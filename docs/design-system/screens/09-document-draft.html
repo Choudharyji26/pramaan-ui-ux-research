@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en" data-rail="expanded">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product brief, ui test (draft 1)</title>
+<script>
+  /* Before first paint: saved rail and theme (see shell.js). One rail state on every screen: stored choice, else expanded from 1280px up. */
+  (function () { var d = document.documentElement, r = null, t = null; try { r = localStorage.getItem("pm.rail"); t = localStorage.getItem("pm.theme"); } catch (e) {}
+  if (innerWidth < 1024 || r === "collapsed" || (r !== "expanded" && innerWidth < 1280)) d.setAttribute("data-rail", "collapsed"); if (t === "dark" || t === "light") d.setAttribute("data-theme", t); })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../base.css">
+<link rel="stylesheet" href="../shell.css">
+<link rel="stylesheet" href="../components-a.css">
+<link rel="stylesheet" href="../components-b.css">
+<link rel="stylesheet" href="../components-c.css">
+<script defer src="../shell.js"></script>
+<script defer src="../components.js"></script>
+<style>
+  /* Document tables: wide ones scroll sideways and never shrink text (SPEC A7, column minimums come from components-b); readiness boxes align to the first line. */
+  .tw td { vertical-align: top; }
+  .tw code { white-space: nowrap; }
+  .tw--policy code { white-space: normal; overflow-wrap: anywhere; }
+  /* The head owns the space above the first section, so the sticky section mask never covers the byline. */
+  .pm-doc-head { padding: var(--pm-space-5) 0 var(--pm-space-3); }
+  .rg { padding-left: 0; list-style: none; }
+  .rg label { align-items: flex-start; }
+  .rg input { flex: none; margin-top: 6px; }
+  .pm-article :is(.pm-reader-sec, .pm-reader-sub) > :where(.pm-table-scroll, p) { max-width: none; }
+  .tw :is(th, td):first-child { min-width: 220px; }
+  .pm-cell-details { margin-top: var(--pm-space-2); }
+</style>
+</head>
+<body>
+<a class="pm-skip" href="#pm-job">Skip to the main job</a>
+
+<!-- CANONICAL SPRITE (copy it whole into every screen). Shell icons: i-*, 20x20 viewBox, used with .pm-i (20px),
+     .pm-i--16 or .pm-i--12. Component glyphs: pm-*, 16x16 viewBox, used with .pm-icon or .pm-pin-glyph. All strokes render at
+     1.5px with round caps; stroke and fill come from the CSS class, never from the symbol. -->
+<svg width="0" height="0" style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="i-overview" viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></symbol>
+  <symbol id="i-interview" viewBox="0 0 20 20"><path d="M4 4.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9.5L6 17v-3.5H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M6.5 8h7M6.5 10.5h4"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 20 20"><path d="M6 2.5h5.5l4 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1z"/><path d="M11.5 2.5v4h4M7.5 10.5h5M7.5 13.5h5"/></symbol>
+  <symbol id="i-roadmap" viewBox="0 0 20 20"><circle cx="4.5" cy="14.5" r="1.75"/><circle cx="10" cy="5.5" r="1.75"/><circle cx="15.5" cy="14.5" r="1.75"/><path d="M5.4 13l3.7-6M10.9 7l3.7 6"/></symbol>
+  <symbol id="i-build" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5"/><path d="M3 8h14M3 12h14M10 4v4M7 8v4M13 8v4M10 12v4"/></symbol>
+  <symbol id="i-try-it" viewBox="0 0 20 20"><path d="M5.5 3.5l10 4.2-4.3 1.6-1.7 4.4z"/><path d="M12.5 12.5l3.5 3.5"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 20 20"><path d="M3 6h2M9 6h8M3 14h8M15 14h2"/><circle cx="7" cy="6" r="2"/><circle cx="13" cy="14" r="2"/></symbol>
+  <symbol id="i-live-logs" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><path d="M6 8l3 2-3 2M11 12.5h3.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 20 20"><path d="M3 6.5a1 1 0 0 1 1-1h4l1.8 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 20 20"><path d="M16 10H4M9 5l-5 5 5 5"/></symbol>
+  <symbol id="i-collapse" viewBox="0 0 20 20"><path d="M10 5l-5 5 5 5M16 5l-5 5 5 5"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 20 20"><path d="M4 5l5 5-5 5M10 5l5 5-5 5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5"/><path d="M13 13l4 4"/></symbol>
+  <symbol id="i-attach" viewBox="0 0 20 20"><path d="M15.5 9.5l-5.8 5.8a3.2 3.2 0 0 1-4.5-4.5l6-6a2.1 2.1 0 0 1 3 3l-6 6a1 1 0 0 1-1.5-1.5l5.3-5.3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 20 20"><path d="M10 16V4M5 9l5-5 5 5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 20 20"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 20 20"><path d="M7 5v10M13 5v10"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 20 20"><path d="M5 10h10"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="9" rx="1.5"/><path d="M13 7V5.5A1.5 1.5 0 0 0 11.5 4h-6A1.5 1.5 0 0 0 4 5.5v6A1.5 1.5 0 0 0 5.5 13H7"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></symbol>
+  <symbol id="i-external" viewBox="0 0 20 20"><path d="M8 4.5H5.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12M11 4.5h4.5V9M15.5 4.5L9 11"/></symbol>
+  <!-- Component glyphs, 16x16 viewBox (components-a/-b): <svg class="pm-icon"><use href="#pm-i-..."/></svg> for 16px icons,
+       <svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-..."/></svg> inside .pm-pin-head (Done check, Blocked x, Paused bar, Locked lock). -->
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+  <symbol id="pm-i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></symbol>
+  <symbol id="pm-i-attach" viewBox="0 0 16 16"><path d="M13 7.5l-5 5a3 3 0 01-4.2-4.2l5.5-5.5a2 2 0 012.8 2.8L6.6 11a1 1 0 01-1.4-1.4l4.6-4.6"/></symbol>
+  <symbol id="pm-i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/></symbol>
+  <symbol id="pm-i-external" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></symbol>
+  <symbol id="i-requests" viewBox="0 0 20 20"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="15" r="2"/><circle cx="14" cy="8" r="2"/><path d="M6 7v6M14 10c0 3-3 3-6 4"/></symbol>
+  <symbol id="pm-i-mic" viewBox="0 0 16 16"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3.5 7.5a4.5 4.5 0 0 0 9 0M8 12v2.5M5.5 14.5h5"/></symbol>
+  <symbol id="pm-i-stop" viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="1.5"/></symbol>
+  <symbol id="pm-i-upload" viewBox="0 0 16 16"><path d="M8 10.5v-8M4.5 6L8 2.5 11.5 6M3 12.5h10"/></symbol>
+  <symbol id="pm-i-arrow-down" viewBox="0 0 16 16"><path d="M8 3v10M4.5 9.5L8 13l3.5-3.5"/></symbol>
+</svg>
+
+<div class="pm-app">
+
+  <aside class="pm-rail" id="pm-rail" aria-label="Sidebar">
+    <div class="pm-rail-head">
+      <a class="pm-wordmark" href="01-projects.html" aria-label="pramaan, all projects">pramaan</a>
+      <span class="pm-monogram" aria-hidden="true">p</span>
+      <button class="pm-rail-toggle" type="button" aria-expanded="true" aria-controls="pm-rail" aria-label="Collapse navigation">
+        <svg class="pm-i pm-i-collapse"><use href="#i-collapse"/></svg>
+        <svg class="pm-i pm-i-expand"><use href="#i-expand"/></svg>
+      </button>
+    </div>
+
+    <nav class="pm-rail-nav" aria-label="Projects and destinations">
+      <a class="pm-rail-item pm-rail-all" href="01-projects.html"><svg class="pm-i"><use href="#i-folder"/></svg><span class="pm-rail-label">All projects</span><span class="pm-rail-meta">Test</span></a>
+      <div class="pm-rail-seam" role="separator"></div>
+      <div class="pm-rail-project" title="ui test, Needs you">
+        <span class="pm-rail-tile" aria-hidden="true">U</span>
+        <span class="pm-rail-project-text"><span class="pm-rail-project-name">ui test</span><span class="pm-rail-status" data-status="needs-you">Needs you</span></span>
+      </div>
+      <ul class="pm-rail-list">
+        <li><a class="pm-rail-item" href="03-overview-decision.html"><svg class="pm-i"><use href="#i-overview"/></svg><span class="pm-rail-label">Overview</span></a></li>
+        <li><a class="pm-rail-item" href="06-interview-finished.html"><svg class="pm-i"><use href="#i-interview"/></svg><span class="pm-rail-label">Interview</span></a></li>
+        <li><a class="pm-rail-item" href="09-document-draft.html" aria-current="page"><svg class="pm-i"><use href="#i-documents"/></svg><span class="pm-rail-label">Documents<svg class="pm-pen" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false"><ellipse cx="50" cy="16" rx="49" ry="15" vector-effect="non-scaling-stroke"/></svg></span><span class="pm-rail-meta pm-tnum">0/3</span></a></li>
+        <li><a class="pm-rail-item" href="11-roadmap-awaiting.html"><svg class="pm-i"><use href="#i-roadmap"/></svg><span class="pm-rail-label">Roadmap</span></a></li>
+        <li><a class="pm-rail-item" href="13-sprints-building.html"><svg class="pm-i"><use href="#i-build"/></svg><span class="pm-rail-label">Build</span></a></li>
+        <li><a class="pm-rail-item" href="15-try-it.html" data-locked><svg class="pm-i"><use href="#i-try-it"/></svg><span class="pm-rail-label">Try it</span><svg class="pm-i pm-rail-lock" aria-hidden="true"><use href="#i-lock"/></svg></a></li>
+        <li><a class="pm-rail-item" href="16-settings.html"><svg class="pm-i"><use href="#i-settings"/></svg><span class="pm-rail-label">Settings</span></a></li>
+        <li class="pm-rail-item--dev"><span class="pm-sr">Development</span><a class="pm-rail-item" href="17-live-logs.html"><svg class="pm-i"><use href="#i-live-logs"/></svg><span class="pm-rail-label">Live logs</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="pm-rail-spacer"></div>
+
+    <div class="pm-rail-budget" role="group" aria-label="Monthly budget 2% used" title="Monthly budget 2% used">
+      <div class="pm-rail-budget-text"><span class="pm-rail-budget-label">Monthly budget</span><span class="pm-rail-budget-value">2% used</span></div>
+      <div class="pm-rail-track" aria-hidden="true"><div class="pm-rail-fill" style="--pm-fill: 2%"></div></div>
+    </div>
+
+    <button class="pm-rail-user" type="button" popovertarget="pm-user-menu" aria-label="Account menu, Aditya Choudhary" title="Aditya Choudhary">
+      <span class="pm-rail-avatar" aria-hidden="true">AC</span>
+      <span class="pm-rail-user-text"><span class="pm-rail-user-name">Aditya Choudhary</span><span class="pm-rail-user-sub">Signed in</span></span>
+    </button>
+    <div class="pm-rail-menu" id="pm-user-menu" popover aria-label="Account">
+      <button class="pm-rail-menu-item" type="button" role="switch" aria-checked="false" data-theme-switch><span>Dark theme</span><span class="pm-rail-switch" aria-hidden="true"></span></button>
+      <a class="pm-rail-menu-item" href="#">Switch organisation</a>
+      <a class="pm-rail-menu-item" href="#">Sign out</a>
+    </div>
+  </aside>
+
+  <main class="pm-main pm-main--workbench" id="pm-main">
+    <header class="pm-topbar">
+      <a class="pm-back" href="08-documents.html" aria-label="Back to Documents"><svg class="pm-i"><use href="#i-back"/></svg></a>
+      <nav class="pm-crumb" aria-label="Breadcrumb"><ol><li><a href="01-projects.html">Projects</a></li><li><a href="03-overview-decision.html">ui test</a></li><li><a href="08-documents.html">Documents</a></li><li><span aria-current="page">Product brief</span></li></ol></nav>
+      <nav class="pm-tape" aria-label="Your journey"><ol><li data-state="done"><a class="pm-tape-step" href="06-interview-finished.html"><span class="pm-tape-label"><span class="pm-sr">Step 1, </span>Interview<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li><li data-state="current" data-progress="0/3"><a class="pm-tape-step" href="09-document-draft.html" aria-current="step" title="Documents: 0 of 3 accepted"><span class="pm-tape-label"><span class="pm-sr">Step 2, </span>Documents<span class="pm-sr">, 0 of 3 accepted. You are here</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">2</span><span class="pm-tape-ticks" aria-hidden="true"><i></i><i></i><i></i></span></a></li><li data-state="upcoming"><a class="pm-tape-step" href="11-roadmap-awaiting.html"><span class="pm-tape-label"><span class="pm-sr">Step 3, </span>Roadmap<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">3</span></a></li><li data-state="upcoming"><a class="pm-tape-step" href="13-sprints-building.html"><span class="pm-tape-label"><span class="pm-sr">Step 4, </span>Build<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">4</span></a></li><li data-state="locked"><span class="pm-tape-step" aria-disabled="true" title="Opens after the plan is approved"><span class="pm-tape-label"><span class="pm-sr">Step 5, </span>Try it<span class="pm-sr">, locked. Opens after the plan is approved</span></span><span class="pm-tape-num" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-lock"/></svg></span></span></li></ol><span class="pm-tape-pin" aria-hidden="true"></span></nav>
+      <div class="pm-slot"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-pin-sentence pm-slot-sentence" title="Accept this draft or ask for changes.">Review this draft.</span></div>
+    </header>
+    <div class="pm-strip">
+      <span class="pm-strip-text">Last saved: your decision "First turn", <time datetime="2026-09-30T14:10">14:10</time> &middot; Nothing accepted yet</span>
+      <button class="pm-strip-history" type="button" popovertarget="pm-history">History</button>
+    </div>
+    <div class="pm-history" id="pm-history" popover aria-label="Recently saved or accepted">
+      <ol>
+        <li><time datetime="2026-09-30T14:10">14:10</time><span>Saved decision "First turn"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-30T14:07">14:07</time><span>Saved decision "Start over early"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-30T14:04">14:04</time><span>Saved decision "Who plays"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-30T14:01">14:01</time><span>Saved decision "End of game"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-30T13:55">13:55</time><span>Saved decision "Screen purpose"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-30T13:52">13:52</time><span>Saved decision "Product idea"</span><a href="#">Open</a></li>
+      </ol>
+    </div>
+
+    <div class="pm-workbench" id="pm-job">
+      <div class="pm-reader" data-state="draft">
+        <nav class="pm-toc" aria-label="In this document">
+          <p class="pm-toc-title">In this document</p>
+          <ol>
+            <li><a href="#s-outcome" title="The one thing this product should do." aria-current="location">One-sentence outcome</a></li>
+            <li><a href="#s-evidence" title="What you told us that led to this brief.">Evidence of the problem</a></li>
+            <li><a href="#s-contract" title="How we will know the product works.">Success contract</a></li>
+            <li><a href="#s-guardrails" title="Things that must not get worse while we build.">Guardrails</a></li>
+            <li><a href="#s-acceptance" title="The check you can run yourself to accept the result.">Acceptance signal</a></li>
+            <li><a href="#s-constraints" title="What the product must stay within, and what it will not do.">Constraints and non-goals</a></li>
+            <li><a href="#s-advanced" title="Pramaan's working rules. Most people never need to open these.">Advanced sections</a>
+              <ol>
+                <li><a href="#s-exec" title="What Pramaan promises to do, and what it will not touch.">Execution contract</a></li>
+                <li><a href="#s-policy" title="The rules Pramaan follows if it has to decide something without asking you.">Frozen autonomous decision policy</a></li>
+                <li><a href="#s-authority" title="What Pramaan is allowed to change on its own.">Authority envelope</a></li>
+                <li><a href="#s-ready" title="The checks before building starts. You do not need to tick these.">Readiness gate</a></li>
+              </ol>
+            </li>
+          </ol>
+          <div class="pm-toc-links"><a href="#s-details">Details</a></div>
+          <p class="pm-toc-title pm-toc-comments-title" id="toc-comments">Passage comments (1)</p>
+          <ol class="pm-toc-comments" aria-labelledby="toc-comments"><li><a href="#mark-1">1 &middot; Constraints: 'I don't think this is a constraint'</a></li></ol>
+        </nav>
+        <div class="pm-reader-body" tabindex="0" aria-label="Product brief, draft 1">
+          <div class="pm-actionbar" role="region" aria-label="Your decision">
+            <div class="pm-actionbar-main"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-pin-sentence">Draft 1. Nobody has accepted it yet.</span></div>
+            <div class="pm-actionbar-actions">
+              <button class="pm-btn pm-btn--quiet" type="button">Ask for changes (1)</button>
+              <button class="pm-btn pm-btn--thread" type="button" data-thread>Accept this draft <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></button>
+            </div>
+          </div>
+          <div class="pm-reader-doc">
+            <div class="pm-doc-head">
+              <h1 class="pm-doc-title">Product brief</h1>
+              <div class="pm-versions" role="radiogroup" aria-label="Version"><button class="pm-chip" type="button" role="radio" aria-checked="true">Draft 1 &middot; newest</button></div>
+              <details class="pm-doc-byline pm-details" id="s-details">
+                <summary><span>Pramaan wrote draft 1 on Tuesday at 20:59.</span> <span class="pm-doc-details-link">Details</span></summary>
+                <div class="pm-details-body pm-mono">Repository: pramaan-build/ui-test-52da6713<br>File: product/brief.md<br>Version: draft 1<br>The file's own labels: Product brief, core document 1 of 3</div>
+              </details>
+            </div>
+            <article class="pm-article">
+              <section class="pm-reader-sec">
+                <h2 id="s-outcome">One-sentence outcome</h2>
+                <p class="pm-gloss">The one thing this product should do.</p>
+                <p>For two people sharing a screen, change a tic-tac-toe screen idea to a playable game where X starts, players take turns, the result is shown, and they can start a new game each time they play.</p>
+              </section>
+              <section class="pm-reader-sec">
+                <h2 id="s-evidence">Evidence of the problem</h2>
+                <p class="pm-gloss">What you told us that led to this brief.</p>
+                <ul>
+                  <li>Source: The founder's description and confirmed decisions.</li>
+                  <li>What was observed: The founder asked for a playable tic-tac-toe screen for two people taking turns on the same screen, with X starting every game, a winner or draw shown at the end, no further moves after the result, and a new-game button available at any time.</li>
+                  <li>Confidence / unknowns: These are settled product decisions; no existing screen or player research was provided.</li>
+                </ul>
+              </section>
+              <section class="pm-reader-sec">
+                <h2 id="s-contract">Success contract</h2>
+                <p class="pm-gloss">How we will know the product works.</p>
+                <div class="pm-table-scroll"><table class="pm-table tw">
+                    <thead><tr><th scope="col" title="Measure or binary condition">How we will know</th><th scope="col" title="Baseline">Starting point</th><th scope="col" title="Target">Goal</th><th scope="col" title="Window">By when</th><th scope="col" title="Data source">Where we look</th><th scope="col" title="Owner">Who decides</th></tr></thead>
+                    <tbody><tr><td>Two people can complete a game on the same screen and see the correct winner or draw.<details class="pm-details pm-cell-details"><summary>Details</summary><div class="pm-details-body pm-mono">The file's own label: KPI-1<br>Phase 0: the step before building where Pramaan measures the starting point.</div></details></td><td title="Phase 0 is the step before building where Pramaan measures the starting point.">Unknown, measure in Phase 0</td><td>True for every completed game checked</td><td>At product acceptance</td><td>Reproducible game walkthrough on the preview</td><td>Founder</td></tr></tbody>
+                  </table></div>
+              </section>
+              <section class="pm-reader-sec">
+                <h2 id="s-guardrails">Guardrails</h2>
+                <p class="pm-gloss">Things that must not get worse while we build.</p>
+                <div class="pm-table-scroll"><table class="pm-table tw tw--short">
+                    <thead><tr><th scope="col" title="Must not regress">What must not get worse</th><th scope="col" title="Threshold">Most allowed</th><th scope="col" title="How it is checked">How we check</th></tr></thead>
+                    <tbody><tr><td>Moves accepted after a winner or draw is shown<details class="pm-details pm-cell-details"><summary>Details</summary><div class="pm-details-body pm-mono">The file's own label: G-1</div></details></td><td class="pm-tnum">0</td><td>Attempt a move after each end-game result on the preview.</td></tr><tr><td>New games that begin with O instead of X<details class="pm-details pm-cell-details"><summary>Details</summary><div class="pm-details-body pm-mono">The file's own label: G-2</div></details></td><td class="pm-tnum">0</td><td>Start a new game both during and after play; inspect the first turn on the preview.</td></tr></tbody>
+                  </table></div>
+              </section>
+              <section class="pm-reader-sec">
+                <h2 id="s-acceptance">Acceptance signal</h2>
+                <p class="pm-gloss">The check you can run yourself to accept the result.</p>
+                <ul>
+                  <li>Reproducible product/technical check: On the browser preview, two people alternate moves; a win and a draw each show the correct result and prevent further moves; the new-game button clears the game during play and after a result, with X taking the first turn.</li>
+                  <li>Subjective decision and named approver: None required for the stated outcome.</li>
+                </ul>
+              </section>
+              <section class="pm-reader-sec">
+                <h2 id="s-constraints">Constraints and non-goals</h2>
+                <p class="pm-gloss">What the product must stay within, and what it will not do.</p>
+                <ul>
+                  <li class="pm-has-mark">Constraint: <span class="pm-marked">This is a browser-based web app that works on phones, tablets, and computers</span> and can be added to a phone's home screen; it is not a native or app-store app.
+                    <button class="pm-chalk-mark" id="mark-1" type="button" popovertarget="pm-c1" aria-label="Comment 1 on 'Constraint: This is a browser-based web app'">1</button>
+                  </li>
+                  <li>Constraint: Two people play on the same screen; X takes the first turn in every new game.</li>
+                </ul>
+              </section>
+              <details class="pm-details pm-reader-adv" id="s-advanced">
+                <summary>Advanced sections (how Pramaan will work)</summary>
+                <section class="pm-reader-sub">
+                  <h2 id="s-exec">Execution contract</h2>
+                  <p class="pm-gloss">What Pramaan promises to do, and what it will not touch.</p>
+                  <ul>
+                    <li>Mode: <code>supervised</code></li>
+                    <li>Maximum run/phase wall time or turns: per project settings</li>
+                    <li>Consecutive no-progress threshold: per project settings (repair budget)</li>
+                    <li>Cost ceiling, or <code>none-record actual</code>: per project settings; record actual</li>
+                    <li>Target environments in order: verification cell, sprint preview</li>
+                    <li>Allowed reversible defaults: none beyond the stack's defaults</li>
+                    <li>Decisions that must be resolved before autonomous kickoff: not applicable in supervised mode</li>
+                    <li>Delivery milestone: <code>RELEASED</code>; lifecycle then <code>OBSERVING</code></li>
+                    <li>Terminal run states: <code>VALIDATED</code>, <code>MISSED_TARGET</code>, or evidence-backed <code>BLOCKED</code></li>
+                    <li>Immutable manifest path: <code>product/run-contract.md</code></li>
+                    <li>Mutable state path: <code>.loop/run-state.json</code> (outside the integration diff)</li>
+                    <li>Required credential references (logical <code>credential-ref:*</code> names only; never secret values): none; the product needs no outside service</li>
+                    <li>Transient-failure retry/backoff policy: per project settings</li>
+                  </ul>
+                </section>
+                <section class="pm-reader-sub">
+                  <h2 id="s-policy">Frozen autonomous decision policy</h2>
+                  <p class="pm-gloss">The rules Pramaan follows if it has to decide something without asking you.</p>
+                  <div class="pm-table-scroll"><table class="pm-table tw tw--policy">
+                      <thead><tr><th scope="col">Decision class</th><th scope="col">Rule/default</th><th scope="col">Evidence source</th><th scope="col">Evaluator</th><th scope="col">Outside-contract action</th></tr></thead>
+                      <tbody><tr><td>Product scope</td><td>ask the founder</td><td>this brief and the PRD</td><td>founder</td><td><code>BLOCKED</code></td></tr><tr><td>UX/copy</td><td>ask the founder</td><td>the user journey asset</td><td>founder</td><td><code>BLOCKED</code></td></tr><tr><td>Architecture/dependency</td><td>ask the founder</td><td>the architecture asset</td><td>founder</td><td><code>BLOCKED</code></td></tr><tr><td>Privacy/security</td><td>ask the founder</td><td>the PRD's instrumentation privacy classes</td><td>founder</td><td><code>BLOCKED</code></td></tr><tr><td>Release/rollback</td><td>ask the founder</td><td><code>product/run-contract.md</code></td><td>founder</td><td><code>BLOCKED</code></td></tr></tbody>
+                    </table></div>
+                </section>
+                <section class="pm-reader-sub">
+                  <h2 id="s-authority">Authority envelope</h2>
+                  <p class="pm-gloss">What Pramaan is allowed to change on its own.</p>
+                  <p>Use <code>allowed</code>, <code>not allowed</code>, or <code>approval required</code>. Cite the user request or repository policy that grants it.</p>
+                  <div class="pm-table-scroll"><table class="pm-table tw tw--auth">
+                      <thead><tr><th scope="col">Action</th><th scope="col">Authority</th><th scope="col">Target/limits</th><th scope="col">Source/approver</th></tr></thead>
+                      <tbody><tr><td>Local edits and tests</td><td>allowed</td><td>the feature worktree</td><td>builder default</td></tr><tr><td>Commits, branches, and worktrees</td><td>allowed</td><td>feature branches only</td><td>builder default</td></tr><tr><td>Dependency install / network reads</td><td>allowed</td><td>the install step only, registry access only</td><td>builder default</td></tr><tr><td>Push, open PR, or merge PR</td><td>push and open PR allowed; merge approval required</td><td>draft PRs against the sprint branch</td><td>founder merges</td></tr><tr><td>External data write or message</td><td>not allowed outside provider test mode</td><td>no outside services; test mode only</td><td>founder</td></tr><tr><td>Database/schema migration</td><td>allowed</td><td>preview databases only</td><td>builder default</td></tr><tr><td>Staging deployment</td><td>allowed</td><td>the sprint preview</td><td>builder default</td></tr><tr><td>Secret/credential access</td><td>not allowed</td><td>credential references by name only</td><td>platform</td></tr><tr><td>Production deployment</td><td>not allowed</td><td>out of this plan</td><td>founder</td></tr></tbody>
+                    </table></div>
+                  <p>An autonomous run may enter <code>RUNNING</code> only when every required action is <code>allowed</code> within exact limits. <code>Approval required</code> means <code>NOT_READY</code> for that action; it must not become a mid-run prompt.</p>
+                </section>
+                <section class="pm-reader-sub">
+                  <h2 id="s-ready">Readiness gate</h2>
+                  <p class="pm-gloss">The checks before building starts. You do not need to tick these.</p>
+                  <p class="pm-help" id="rg-why">Pramaan ticks these once the brief passes its own checks. You cannot tick them.</p>
+                  <ul class="rg"><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Specific user and problem are named.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Outcome is observable.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Primary target, window, data source, and owner exist.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Guardrails and acceptance method exist.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Unknown baseline has a measurement phase.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Material constraints/non-goals are explicit.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Authority is explicit before any commit, remote write, migration, or deployment.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Execution mode, ceilings, no-progress rule, decision defaults, retry policy, terminal states, and rollback thresholds are frozen.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Every required credential/environment is named by a non-secret reference and resolves, or the missing item is recorded and lifecycle is <code>NOT_READY</code>.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>Release rollback action and responsibility are explicit in <code>product/run-contract.md</code>.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span>The product-specific observation monitor contract is approved; resume responsibility and scheduler reference are explicit; its durable scheduled wake was tested with least-privilege credentials.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span><code>product/run-contract.md</code> lists the immutable artifact set and first phase contract.</span></label></li><li><label class="pm-checkbox"><input type="checkbox" disabled aria-describedby="rg-why"> <span><code>.loop/run-state.json</code> exists and records the full baseline contract commit before autonomous kickoff.</span></label></li></ul>
+                  <p>Do not set this artifact to <code>APPROVED</code> or let run state enter <code>READY</code> / <code>RUNNING</code> until all applicable items pass. After the manifest/artifact set is committed, do not mutate this file inside that autonomous run.</p>
+                </section>
+              </details>
+            </article>
+          </div>
+        </div>
+      </div>
+      <button class="pm-btn pm-btn--quiet pm-btn--sm pm-comment-cta" type="button" hidden popovertarget="pm-newc">Comment on this passage</button>
+      <div class="pm-popover" id="pm-newc" popover data-anchor="invoker" aria-label="New comment">
+        <div class="pm-comment">
+          <blockquote class="pm-quote" data-comment-quote></blockquote>
+          <label class="pm-label" for="newc-text">Your comment</label>
+          <textarea class="pm-textarea" id="newc-text"></textarea>
+          <span class="pm-comment-by">Your comments are sent together when you ask for changes.</span>
+          <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" popovertarget="pm-newc" popovertargetaction="hide">Add comment</button>
+        </div>
+      </div>
+      <div class="pm-popover" id="pm-c1" popover data-anchor="invoker" aria-label="Comment 1">
+        <div class="pm-comment">
+          <blockquote class="pm-quote">This is a browser-based web app that works on phones, tablets, and computers</blockquote>
+          <span class="pm-comment-by">You, draft 1</span>
+          <p class="pm-comment-text">I don't think this is a constraint</p>
+          <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" popovertarget="pm-c1" popovertargetaction="hide">Remove comment</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

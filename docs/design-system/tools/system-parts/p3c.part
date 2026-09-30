@@ -1,0 +1,469 @@
+
+    <!-- 5b. Pass-2 components (SPEC P.4 and P.5): every sample is the shipped markup, with ids prefixed n- -->
+    <article class="ss-comp" id="n-lanes" aria-labelledby="h-n-lanes">
+      <div class="ss-comp-head"><h3 id="h-n-lanes">Lane switcher</h3><span class="pm-meta">P.5.2 and Ruling 13</span></div>
+      <p class="ss-lede">Three ways in, as one 44px row under the title on 02, 18 and 21 and their states. It is navigation, never the thread.</p>
+      <div class="ss-stage">
+        <nav class="pm-lanes" aria-label="Ways to start, current: Describe your idea"><ol><li><a class="pm-chip" href="#n-lanes" aria-current="page">Describe your idea</a></li><li><a class="pm-chip" href="#n-lanes">Hand off your code</a></li><li class="pm-lanes-label">For engineering teams</li><li><a class="pm-chip" href="#n-lanes">Work in my repository</a></li></ol></nav>
+        <nav class="pm-lanes" aria-label="Ways to start, current: Hand off your code"><ol><li><a class="pm-chip" href="#n-lanes">Describe your idea</a></li><li><a class="pm-chip" href="#n-lanes" aria-current="page">Hand off your code</a></li><li class="pm-lanes-label">For engineering teams</li><li><a class="pm-chip" href="#n-lanes">Work in my repository</a></li></ol></nav>
+        <nav class="pm-lanes" aria-label="Ways to start, current: Work in my repository"><ol><li><a class="pm-chip" href="#n-lanes">Describe your idea</a></li><li><a class="pm-chip" href="#n-lanes">Hand off your code</a></li><li class="pm-lanes-label">For engineering teams</li><li><a class="pm-chip" href="#n-lanes" aria-current="page">Work in my repository</a></li></ol></nav>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>Three 28px chips in a stitched 44px row: "Describe your idea", "Hand off your code", then a Meta label "For engineering teams" and "Work in my repository". The current chip is ink filled and carries <span class="pm-mono">aria-current="page"</span>. The typed form is not kept between lanes.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-radius-chip, --pm-sys-text, --pm-sys-text-on-ink, --pm-stitch</dd><dt>A11y</dt><dd>A labelled nav with an ordered list. The current lane is named in the nav label. The Meta label is plain text in a list item.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Hand off your code is the current lane on 18 and its four states.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Dress a lane chip as the thread, or keep a half-typed form when the lane changes.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-choice" aria-labelledby="h-n-choice">
+      <div class="ss-comp-head"><h3 id="h-n-choice">Choice cards and choice list</h3><span class="pm-meta">P.5.3</span></div>
+      <p class="ss-lede">A radio card for a choice that changes the rest of the form, and a radio list for picking one of a few named things. Arrow keys move inside a group.</p>
+      <div class="ss-stage ss-grid2">
+        <div style="display:grid;gap:var(--pm-space-5)">
+          <fieldset class="pm-choices"><legend>Where is your code? Two cards, one chosen</legend>
+            <label class="pm-choice"><input class="pm-sr" type="radio" name="n-src" value="upload" checked><span class="pm-choice-title">Upload a .zip</span><span class="pm-choice-meta">No GitHub account needed.</span></label>
+            <label class="pm-choice"><input class="pm-sr" type="radio" name="n-src" value="github"><span class="pm-choice-title">Import from GitHub</span><span class="pm-choice-meta">Pramaan reads it once. Your repository is never changed.</span></label>
+          </fieldset>
+          <fieldset class="pm-choices"><legend>A disabled card gives its reason in the sentence</legend>
+            <label class="pm-choice"><input class="pm-sr" type="radio" name="n-off" value="github" disabled><span class="pm-choice-title">Import from GitHub</span><span class="pm-choice-meta">Give permission on GitHub first.</span></label>
+          </fieldset>
+        </div>
+        <div>
+          <fieldset class="pm-choice-list"><legend>Choose your repository</legend>
+            <div class="pm-choice-rows">
+              <label class="pm-choice-row"><input type="radio" name="n-repo" value="a" checked><span class="pm-choice-name">test-org/insight-weaver-537</span></label>
+              <label class="pm-choice-row" aria-disabled="true"><input type="radio" name="n-repo" value="b" disabled><span class="pm-choice-name">test-org/todo</span><span class="pm-choice-note">already a Pramaan project</span></label>
+              <label class="pm-choice-row"><input type="radio" name="n-repo" value="c"><span class="pm-choice-name">studio-demo/customer-portal</span></label>
+              <label class="pm-choice-row"><input type="radio" name="n-repo" value="d"><span class="pm-choice-name">test-org/provider-update-demo-npm-stack</span></label>
+              <label class="pm-choice-row"><input type="radio" name="n-repo" value="e"><span class="pm-choice-name">test-org/omnibound-vlmk-craft</span></label>
+              <label class="pm-choice-row"><input type="radio" name="n-repo" value="f"><span class="pm-choice-name">test-org/pramaan-web</span></label>
+            </div>
+          </fieldset>
+          <p class="ss-cap" style="margin-top:var(--pm-space-2)">Showing 6 of 33</p>
+        </div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A card is raised with a hairline, radius card, 64px minimum: a hollow ring that becomes a filled ink pin head when chosen, a Label title and a Meta sentence. The list is a fieldset of 40px rows with the name in 13/20 mono and a Meta note; a row that cannot be chosen is muted and gives its reason in the note. At most six rows: "Showing 6 of 33" and the search field stand in for a second scroller.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-surface-raised, --pm-hairline, --pm-sys-text, --pm-font-mono, --pm-radius-card</dd><dt>A11y</dt><dd>Real radio inputs, visually hidden on the card, with a focus ring drawn on the label. A disabled choice uses <span class="pm-mono">aria-disabled</span> and <span class="pm-mono">disabled</span> and says why in its own text.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>test-org/todo, already a Pramaan project: disabled, and the note says why.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Grey out a repository with no reason, or add a scroller to the list.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-file" aria-labelledby="h-n-file">
+      <div class="ss-comp-head"><h3 id="h-n-file">File field</h3><span class="pm-meta">P.5.4</span></div>
+      <p class="ss-lede">A quiet button with the chosen name beside it. Choose a file in the first two fields: the copy flow below it writes the name and size, and a wrong file turns the field into its error state.</p>
+      <div class="ss-stage ss-grid2">
+        <div style="display:grid;gap:var(--pm-space-5)">
+          <div class="pm-field"><span class="pm-label" id="n-f1-l">Your code (.zip, up to 200 MB): default</span>
+            <div class="pm-file"><input type="file" id="n-f1" class="pm-sr" aria-labelledby="n-f1-l" aria-describedby="n-f1-h" accept=".zip"><label for="n-f1" class="pm-btn pm-btn--quiet">Choose a file</label><span class="pm-file-name" data-file-name></span></div>
+            <span class="pm-help" id="n-f1-h">Up to 200 MB. Dependencies and build output are left out.</span></div>
+          <div class="pm-field"><span class="pm-label" id="n-f2-l">Your code (.zip, up to 200 MB): chosen</span>
+            <div class="pm-file"><input type="file" id="n-f2" class="pm-sr" aria-labelledby="n-f2-l" aria-describedby="n-f2-h" accept=".zip"><label for="n-f2" class="pm-btn pm-btn--quiet">Choose a file</label><span class="pm-file-name" data-file-name>customer-portal.zip &middot; 38 MB</span></div>
+            <span class="pm-help" id="n-f2-h">Pramaan never writes back to where the code came from.</span></div>
+          <div class="pm-field"><span class="pm-label" id="n-f3-l">Too big (18c)</span>
+            <div class="pm-file pm-file--error"><input type="file" id="n-f3" class="pm-sr" aria-labelledby="n-f3-l" aria-describedby="n-f3-h" accept=".zip"><label for="n-f3" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>customer-portal.zip &middot; 312 MB</span></div>
+            <span class="pm-help pm-help--error" id="n-f3-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>This file is larger than 200 MB. Choose a smaller .zip, or leave out big folders such as media.</span></div>
+          <div class="pm-field"><span class="pm-label" id="n-f4-l">Not a zip (18d)</span>
+            <div class="pm-file pm-file--error"><input type="file" id="n-f4" class="pm-sr" aria-labelledby="n-f4-l" aria-describedby="n-f4-h" accept=".zip"><label for="n-f4" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>customer-portal.rar &middot; 41 MB</span></div>
+            <span class="pm-help pm-help--error" id="n-f4-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>This is not a .zip file. Zip the folder and choose the .zip.</span></div>
+        </div>
+        <div style="display:grid;gap:var(--pm-space-5)">
+          <div class="pm-field"><span class="pm-label" id="n-f5-l">Requirements document (20): wrong type</span>
+            <div class="pm-file pm-file--error"><input type="file" id="n-f5" class="pm-sr" aria-labelledby="n-f5-l" aria-describedby="n-f5-h" accept=".md,.txt"><label for="n-f5" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>requirements.pdf &middot; 3 MB</span></div>
+            <span class="pm-help pm-help--error" id="n-f5-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>Choose a Markdown or text file under 1 MB.</span></div>
+          <div class="pm-field"><span class="pm-label" id="n-f6-l">Requirements document (20): empty</span>
+            <div class="pm-file pm-file--error"><input type="file" id="n-f6" class="pm-sr" aria-labelledby="n-f6-l" aria-describedby="n-f6-h" accept=".md,.txt"><label for="n-f6" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>requirements.md &middot; 0 KB</span></div>
+            <span class="pm-help pm-help--error" id="n-f6-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>This document is empty.</span></div>
+          <div class="pm-field"><span class="pm-label" id="n-f7-l">Requirements document (20): unreadable</span>
+            <div class="pm-file pm-file--error"><input type="file" id="n-f7" class="pm-sr" aria-labelledby="n-f7-l" aria-describedby="n-f7-h" accept=".md,.txt"><label for="n-f7" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>requirements.md &middot; 12 KB</span></div>
+            <span class="pm-help pm-help--error" id="n-f7-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>The file could not be read. Paste its text below instead.</span></div>
+        </div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A label, then a quiet button, the chosen name in 13/20 mono and a helper. The error state puts the blocked border on the button, the helper carries a Blocked pin and the full sentence, and the button reads "Choose another file". Limits follow <span class="pm-mono">accept</span> and <span class="pm-mono">data-max-mb</span> (.zip up to 200 MB; documents .md or .txt under 1 MB).</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-status-blocked, --pm-sys-control-border, --pm-radius-control, --pm-font-mono</dd><dt>A11y</dt><dd>A real file input, visually hidden, labelled by the field label, with <span class="pm-mono">aria-invalid</span> and <span class="pm-mono">aria-describedby</span> on the error states. The error sentence is text, never colour alone.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>This file is larger than 200 MB. Choose a smaller .zip, or leave out big folders such as media.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">A red border with no sentence, or a disabled upload button with no way to choose another file.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-copyflow" aria-labelledby="h-n-copyflow">
+      <div class="ss-comp-head"><h3 id="h-n-copyflow">Copy flow</h3><span class="pm-meta">P.5.5</span></div>
+      <p class="ss-lede">Where your code goes, as two boxes and an arrow, in six states. It is a fitted aside on the Lane A form screens, and it always says the original is never written to.</p>
+      <div class="ss-stage ss-grid3">
+        <div><span class="ss-cap ss-cap--block">No file chosen (live: choose a file above)</span><aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: no file chosen (live: choose a file above)">
+          <h2>Where your code goes</h2>
+          <div class="pm-flow">
+            <div class="pm-flow-box"><span class="pm-flow-label" data-flow-source-label>Your upload</span><span class="pm-flow-value" data-flow-source-value>No file chosen yet</span><span class="pm-chip pm-flow-chip" data-flow-source-chip>Read once &middot; never changed</span></div>
+            <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+            <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip">All work happens here</span></div>
+          </div>
+          <p class="pm-flow-sentence">The code stays yours. Take a copy any time.</p>
+          <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project. Take a copy downloads a .zip. Export to GitHub is not available yet.</div></details>
+        </aside></div>
+        <div><span class="ss-cap ss-cap--block">File chosen</span><aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: file chosen">
+          <h2>Where your code goes</h2>
+          <div class="pm-flow">
+            <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 38 MB</span><span class="pm-chip pm-flow-chip">Read once &middot; never changed</span></div>
+            <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+            <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip">All work happens here</span></div>
+          </div>
+          <p class="pm-flow-sentence">The code stays yours. Take a copy any time.</p>
+          <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project. Take a copy downloads a .zip. Export to GitHub is not available yet.</div></details>
+        </aside></div>
+        <div><span class="ss-cap ss-cap--block">From GitHub</span><aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: from github">
+          <h2>Where your code goes</h2>
+          <div class="pm-flow">
+            <div class="pm-flow-box"><span class="pm-flow-label">GitHub</span><span class="pm-flow-value pm-mono">studio-demo/customer-portal</span><span class="pm-chip pm-flow-chip">Read only &middot; unchanged</span></div>
+            <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+            <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip">All work happens here</span></div>
+          </div>
+          <p class="pm-flow-sentence">The code stays yours. Take a copy any time.</p>
+          <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project. Take a copy downloads a .zip. Export to GitHub is not available yet.</div></details>
+        </aside></div>
+        <div><span class="ss-cap ss-cap--block">In progress</span><aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: in progress">
+          <h2>Where your code goes</h2>
+          <div class="pm-flow">
+            <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 38 MB</span><span class="pm-chip pm-flow-chip">Read once &middot; never changed</span></div>
+            <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+            <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">Making your private copy</span><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span></div>
+          </div>
+          <p class="pm-flow-sentence">Your original code stays unchanged.</p>
+          <details class="pm-details"><summary>Details</summary><div class="pm-details-body pm-mono">Private copy: pramaan-build/customer-portal-3f9a1c2e, from your upload customer-portal.zip (38 MB), received today</div></details>
+        </aside></div>
+        <div><span class="ss-cap ss-cap--block">Done</span><aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: done">
+          <h2>Where your code goes</h2>
+          <div class="pm-flow">
+            <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 38 MB</span><span class="pm-chip pm-flow-chip">Read once &middot; never changed</span></div>
+            <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+            <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip" data-status="done">Ready</span></div>
+          </div>
+          <p class="pm-flow-sentence">Your original code stays unchanged.</p>
+          <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project.</div></details>
+        </aside></div>
+        <div><span class="ss-cap ss-cap--block">Too big</span><aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: too big">
+          <h2>Where your code goes</h2>
+          <div class="pm-flow">
+            <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 312 MB</span><span class="pm-chip pm-flow-chip" data-status="blocked">Too big</span></div>
+            <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+            <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip">All work happens here</span></div>
+          </div>
+          <p class="pm-flow-sentence">Choose a file under 200 MB.</p>
+          <details class="pm-details"><summary>Details</summary><div class="pm-details-body">Dependencies, build output and the .git folder are left out of the copy; the ZIP can unpack to at most 1 GB and 50,000 files.</div></details>
+        </aside></div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A heading, two sunken boxes joined by a 16px arrow, then one sentence and a closed Details. Each box has a Meta label, a value (mono for a file or GitHub name) and a quiet chip. Box 2 shows a Working pin while the copy is made, a Done "Ready" chip when it is finished, and box 1 shows a Blocked chip when the file is refused.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-surface-sunken, --pm-radius-card, --pm-sys-status-done-tint, --pm-sys-status-blocked-tint</dd><dt>A11y</dt><dd>The aside is labelled. The arrow is decorative. The state is stated in the chip and the sentence, never by colour alone. Data hooks for the live page: <span class="pm-mono">data-flow-source-label</span>, <span class="pm-mono">-value</span>, <span class="pm-mono">-chip</span>.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Your original code stays unchanged.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Show a GitHub logo, or promise a read-only permission GitHub may not offer.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-steps" aria-labelledby="h-n-steps">
+      <div class="ss-comp-head"><h3 id="h-n-steps">Steps, mini steps and the check</h3><span class="pm-meta">P.5.7</span></div>
+      <p class="ss-lede">Steps state what Pramaan did, one fact each. Mini steps are the four-square measure of a request. The check is a callout-sized result, used for the GitHub App check.</p>
+      <div class="ss-stage ss-grid2">
+        <div style="display:grid;gap:var(--pm-space-4)">
+          <div><span class="ss-cap ss-cap--block">Steps: four Done and one Working</span><ol class="pm-steps">
+            <li class="pm-step"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-step-title">Made the change on a new branch</span><span class="pm-steps-fact"><span class="pm-mono">feature/2-archive-workspaces</span></span></li>
+            <li class="pm-step"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-step-title">Tested the change it made</span><span class="pm-steps-fact">Checks passed on the branch</span></li>
+            <li class="pm-step"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-step-title">Opened a pull request and had it reviewed</span><span class="pm-steps-fact">Pull request #42, opened Tuesday</span></li>
+            <li class="pm-step"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-step-title">Fixed what the review found</span><span class="pm-steps-fact">Round 1 asked for an empty-state test. Round 2 passed.</span></li>
+            <li class="pm-step"><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span><span class="pm-step-title">Making your private copy</span><span class="pm-steps-fact">Nothing needed from you.</span></li>
+          </ol></div>
+        </div>
+        <div style="display:grid;gap:var(--pm-space-4);align-content:start">
+          <div><span class="ss-cap ss-cap--block">Mini steps: none, one to four done, working, blocked</span><div style="display:grid;gap:var(--pm-space-2)">
+            <span class="ss-row" style="gap:var(--pm-space-2)"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: none done"><i></i><i></i><i></i><i></i></span><span class="ss-cap">none done</span></span>
+            <span class="ss-row" style="gap:var(--pm-space-2)"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 1 of 4 done"><i data-state="done"></i><i></i><i></i><i></i></span><span class="ss-cap">1 of 4 done</span></span>
+            <span class="ss-row" style="gap:var(--pm-space-2)"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 2 of 4 done"><i data-state="done"></i><i data-state="done"></i><i></i><i></i></span><span class="ss-cap">2 of 4 done</span></span>
+            <span class="ss-row" style="gap:var(--pm-space-2)"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 3 of 4 done"><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i><i></i></span><span class="ss-cap">3 of 4 done</span></span>
+            <span class="ss-row" style="gap:var(--pm-space-2)"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 4 of 4 done"><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i></span><span class="ss-cap">4 of 4 done</span></span>
+            <span class="ss-row" style="gap:var(--pm-space-2)"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: Review working"><i data-state="done"></i><i data-state="done"></i><i data-state="working"></i><i></i></span><span class="ss-cap">Review working</span></span>
+            <span class="ss-row" style="gap:var(--pm-space-2)"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: Test blocked"><i data-state="done"></i><i data-state="blocked"></i><i></i><i></i></span><span class="ss-cap">Test blocked</span></span>
+          </div></div>
+          <div><span class="ss-cap ss-cap--block">The check: Done, then Blocked</span><div style="display:grid;gap:var(--pm-space-3)">
+            <div class="pm-check" data-status="done"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span><span class="pm-pin-sentence">Pramaan can open pull requests in test-org/insight-weaver-537.</span></span><p class="pm-check-text">It never pushes to your default branch (main).</p></div>
+            <div class="pm-check" data-status="blocked"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span><span class="pm-pin-sentence">Pramaan cannot open pull requests in test-org/insight-weaver-537 yet.</span></span><p class="pm-check-text">The Pramaan GitHub App is not installed for this repository.</p></div>
+          </div></div>
+        </div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>Steps are 44px rows on a thin stitched line: a pin, a Label title and a Meta fact. Mini steps are four 8px squares (radius 2) that read Build, Test, Review, Merge: done fills with the Done colour, the current one with Working, a blocked one with Blocked, waiting stays a hairline. The check is a padded block tinted by its status, holding a pin and two sentences.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-status-done, --pm-sys-status-working, --pm-sys-status-blocked, --pm-sys-status-*-tint, --pm-cmp-pin-size</dd><dt>A11y</dt><dd>Steps are an ordered list. Mini steps are <span class="pm-mono">role="img"</span> with a label such as "Build, Test, Review, Merge: 3 of 4 done". The check is a <span class="pm-mono">div</span>; <span class="pm-mono">label.pm-check</span> and <span class="pm-mono">li.pm-check</span> belong to the Try it checklist.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Round 1 asked for an empty-state test. Round 2 passed.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Put a branch name in a pin sentence: it belongs in the row facts or Details.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-actioncards" aria-labelledby="h-n-actioncards">
+      <div class="ss-comp-head"><h3 id="h-n-actioncards">Action cards</h3><span class="pm-meta">P.5.8</span></div>
+      <p class="ss-lede">Three equal cards on the locked interview: the action on line one, its sentence on line two. The card is not a link; the button is.</p>
+      <div class="ss-stage">
+        <ul class="pm-actioncards">
+          <li class="pm-actioncard"><button class="pm-actioncard-action" type="button">Read your decisions</button><p class="pm-actioncard-text">Nothing you decided is lost.</p></li>
+          <li class="pm-actioncard"><button class="pm-actioncard-action" type="button">Request a revision</button><p class="pm-actioncard-text">Pramaan drafts the change after the sprint.</p></li>
+          <li class="pm-actioncard"><a class="pm-actioncard-action" href="#n-actioncards">Open Build</a><p class="pm-actioncard-text">See how sprint 1 is going.</p></li>
+        </ul>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A list of three 88px cards (raised, hairline, radius card, padding 12 by 16) in equal columns with a 12px gap. Line one is a button or link in Label weight, line two is a Meta sentence.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-surface-raised, --pm-hairline, --pm-radius-card, --pm-space-3</dd><dt>A11y</dt><dd>The action is a real button or link with a verb-phrase name. The card itself has no role, so there is exactly one control per card.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Request a revision. Pramaan drafts the change after the sprint.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Make the whole card a link, or add a fourth action.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-meter" aria-labelledby="h-n-meter">
+      <div class="ss-comp-head"><h3 id="h-n-meter">Meter</h3><span class="pm-meta">P.5.9</span></div>
+      <p class="ss-lede">The rail's budget line drawn in page colours: a 4px track, an ink fill, a Meta line above. Used in the settings aside and the budget tile.</p>
+      <div class="ss-stage ss-grid2">
+        <div class="pm-meter" style="--pm-fill: 18%"><p class="pm-meter-label">Monthly budget &middot; 18% used</p><div class="pm-meter-track" role="img" aria-label="Monthly budget 18% used"><span class="pm-meter-fill"></span></div></div>
+        <div class="pm-meter" style="--pm-fill: 100%"><p class="pm-meter-label">Monthly budget &middot; 100% used</p><div class="pm-meter-track" role="img" aria-label="Monthly budget 100% used"><span class="pm-meter-fill"></span></div></div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A Meta label, then a 4px hairline track with an ink fill at <span class="pm-mono">--pm-fill</span>. The percentage is in the label, so the bar never carries the fact alone.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-hairline, --pm-sys-text, --pm-fill</dd><dt>A11y</dt><dd>The track is <span class="pm-mono">role="img"</span> with a label that states the percentage.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Monthly budget &middot; 18% used. Tokens only under Details.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Colour the fill red as the budget runs out: Paused is clay and has its own banner.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-brief" aria-labelledby="h-n-brief">
+      <div class="ss-comp-head"><h3 id="h-n-brief">Decisions brief block</h3><span class="pm-meta">P.5.6</span></div>
+      <p class="ss-lede">Inside the fitted decisions panel, under the list: which section of the product brief each answer feeds. Untouched, first row ticked, and collapsed to one Done line.</p>
+      <div class="ss-stage ss-grid3">
+        <aside class="pm-decisions pm-panel--fit" aria-label="Your decisions, nothing ticked">
+          <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count pm-tnum">1 of about 6 saved</span></div>
+          <ul class="pm-decisions-list"><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Product idea</span><span class="pm-decision-value">a tic tac toe game</span><span class="pm-decision-editcue">Edit</span></button></li></ul>
+          <div class="pm-decisions-brief"><h3 class="pm-decisions-brief-title">Where your answers go</h3><ol class="pm-brief-list"><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">One-sentence outcome</span><span class="pm-brief-gloss">The one thing this product should do.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Evidence of the problem</span><span class="pm-brief-gloss">What you told us that led to this brief.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Success contract</span><span class="pm-brief-gloss">How we will know the product works.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Guardrails</span><span class="pm-brief-gloss">Things that must not get worse while we build.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Acceptance signal</span><span class="pm-brief-gloss">The check you can run yourself to accept the result.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Constraints and non-goals</span><span class="pm-brief-gloss">What it must respect and what it will not do.</span></li></ol></div>
+        </aside>
+        <aside class="pm-decisions pm-panel--fit" aria-label="Your decisions, first ticked">
+          <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count pm-tnum">2 of about 6 saved</span></div>
+          <ul class="pm-decisions-list"><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Product idea</span><span class="pm-decision-value">a tic tac toe game</span><span class="pm-decision-editcue">Edit</span></button></li><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Who plays</span><span class="pm-decision-value">One person against the computer</span><span class="pm-decision-editcue">Edit</span></button></li></ul>
+          <div class="pm-decisions-brief"><h3 class="pm-decisions-brief-title">Where your answers go</h3><ol class="pm-brief-list"><li class="pm-brief-row" data-fed="true"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">One-sentence outcome</span><span class="pm-brief-gloss">The one thing this product should do.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Evidence of the problem</span><span class="pm-brief-gloss">What you told us that led to this brief.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Success contract</span><span class="pm-brief-gloss">How we will know the product works.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Guardrails</span><span class="pm-brief-gloss">Things that must not get worse while we build.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Acceptance signal</span><span class="pm-brief-gloss">The check you can run yourself to accept the result.</span></li><li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Constraints and non-goals</span><span class="pm-brief-gloss">What it must respect and what it will not do.</span></li></ol></div>
+        </aside>
+        <aside class="pm-decisions pm-panel--fit" aria-label="Your decisions, interview finished">
+          <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count pm-tnum">6 of 6 saved</span></div>
+          <ul class="pm-decisions-list"><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Product idea</span><span class="pm-decision-value">a tic tac toe game</span><span class="pm-decision-editcue">Edit</span></button></li><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Who plays</span><span class="pm-decision-value">One person against the computer</span><span class="pm-decision-editcue">Edit</span></button></li><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">What happens on a win</span><span class="pm-decision-value">The game says who won and offers a new game</span><span class="pm-decision-editcue">Edit</span></button></li><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Starting over</span><span class="pm-decision-value">A button starts a new game at any time</span><span class="pm-decision-editcue">Edit</span></button></li></ul>
+          <div class="pm-decisions-brief"><h3 class="pm-decisions-brief-title">Where your answers go</h3><p class="pm-brief-line"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span>Your 6 decisions feed all six sections.</span></p></div>
+        </aside>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A 32px heading row with a stitch above, then six 40px rows: a 10px ring (a check inside a Done head when fed), the section name and a one-line gloss. When the interview has finished the list is replaced by a single Done line.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-cmp-pin-size, --pm-sys-status-done, --pm-hairline</dd><dt>A11y</dt><dd>An ordered list. A fed row is marked by <span class="pm-mono">data-fed="true"</span> and its check glyph, not by colour alone.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Your 6 decisions feed all six sections.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Tick a section before any decision feeds it.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-dochead" aria-labelledby="h-n-dochead">
+      <div class="ss-comp-head"><h3 id="h-n-dochead">Document head</h3><span class="pm-meta">P.5.10</span></div>
+      <p class="ss-lede">Title left, version chips right on the same line, the byline under it with a link-styled Details at its end. It fills what used to be an empty hole beside the title.</p>
+      <div class="ss-stage">
+        <div class="pm-doc-head">
+          <h4 class="pm-doc-title pm-t-title">Product brief</h4>
+          <div class="pm-versions" role="radiogroup" aria-label="Version"><button class="pm-chip" type="button" role="radio" aria-checked="true">Draft 1 &middot; newest</button><button class="pm-chip" type="button" role="radio" aria-checked="false">Draft 2</button></div>
+          <details class="pm-doc-byline pm-details"><summary><span>Pramaan wrote draft 1 on Tuesday at 20:59.</span> <span class="pm-doc-details-link">Details</span></summary><div class="pm-details-body pm-mono">Draft id d-1 &middot; repository path pramaan-build/todo-d509a2e9</div></details>
+        </div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A three-column grid row: the title, a flexible gap, the version chips. The byline spans the row under the title and is a <span class="pm-mono">details</span> element whose summary is the byline sentence with "Details" at its end; the block opens below it.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-type-title-size, --pm-radius-chip, --pm-sys-text-muted</dd><dt>A11y</dt><dd>Version chips are a radio group. The byline is a real disclosure; repository paths and ids stay inside it.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Draft 1 newest, Draft 2 beside it, one line.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Show the repository path in the byline.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-request" aria-labelledby="h-n-request">
+      <div class="ss-comp-head"><h3 id="h-n-request">Request composer and request rows</h3><span class="pm-meta">P.5.11</span></div>
+      <p class="ss-lede">Lane B's home. The composer sends a request; the send is disabled with its reason until there is text, and Ctrl+Enter sends. The first send is ink because another request needs you; the second is the thread and stays quiet until you type (Ruling 15). Type in either to try it.</p>
+      <div class="ss-stage">
+        <form class="pm-request-composer" aria-label="Request a change, ink send" onsubmit="return false">
+          <label class="pm-label" for="n-rq1">Request a change</label>
+          <div class="pm-composer-row pm-composer-row--dictate">
+            <button class="pm-btn pm-btn--ghost pm-btn--icon pm-btn--lg" type="button" aria-label="Attach files or images"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-attach"/></svg></button>
+            <button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-dictate="#n-rq1"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button>
+            <textarea class="pm-composer-input" id="n-rq1" rows="3" placeholder="Describe the change the way you would in a ticket. One change per request."></textarea>
+            <button class="pm-btn pm-btn--ink pm-btn--lg" type="submit" data-request-send aria-disabled="true" aria-describedby="n-rq1-r">Send the request</button>
+          </div>
+          <div class="pm-composer-hint"><span data-dictate-status>Pramaan starts on a new branch as soon as you send. Nothing touches main.</span><span class="pm-btn-reason" id="n-rq1-r">Type the change first.</span></div>
+        </form>
+        <form class="pm-request-composer" aria-label="Request a change, thread send" onsubmit="return false">
+          <label class="pm-label" for="n-rq2">Request a change</label>
+          <div class="pm-composer-row pm-composer-row--dictate">
+            <button class="pm-btn pm-btn--ghost pm-btn--icon pm-btn--lg" type="button" aria-label="Attach files or images"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-attach"/></svg></button>
+            <button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-dictate="#n-rq2"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button>
+            <textarea class="pm-composer-input" id="n-rq2" rows="3" placeholder="Describe the change the way you would in a ticket. One change per request."></textarea>
+            <button class="pm-btn pm-btn--thread-demo pm-btn--lg" type="submit" data-request-send data-thread-when="text" aria-disabled="true" aria-describedby="n-rq2-r">Send the request</button>
+          </div>
+          <div class="pm-composer-hint"><span data-dictate-status>Nothing needs you. Describe the first change.</span><span class="pm-btn-reason" id="n-rq2-r">Type the change first.</span></div>
+        </form>
+        <ol class="pm-request-list" aria-label="Requests">
+          <li class="pm-request"><div class="pm-request-line"><a class="pm-rowlink pm-request-title" href="#n-request">Let admins archive old workspaces</a><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-request-sentence">Reviewed twice and ready. Merge it when you are ready.</span></div><p class="pm-request-meta">Started Tuesday &middot; <span class="pm-mono">feature/2-archive-workspaces</span> &middot; <a href="#n-request">Pull request #42</a></p><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 3 of 4 done"><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i><i></i></span></li>
+          <li class="pm-request"><div class="pm-request-line"><a class="pm-rowlink pm-request-title" href="#n-request">Send a summary email every Monday</a><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span><span class="pm-request-sentence">A check did not pass. Pramaan is fixing it; nothing needed from you.</span></div><p class="pm-request-meta">Started today &middot; <span class="pm-mono">feature/3-weekly-summary</span></p><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: Build done, Test blocked"><i data-state="done"></i><i data-state="blocked"></i><i></i><i></i></span></li>
+          <li class="pm-request"><div class="pm-request-line"><a class="pm-rowlink pm-request-title" href="#n-request">Search across notes</a><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span><span class="pm-request-sentence">Starts after 'Send a summary email every Monday'.</span></div><p class="pm-request-meta">Queued today</p><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: none done"><i></i><i></i><i></i><i></i></span></li>
+          <li class="pm-request"><div class="pm-request-line"><a class="pm-rowlink pm-request-title" href="#n-request">Export the weekly report as CSV</a><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-request-sentence">Merged by you Tuesday 14:10.</span></div><p class="pm-request-meta"><span class="pm-mono">feature/1-export-csv</span> &middot; <a href="#n-request">Pull request #38</a> &middot; merged Tuesday</p><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 4 of 4 done"><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i></span></li>
+        </ol>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>The composer is a raised card: a label, a row of attach, dictate, a textarea (Reading size, three rows, grows to eight) and send, then a hint and the send's reason. A request row is 64px: line one is the title as the row link, a pin and one plain sentence; line two is a Meta line with the branch in mono and the pull request as a link; the mini steps sit at the right. Rank order: Needs you, Blocked, Working, Waiting, Done.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-surface-raised, --pm-radius-card, --pm-font-mono, --pm-sys-surface-sunken (row hover)</dd><dt>A11y</dt><dd>The disabled send keeps <span class="pm-mono">aria-disabled</span> and points at its reason. When the thread send has text it becomes the one <span class="pm-mono">[data-thread]</span> and the page's blocked marker is removed. The row link covers the row; focus draws a ring around it.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Reviewed twice and ready. Merge it when you are ready.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Put the branch name or pull request number inside a pin sentence: they live in the meta line.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-dictate" aria-labelledby="h-n-dictate">
+      <div class="ss-comp-head"><h3 id="h-n-dictate">Dictation</h3><span class="pm-meta">P.4.1 and T-1</span></div>
+      <p class="ss-lede">Voice in the composer, adapted: a 40px ghost mic button that writes into the text box. The first row is live (Chrome runs the real speech API; other browsers show the unavailable state). The rest are static. Nothing is ever sent by voice.</p>
+      <div class="ss-stage">
+        <div class="ss-row" style="flex-wrap:nowrap;gap:var(--pm-space-3)"><span style="flex:none;width:40px"><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-dictate="#n-dict-ta"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button></span><span class="pm-label" style="flex:none;width:96px">Idle, live</span><span class="pm-dictate-status pm-help"><span data-dictate-status>Ctrl+Enter sends. Your decisions save as you go.</span></span></div>
+        <div class="ss-row" style="flex-wrap:nowrap;gap:var(--pm-space-3)"><span style="flex:none;width:40px"><button class="pm-dictate" type="button" aria-pressed="true" aria-label="Stop dictating" data-state="listening" data-live="true"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-stop"/></svg></button></span><span class="pm-label" style="flex:none;width:96px">Listening</span><span class="pm-dictate-status pm-help">Listening. Press the button again to stop. Nothing is sent until you press Send.</span></div>
+        <div class="ss-row" style="flex-wrap:nowrap;gap:var(--pm-space-3)"><span style="flex:none;width:40px"><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button></span><span class="pm-label" style="flex:none;width:96px">Done</span><span class="pm-dictate-status pm-help">Added to your reply. Check it, then send.</span></div>
+        <div class="ss-row" style="flex-wrap:nowrap;gap:var(--pm-space-3)"><span style="flex:none;width:40px"><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" aria-disabled="true" data-state="unavailable" aria-describedby="n-dict-na"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button></span><span class="pm-label" style="flex:none;width:96px">Unavailable</span><span class="pm-dictate-status pm-help"><span id="n-dict-na">Dictation is not available in this browser. Typing works the same.</span></span></div>
+        <div class="ss-row" style="flex-wrap:nowrap;gap:var(--pm-space-3)"><span style="flex:none;width:40px"><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-state="error"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button></span><span class="pm-label" style="flex:none;width:96px">Error</span><span class="pm-dictate-status pm-help"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span><span class="pm-pin-sentence">Nothing was heard. Try again, or type.</span></span></span></div>
+        <textarea class="pm-textarea" id="n-dict-ta" rows="2" aria-label="Text the live dictation button writes into" placeholder="The live dictation button above writes here."></textarea>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A 40px ghost icon button before Send. Listening swaps the mic for a stop icon and draws the Working dash ring around the button; that ring is the only motion. A status line in the composer hint says what is happening. Other error sentences: "The microphone is blocked. Allow it in your browser, or type." and "Dictation stopped. Try again, or type." A field with no send (screen 20) puts the same button under the text box.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-chalk, --pm-sys-text-muted, --pm-motion-state</dd><dt>A11y</dt><dd><span class="pm-mono">aria-pressed</span> carries the listening state and the label becomes "Stop dictating". The status line is a polite live region. Unavailable is <span class="pm-mono">aria-disabled</span> with its reason as <span class="pm-mono">aria-describedby</span>. Escape stops listening.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Added to your reply. Check it, then send.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Send by voice, or submit on a pause in speech.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-setting" aria-labelledby="h-n-setting">
+      <div class="ss-comp-head"><h3 id="h-n-setting">Setting switch</h3><span class="pm-meta">P.4.2 and T-2</span></div>
+      <p class="ss-lede">One plain autonomy setting, adapted: a switch whose consequence sentence changes with the state. Flip the first two. The effect appears only as the sentence, never as a permission matrix.</p>
+      <div class="ss-stage ss-grid2">
+        <div class="pm-setting">
+          <h4 class="pm-setting-title">On</h4>
+          <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="n-sw1" checked aria-describedby="n-sw1-t"><div class="pm-setting-text"><div class="pm-setting-head"><label class="pm-setting-label" for="n-sw1">Check with me before each sprint starts</label></div><p class="pm-setting-consequence" id="n-sw1-t" data-on="Pramaan waits for you to try and accept a sprint before the next one starts." data-off="Pramaan starts the next sprint as soon as the previous one is built and checked. You can still ask for changes at any time.">Pramaan waits for you to try and accept a sprint before the next one starts.</p></div></div>
+        </div>
+        <div class="pm-setting">
+          <h4 class="pm-setting-title">Off</h4>
+          <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="n-sw2" aria-describedby="n-sw2-t"><div class="pm-setting-text"><div class="pm-setting-head"><label class="pm-setting-label" for="n-sw2">Check with me before each sprint starts</label></div><p class="pm-setting-consequence" id="n-sw2-t" data-on="Pramaan waits for you to try and accept a sprint before the next one starts." data-off="Pramaan starts the next sprint as soon as the previous one is built and checked. You can still ask for changes at any time.">Pramaan starts the next sprint as soon as the previous one is built and checked. You can still ask for changes at any time.</p></div></div>
+        </div>
+        <div class="pm-setting">
+          <h4 class="pm-setting-title">Disabled, project paused</h4>
+          <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="n-sw3" checked disabled aria-describedby="n-sw3-t n-sw3-r"><div class="pm-setting-text"><div class="pm-setting-head"><label class="pm-setting-label" for="n-sw3">Check with me before each sprint starts</label><span class="pm-setting-reason" id="n-sw3-r">Change this when the project is running again.</span></div><p class="pm-setting-consequence" id="n-sw3-t">Pramaan waits for you to try and accept a sprint before the next one starts.</p></div></div>
+        </div>
+        <div class="pm-setting">
+          <h4 class="pm-setting-title">Disabled, all sprints accepted</h4>
+          <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="n-sw4" disabled aria-describedby="n-sw4-t n-sw4-r"><div class="pm-setting-text"><div class="pm-setting-head"><label class="pm-setting-label" for="n-sw4">Check with me before each sprint starts</label><span class="pm-setting-reason" id="n-sw4-r">All planned sprints are accepted; there is no next sprint.</span></div><p class="pm-setting-consequence" id="n-sw4-t">Pramaan starts the next sprint as soon as the previous one is built and checked. You can still ask for changes at any time.</p></div></div>
+        </div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A heading, then a 36 by 20 switch and its label "Check with me before each sprint starts" with the consequence sentence beneath. A disabled switch mutes the label and gives its reason beside it in Meta. The same consequence also appears as a line on the roadmap gate and on the sprint strip.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-text, --pm-sys-text-muted, --pm-control-h</dd><dt>A11y</dt><dd>A real checkbox with <span class="pm-mono">role="switch"</span>. The sentence that carries <span class="pm-mono">data-on</span> and <span class="pm-mono">data-off</span> is the <span class="pm-mono">aria-describedby</span> target, and a reason id may sit beside it.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Pramaan waits for you to try and accept a sprint before the next one starts.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Add per-action policies, "always allow" or a permission matrix to the interface.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-bento" aria-labelledby="h-n-bento">
+      <div class="ss-comp-head"><h3 id="h-n-bento">Bento tiles</h3><span class="pm-meta">P.4.3 and T-3</span></div>
+      <p class="ss-lede">The project overview as importance-sized tiles, adapted from the bento trend. DOM order is reading order: the decision, three digits, what happens next, then workspace facts. No tile without a sentence.</p>
+      <div class="ss-stage">
+        <div class="pm-bento" style="margin-top:0">
+          <div class="pm-banner pm-banner--needs-you pm-tile pm-tile--lead" data-gate>
+            <span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span>
+            <div class="pm-banner-body"><h4 class="pm-banner-title">Let's get clear on the product.</h4><p class="pm-banner-text">Answer the next interview question. You set the direction; Pramaan handles the technical setup.</p></div>
+          </div>
+          <div class="pm-tile pm-tile--digit"><dl class="pm-digits"><div class="pm-digit"><dt>Documents accepted</dt><dd class="pm-digit-value"><span>3</span><span class="pm-digit-sep">/</span><span>3</span></dd><dd class="pm-digit-sentence">All three unlock the plan.</dd></div></dl></div>
+          <div class="pm-tile pm-tile--digit"><dl class="pm-digits"><div class="pm-digit"><dt>Sprints</dt><dd class="pm-digit-value"><span>1</span><span class="pm-digit-sep">/</span><span>4</span></dd><dd class="pm-digit-sentence">Sprint 1 is being built.</dd></div></dl></div>
+          <div class="pm-tile pm-tile--digit"><dl class="pm-digits"><div class="pm-digit"><dt>Monthly budget used</dt><dd class="pm-digit-value"><span>18</span><span class="pm-digit-sep">%</span></dd><dd class="pm-digit-sentence">Resets 1 October.</dd></div></dl>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body">Units are tokens, the pieces of text the AI reads and writes. 5,415,812 of 20,000,000 used this month.</div></details></div>
+          <div class="pm-tile pm-tile--wide"><h2>What happens next</h2>
+            <ol class="pm-ticks"><li>Interview: you answer a few questions about your product.</li><li>Documents: Pramaan drafts three documents for you to read and accept.</li><li>Roadmap: you approve a plan of sprints.</li><li>Build: Pramaan builds sprint 1, and you try it.</li></ol></div>
+          <div class="pm-tile"><h2>Your workspace</h2><p class="ss-cap">Private, set up for you once the interview is done.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body pm-mono">Workspace sized automatically. pramaan-build/todo-d509a2e9</div></details></div>
+        </div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A three-column grid with a 20px gap. The lead tile is the existing decision banner (tint and <span class="pm-mono">data-gate</span> kept, the thread inside it) and spans all three columns; three digit tiles sit in one row; "What happens next" spans two; an info tile closes. Tiles are raised, hairline, card radius, at least 120px tall. One column below an 800px content box.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-surface-raised, --pm-hairline, --pm-radius-card, --pm-space-5</dd><dt>A11y</dt><dd>No <span class="pm-mono">order</span> property anywhere, so tab order and screen readers follow the reading order: the decision first. This page has no thread, so the sample shows the lead tile without its button.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>One lead tile holds the one thread. Every digit keeps its sentence.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Use a bento on a list or a board, where sequence matters, or add a sparkline or a tile with no sentence.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-milestone" aria-labelledby="h-n-milestone">
+      <div class="ss-comp-head"><h3 id="h-n-milestone">Quiet milestone</h3><span class="pm-meta">P.4.4 and T-4</span></div>
+      <p class="ss-lede">The one state-change moment, adapted from emotional design: the tape's checks stitch shut once and a single line appears. No toast, no confetti, no sound, nothing loops, nothing plays on load. Under reduced motion the end state appears at once.</p>
+      <div class="ss-stage">
+        <div class="ss-row" style="gap:var(--pm-space-5)">
+          <nav class="pm-tape" aria-label="Your journey, milestone sample">
+            <ol>
+              <li data-state="done"><a class="pm-tape-step" href="#n-milestone"><span class="pm-tape-label"><span class="pm-sr">Step 1, </span>Interview<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+              <li data-state="done"><a class="pm-tape-step" href="#n-milestone"><span class="pm-tape-label"><span class="pm-sr">Step 2, </span>Documents<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+              <li data-state="done"><a class="pm-tape-step" href="#n-milestone"><span class="pm-tape-label"><span class="pm-sr">Step 3, </span>Roadmap<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+              <li data-state="current" data-progress="3/3"><a class="pm-tape-step" href="#n-milestone" aria-current="step"><span class="pm-tape-label"><span class="pm-sr">Step 4, </span>Build<span class="pm-sr">, 3 of 3 features ready. You are here</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">4</span><span class="pm-tape-ticks" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span></a></li>
+              <li data-state="upcoming"><a class="pm-tape-step" href="#n-milestone"><span class="pm-tape-label"><span class="pm-sr">Step 5, </span>Try it<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">5</span></a></li>
+            </ol>
+            <span class="pm-tape-pin" aria-hidden="true"></span>
+          </nav>
+          <div class="pm-review-only"><span>Review only:</span><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-milestone-trigger="sprint-ready">Play once</button></div>
+        </div>
+        <p class="pm-milestone-line" data-milestone-line="sprint-ready" hidden><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span><span class="pm-pin-sentence">Sprint 1 is ready to try.</span></span></p>
+        <div><span class="ss-cap ss-cap--block">The line as it reads once shown (static copy)</span><p class="pm-milestone-line"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span><span class="pm-pin-sentence">Sprint 1 is ready to try.</span></span></p></div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>Two milestones: a sprint becomes ready to try (screen 13) and all sprints are accepted (14). <span class="pm-mono">pmMilestone(kind)</span> sets <span class="pm-mono">data-milestone</span> on the visible tape for 700ms: each done check draws itself in 240ms, staggered 80ms, and the current step's ticks fill left to right. The pin does not move. One line fades in over 180ms. The flow calls it from "Demo: sprint finishes" and from accepting on Try it, never on load.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-motion-reveal, --pm-ease-out, --pm-sys-status-done</dd><dt>A11y</dt><dd>Under <span class="pm-mono">prefers-reduced-motion: reduce</span> nothing draws; the end state and the line appear at once. The line is plain text with a Done pin, so the moment is never only motion.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Sprint 1 is ready to try.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Add confetti, a sound, a modal, or a loop: one quiet sequence, once.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-twoline" aria-labelledby="h-n-twoline">
+      <div class="ss-comp-head"><h3 id="h-n-twoline">Two-line table</h3><span class="pm-meta">P.5.13</span></div>
+      <p class="ss-lede">Rows of 64px: the row link over its plain purpose in Meta. The documents list uses it so the page holds real content instead of white space.</p>
+      <div class="ss-stage">
+        <table class="pm-table pm-table--two-line ss-flat">
+          <thead><tr><th scope="col">Document</th><th scope="col" class="pm-col-status">Status</th><th scope="col" class="pm-col-version">Version</th><th scope="col" class="pm-col-updated">Updated</th></tr></thead>
+          <tbody>
+            <tr><td><a class="pm-rowlink" href="#n-twoline">Product brief</a><span class="pm-row-purpose">What the product is for and how we will know it works.</span></td><td><span class="pm-cell-status"><span class="pm-pin pm-pin--tint" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-help">accepted Tuesday</span></span></td><td class="pm-tnum">Draft 1</td><td class="pm-tnum">Tue 14:10</td></tr>
+            <tr><td><a class="pm-rowlink" href="#n-twoline">Requirements</a><span class="pm-row-purpose">What the first version must do and must not do.</span></td><td><span class="pm-cell-status"><span class="pm-pin pm-pin--tint" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-help">accepted Tuesday</span></span></td><td class="pm-tnum">Draft 1</td><td class="pm-tnum">Tue 14:12</td></tr>
+            <tr><td><a class="pm-rowlink" href="#n-twoline">User journey</a><span class="pm-row-purpose">What a person does in the product, step by step.</span></td><td><span class="pm-cell-status"><span class="pm-pin pm-pin--tint" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-help">Draft 2 is waiting</span></span></td><td class="pm-tnum">Draft 2</td><td class="pm-tnum">Tue 14:30</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>The first cell holds the one row link (Body 500) and, under it, the document's purpose in Meta muted. Row height 64 (12 + 22 + 16 + 14); compact density is 54. The other columns are unchanged.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-row-h, --pm-sys-text-muted, --pm-type-meta-size</dd><dt>A11y</dt><dd>A real table with column scopes. The row link is still the only link in the row.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Product brief. What the product is for and how we will know it works.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Stretch single-line rows to fill the page, or repeat the title as the purpose.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-device" aria-labelledby="h-n-device">
+      <div class="ss-comp-head"><h3 id="h-n-device">Device switch and frame</h3><span class="pm-meta">P.5.13</span></div>
+      <p class="ss-lede">Try it gains a width switch because the sprint is "Calculator on every device". The chips are live: they set the frame width and its caption.</p>
+      <div class="ss-stage">
+        <div class="ss-frame ss-frame--device">
+          <section class="pm-stage" aria-label="Device preview sample">
+            <div class="pm-stage-bar">
+              <span>Private preview &middot; Sprint 1: Calculator on every device</span>
+              <div class="pm-device-switch" role="radiogroup" aria-label="Preview width"><button class="pm-chip" type="button" role="radio" aria-checked="true" data-device-w="390px" data-caption="390 px">Phone</button><button class="pm-chip" type="button" role="radio" aria-checked="false" data-device-w="820px" data-caption="820 px">Tablet</button><button class="pm-chip" type="button" role="radio" aria-checked="false" data-caption="Fills the stage">Computer</button></div>
+              <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button">Open in a new tab <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-external"/></svg></button>
+            </div>
+            <div class="pm-stage-body">
+              <figure class="pm-device" style="--pm-device-w: 390px">
+                <div class="pm-device-frame"><iframe title="Calculator preview, phone width" srcdoc="&lt;!doctype html&gt;&lt;meta charset='utf-8'&gt;&lt;body style='font-family:system-ui,sans-serif;margin:16px'&gt;&lt;h2 style='font-size:18px;margin:0 0 12px'&gt;Calculator&lt;/h2&gt;&lt;input style='width:100%;padding:8px;box-sizing:border-box'&gt;&lt;p&gt;Result: 3&lt;/p&gt;"></iframe></div>
+                <figcaption class="pm-device-caption">390 px</figcaption>
+              </figure>
+            </div>
+          </section>
+        </div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>Three 28px chips centred in the stage bar: Phone, Tablet, Computer. Computer fills the stage as before; Phone is a 390px frame and Tablet 820px, centred, with a control-border frame, card radius and a Meta caption under it. When the stage is narrower than the chosen width the frame fills it and the caption says so. The iframe interior is the customer's app, not ours.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-control-border, --pm-radius-card, --pm-device-w</dd><dt>A11y</dt><dd>The chips are a radio group with arrow-key movement. The caption states the real width.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Phone 390 px, Tablet 820 px, Computer fills the stage.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Scale the preview down to fake a device: show the real width or say it cannot fit.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-plan" aria-labelledby="h-n-plan">
+      <div class="ss-comp-head"><h3 id="h-n-plan">Plan aside</h3><span class="pm-meta">P.5.13 and F8</span></div>
+      <p class="ss-lede">A fitted card beside the roadmap: the plan at a glance, one 40px row per sprint, the sprint in view marked. On the roadmap it sticks under the gate bar.</p>
+      <div class="ss-stage ss-grid3">
+        <aside class="pm-plan-aside pm-panel--fit" aria-label="Plan at a glance">
+          <h2>Plan at a glance</h2>
+          <ol>
+            <li><a href="#n-plan"><span class="pm-tnum">1</span><span class="pm-plan-name">Your private checklist</span><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span></a></li>
+            <li><a href="#n-plan" aria-current="location"><span class="pm-tnum">2</span><span class="pm-plan-name">Calculator on every device</span><span class="pm-pin" data-status="working"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span></a></li>
+            <li><a href="#n-plan"><span class="pm-tnum">3</span><span class="pm-plan-name">Share a checklist</span><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></a></li>
+            <li><a href="#n-plan"><span class="pm-tnum">4</span><span class="pm-plan-name">Reminders by email</span><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></a></li>
+          </ol>
+          <p>Nothing is built until you approve.</p>
+        </aside>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>A heading, a list of 40px rows (number, sprint name, pin), each a link to its sprint on the route, and a consequence sentence. The row of the sprint in view carries a 2px ink bar and weight 600; on the roadmap it follows the scroll (<span class="pm-mono">[data-spy]</span>). Under the list, the gate's consequence and the autonomy line.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-surface-raised, --pm-hairline, --pm-sys-text, --pm-radius-card</dd><dt>A11y</dt><dd>The marked row takes <span class="pm-mono">aria-current="location"</span>. Every row is a link with a visible focus ring.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Nothing is built until you approve.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Fill the aside with tips: it states facts the plan already has.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-skeleton" aria-labelledby="h-n-skeleton">
+      <div class="ss-comp-head"><h3 id="h-n-skeleton">Skeleton route card</h3><span class="pm-meta">P.5.13 and F10</span></div>
+      <p class="ss-lede">While the plan is being drafted, each node is the height of a real route card, so the column is as tall as the plan will be.</p>
+      <div class="ss-stage ss-grid3">
+        <div class="pm-route-card pm-route-card--skeleton" aria-hidden="true"><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span></div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>Six sunken bars in a card of about 232px: a title at 40%, four outcome lines at 90, 85, 88 and 80%, and one try block at 44px. The pulse is opacity only and stops under reduced motion.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-surface-sunken, --pm-motion-reveal, --pm-radius-card</dd><dt>A11y</dt><dd>Hidden from assistive technology; the Working pin and sentence beside it say what is happening.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Three skeleton cards and the sentence "Pramaan is drafting your plan from these."</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Show a spinner, or a short skeleton that leaves the column blank under it.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-toc" aria-labelledby="h-n-toc">
+      <div class="ss-comp-head"><h3 id="h-n-toc">Contents comments</h3><span class="pm-meta">P.5.13 and F14</span></div>
+      <p class="ss-lede">Passage comments, listed in the reader's contents rail under the section links. It fills the rail with the founder's own notes and links each back to its mark.</p>
+      <div class="ss-stage ss-grid3">
+        <nav class="pm-toc" aria-label="In this document, with a comment">
+          <p class="pm-toc-title">In this document</p>
+          <ol><li><a href="#n-toc" aria-current="location">One-sentence outcome</a></li><li><a href="#n-toc">Constraints</a></li><li><a href="#n-toc">Success contract</a></li></ol>
+          <p class="pm-toc-title pm-toc-comments-title" id="n-toc-c">Passage comments (1)</p>
+          <ol class="pm-toc-comments" aria-labelledby="n-toc-c"><li><a href="#n-toc">1 &middot; Constraints: 'I don't think this is a constraint'</a></li></ol>
+        </nav>
+        <nav class="pm-toc" aria-label="In this document, no comments">
+          <p class="pm-toc-title">In this document</p>
+          <ol><li><a href="#n-toc" aria-current="location">One-sentence outcome</a></li><li><a href="#n-toc">Constraints</a></li></ol>
+          <p class="pm-toc-title pm-toc-comments-title">Passage comments</p>
+          <p class="pm-toc-comments-empty">No passage comments.</p>
+        </nav>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>Below the section list, a label "Passage comments (n)" and a Meta list: the number, the section and the quoted words, each a link to the mark. With none it reads "No passage comments." Only the section list takes the current marker.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-text-muted, --pm-type-meta-size</dd><dt>A11y</dt><dd>The list is labelled by its visible heading. Comment links are never marked current.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>1 &middot; Constraints: "I don't think this is a constraint"</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Count a comment that is not listed, or mark a comment link as the current section.</span></div></div>
+    </article>
+
+    <article class="ss-comp" id="n-blocked" aria-labelledby="h-n-blocked">
+      <div class="ss-comp-head"><h3 id="h-n-blocked">Blocked state on a form</h3><span class="pm-meta">Ruling 15</span></div>
+      <p class="ss-lede">A form whose thread cannot be pressed yet does not show a disabled canary button. The page declares <span class="pm-mono">data-thread-none="blocked"</span>, the slot shows the Blocked sentence, and the would-be thread is a quiet disabled button with its reason beside it. Screens 18c, 18d and 22b declare the blocked state; 11b, 18e and 21b show the same quiet disabled button, with its reason, beside their one real thread or sentence.</p>
+      <div class="ss-stage">
+        <div><span class="ss-cap ss-cap--block">Blocked: no file yet</span>
+          <div class="ss-row"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span><span class="pm-pin-sentence">Choose a file first.</span></span><span class="pm-btn-reason" id="n-bl-r">Choose a file under 200 MB first.</span><button class="pm-btn pm-btn--quiet" type="button" aria-disabled="true" aria-describedby="n-bl-r">Create private working copy</button></div></div>
+        <div><span class="ss-cap ss-cap--block">Ready: the same slot with a file chosen (the thread is enabled and the page leaves the blocked state)</span>
+          <div class="ss-row"><span class="pm-pin-sentence pm-slot-sentence">Your code is read once.</span><button class="pm-btn pm-btn--thread-demo" type="button">Create private working copy</button></div></div>
+      </div>
+      <dl class="ss-notes"><dt>Anatomy</dt><dd>The slot holds the Blocked pin and a short sentence (at most 16 characters: "File too big.", "Not a .zip.", "No file yet."), then the quiet disabled button and its reason. The one next action is on the page itself, for example the file button relabelled "Choose another file". The button is never filled canary and never carries <span class="pm-mono">data-thread</span> while disabled.</dd><dt>Tokens</dt><dd class="pm-mono">--pm-sys-status-blocked, --pm-sys-control-border</dd><dt>A11y</dt><dd>The disabled button uses <span class="pm-mono">aria-disabled</span> and <span class="pm-mono">aria-describedby</span> to its reason. The full sentence is also the slot sentence's <span class="pm-mono">title</span>.</dd></dl>
+      <div class="ss-dd"><div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>Do</span><span>Choose a file under 200 MB first.</span></div><div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Don't</span><span class="ss-eg">Show a filled canary button that does nothing, or hide the button with no explanation.</span></div></div>
+    </article>

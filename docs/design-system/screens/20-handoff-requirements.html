@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en" data-rail="expanded">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  /* Before first paint: saved rail and theme (see shell.js). */
+  (function () { var d = document.documentElement, r = null, t = null; try { r = localStorage.getItem("pm.rail"); t = localStorage.getItem("pm.theme"); } catch (e) {}
+  if (innerWidth < 1024 || r === "collapsed" || (r !== "expanded" && innerWidth < 1280)) d.setAttribute("data-rail", "collapsed"); if (t === "dark" || t === "light") d.setAttribute("data-theme", t); })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../base.css">
+<link rel="stylesheet" href="../shell.css">
+<link rel="stylesheet" href="../components-a.css">
+<link rel="stylesheet" href="../components-b.css">
+<link rel="stylesheet" href="../components-c.css">
+<script defer src="../shell.js"></script>
+<script defer src="../components.js"></script>
+<title>Pramaan · Your requirements</title>
+<style>
+  /* Page-specific (screen 20): the form stack, the reading-size textarea, the action row and the seams. Tokens only. */
+  .hf-form { display: grid; gap: var(--pm-space-6); min-width: 0; }
+  .hf-reading { font-size: var(--pm-type-reading-size); line-height: var(--pm-type-reading-line); }
+  .hf-actions { display: flex; align-items: center; gap: var(--pm-space-3); }
+  .hf-ready { display: flex; align-items: center; gap: var(--pm-space-2); margin: 0; }
+  .hf-consequence { margin: 0; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+  /* The seams between the form's sections run on under the aside (as on 02). */
+  .hf-form .pm-stitch { width: calc(100% + var(--pm-space-6) + var(--pm-panel-w)); }
+  @container pm-content (max-width: 899px) { .hf-form .pm-stitch { width: 100%; } }
+</style>
+</head>
+<body>
+<a class="pm-skip" href="#pm-job">Skip to the main job</a>
+
+<svg width="0" height="0" style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="i-overview" viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></symbol>
+  <symbol id="i-interview" viewBox="0 0 20 20"><path d="M4 4.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9.5L6 17v-3.5H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M6.5 8h7M6.5 10.5h4"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 20 20"><path d="M6 2.5h5.5l4 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1z"/><path d="M11.5 2.5v4h4M7.5 10.5h5M7.5 13.5h5"/></symbol>
+  <symbol id="i-roadmap" viewBox="0 0 20 20"><circle cx="4.5" cy="14.5" r="1.75"/><circle cx="10" cy="5.5" r="1.75"/><circle cx="15.5" cy="14.5" r="1.75"/><path d="M5.4 13l3.7-6M10.9 7l3.7 6"/></symbol>
+  <symbol id="i-build" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5"/><path d="M3 8h14M3 12h14M10 4v4M7 8v4M13 8v4M10 12v4"/></symbol>
+  <symbol id="i-try-it" viewBox="0 0 20 20"><path d="M5.5 3.5l10 4.2-4.3 1.6-1.7 4.4z"/><path d="M12.5 12.5l3.5 3.5"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 20 20"><path d="M3 6h2M9 6h8M3 14h8M15 14h2"/><circle cx="7" cy="6" r="2"/><circle cx="13" cy="14" r="2"/></symbol>
+  <symbol id="i-live-logs" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><path d="M6 8l3 2-3 2M11 12.5h3.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 20 20"><path d="M3 6.5a1 1 0 0 1 1-1h4l1.8 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 20 20"><path d="M16 10H4M9 5l-5 5 5 5"/></symbol>
+  <symbol id="i-collapse" viewBox="0 0 20 20"><path d="M10 5l-5 5 5 5M16 5l-5 5 5 5"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 20 20"><path d="M4 5l5 5-5 5M10 5l5 5-5 5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5"/><path d="M13 13l4 4"/></symbol>
+  <symbol id="i-attach" viewBox="0 0 20 20"><path d="M15.5 9.5l-5.8 5.8a3.2 3.2 0 0 1-4.5-4.5l6-6a2.1 2.1 0 0 1 3 3l-6 6a1 1 0 0 1-1.5-1.5l5.3-5.3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 20 20"><path d="M10 16V4M5 9l5-5 5 5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 20 20"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 20 20"><path d="M7 5v10M13 5v10"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 20 20"><path d="M5 10h10"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="9" rx="1.5"/><path d="M13 7V5.5A1.5 1.5 0 0 0 11.5 4h-6A1.5 1.5 0 0 0 4 5.5v6A1.5 1.5 0 0 0 5.5 13H7"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></symbol>
+  <symbol id="i-external" viewBox="0 0 20 20"><path d="M8 4.5H5.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12M11 4.5h4.5V9M15.5 4.5L9 11"/></symbol>
+  <!-- Component glyphs, 16x16 viewBox (components-a/-b): <svg class="pm-icon"><use href="#pm-i-..."/></svg> for 16px icons,
+       <svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-..."/></svg> inside .pm-pin-head (Done check, Blocked x, Paused bar, Locked lock). -->
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+  <symbol id="pm-i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></symbol>
+  <symbol id="pm-i-attach" viewBox="0 0 16 16"><path d="M13 7.5l-5 5a3 3 0 01-4.2-4.2l5.5-5.5a2 2 0 012.8 2.8L6.6 11a1 1 0 01-1.4-1.4l4.6-4.6"/></symbol>
+  <symbol id="pm-i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/></symbol>
+  <symbol id="pm-i-external" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></symbol>
+  <symbol id="i-requests" viewBox="0 0 20 20"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="15" r="2"/><circle cx="14" cy="8" r="2"/><path d="M6 7v6M14 10c0 3-3 3-6 4"/></symbol>
+  <symbol id="pm-i-mic" viewBox="0 0 16 16"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3.5 7.5a4.5 4.5 0 0 0 9 0M8 12v2.5M5.5 14.5h5"/></symbol>
+  <symbol id="pm-i-stop" viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="1.5"/></symbol>
+  <symbol id="pm-i-upload" viewBox="0 0 16 16"><path d="M8 10.5v-8M4.5 6L8 2.5 11.5 6M3 12.5h10"/></symbol>
+  <symbol id="pm-i-arrow-down" viewBox="0 0 16 16"><path d="M8 3v10M4.5 9.5L8 13l3.5-3.5"/></symbol>
+</svg>
+
+<div class="pm-app">
+  <aside class="pm-rail" id="pm-rail" aria-label="Sidebar">
+    <div class="pm-rail-head">
+      <a class="pm-wordmark" href="01-projects.html" aria-label="pramaan, all projects">pramaan</a>
+      <span class="pm-monogram" aria-hidden="true">p</span>
+      <button class="pm-rail-toggle" type="button" aria-expanded="true" aria-controls="pm-rail" aria-label="Collapse navigation">
+        <svg class="pm-i pm-i-collapse"><use href="#i-collapse"/></svg>
+        <svg class="pm-i pm-i-expand"><use href="#i-expand"/></svg>
+      </button>
+    </div>
+
+    <nav class="pm-rail-nav" aria-label="Projects and destinations">
+      <a class="pm-rail-item pm-rail-all" href="01-projects.html"><svg class="pm-i"><use href="#i-folder"/></svg><span class="pm-rail-label">All projects</span><span class="pm-rail-meta">Test</span></a>
+      <div class="pm-rail-seam" role="separator"></div>
+      <div class="pm-rail-project" title="Customer portal, Working">
+        <span class="pm-rail-tile" aria-hidden="true">C</span>
+        <span class="pm-rail-project-text"><span class="pm-rail-project-name">Customer portal</span><span class="pm-rail-status" data-status="working">Working</span></span>
+      </div>
+      <ul class="pm-rail-list">
+        <li><a class="pm-rail-item" href="19-handoff-copying.html"><svg class="pm-i"><use href="#i-overview"/></svg><span class="pm-rail-label">Overview</span></a></li>
+        <li><a class="pm-rail-item" href="20-handoff-requirements.html" aria-current="page"><svg class="pm-i"><use href="#i-interview"/></svg><span class="pm-rail-label">Interview<svg class="pm-pen" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false"><ellipse cx="50" cy="16" rx="49" ry="15" vector-effect="non-scaling-stroke"/></svg></span></a></li>
+        <li><a class="pm-rail-item" href="08-documents.html"><svg class="pm-i"><use href="#i-documents"/></svg><span class="pm-rail-label">Documents</span><span class="pm-rail-meta pm-tnum">0/3</span></a></li>
+        <li><a class="pm-rail-item" href="11-roadmap-awaiting.html"><svg class="pm-i"><use href="#i-roadmap"/></svg><span class="pm-rail-label">Roadmap</span></a></li>
+        <li><a class="pm-rail-item" href="13-sprints-building.html"><svg class="pm-i"><use href="#i-build"/></svg><span class="pm-rail-label">Build</span></a></li>
+        <li><a class="pm-rail-item" href="15-try-it.html" data-locked title="Opens after the plan is approved"><svg class="pm-i"><use href="#i-try-it"/></svg><span class="pm-rail-label">Try it</span><svg class="pm-i pm-rail-lock" aria-hidden="true"><use href="#i-lock"/></svg></a></li>
+        <li><a class="pm-rail-item" href="16-settings.html"><svg class="pm-i"><use href="#i-settings"/></svg><span class="pm-rail-label">Settings</span></a></li>
+        <li class="pm-rail-item--dev"><span class="pm-sr">Development</span><a class="pm-rail-item" href="17-live-logs.html"><svg class="pm-i"><use href="#i-live-logs"/></svg><span class="pm-rail-label">Live logs</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="pm-rail-spacer"></div>
+
+    <div class="pm-rail-budget" role="group" aria-label="Monthly budget 0% used" title="Monthly budget 0% used">
+      <div class="pm-rail-budget-text"><span class="pm-rail-budget-label">Monthly budget</span><span class="pm-rail-budget-value">0% used</span></div>
+      <div class="pm-rail-track" aria-hidden="true"><div class="pm-rail-fill" style="--pm-fill: 0%"></div></div>
+    </div>
+
+    <button class="pm-rail-user" type="button" popovertarget="pm-user-menu" aria-label="Account menu, Aditya Choudhary" title="Aditya Choudhary">
+      <span class="pm-rail-avatar" aria-hidden="true">AC</span>
+      <span class="pm-rail-user-text"><span class="pm-rail-user-name">Aditya Choudhary</span><span class="pm-rail-user-sub">Signed in</span></span>
+    </button>
+    <div class="pm-rail-menu" id="pm-user-menu" popover aria-label="Account">
+      <button class="pm-rail-menu-item" type="button" role="switch" aria-checked="false" data-theme-switch><span>Dark theme</span><span class="pm-rail-switch" aria-hidden="true"></span></button>
+      <a class="pm-rail-menu-item" href="#">Switch organisation</a>
+      <a class="pm-rail-menu-item" href="#">Sign out</a>
+    </div>
+  </aside>
+
+  <main class="pm-main" id="pm-main">
+    <header class="pm-topbar">
+      <a class="pm-back" href="19-handoff-copying.html" aria-label="Back to Customer portal"><svg class="pm-i"><use href="#i-back"/></svg></a>
+
+      <nav class="pm-crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="01-projects.html">Projects</a></li>
+          <li><a href="19-handoff-copying.html">Customer portal</a></li>
+          <li><span aria-current="page">Your requirements</span></li>
+        </ol>
+      </nav>
+
+      <nav class="pm-tape" aria-label="Your journey">
+        <ol>
+          <li data-state="current"><a class="pm-tape-step" href="20-handoff-requirements.html" aria-current="step" title="Interview: about your code"><span class="pm-tape-label"><span class="pm-sr">Step 1, </span>Interview<span class="pm-sr">, not started. You are here</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">1</span></a></li>
+          <li data-state="upcoming"><a class="pm-tape-step" href="08-documents.html"><span class="pm-tape-label"><span class="pm-sr">Step 2, </span>Documents<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">2</span></a></li>
+          <li data-state="upcoming"><a class="pm-tape-step" href="11-roadmap-awaiting.html"><span class="pm-tape-label"><span class="pm-sr">Step 3, </span>Roadmap<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">3</span></a></li>
+          <li data-state="upcoming"><a class="pm-tape-step" href="13-sprints-building.html"><span class="pm-tape-label"><span class="pm-sr">Step 4, </span>Build<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">4</span></a></li>
+          <li data-state="locked"><span class="pm-tape-step" aria-disabled="true" title="Opens after the plan is approved"><span class="pm-tape-label"><span class="pm-sr">Step 5, </span>Try it<span class="pm-sr">, locked. Opens after the plan is approved</span></span><span class="pm-tape-num" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-lock"/></svg></span></span></li>
+        </ol>
+        <span class="pm-tape-pin" aria-hidden="true"></span>
+      </nav>
+
+      <div class="pm-slot">
+        <span class="pm-slot-sentence" title="About your code and what to build next.">Questions about your code.</span>
+        <a class="pm-btn pm-btn--thread" data-thread href="05-interview-running.html">Start the interview</a>
+      </div>
+    </header>
+
+    <div class="pm-strip">
+      <span class="pm-strip-text">Last saved: your upload customer-portal.zip, <time datetime="2026-09-30">today</time> &middot; Nothing accepted yet</span>
+      <button class="pm-strip-history" type="button" popovertarget="pm-history">History</button>
+    </div>
+    <div class="pm-history" id="pm-history" popover aria-label="Recently saved or accepted">
+      <ol>
+        <li><time datetime="2026-09-30">Today</time><span>Copied your upload customer-portal.zip</span><a href="19-handoff-copying.html">Open</a></li>
+        <li><time datetime="2026-09-30">Today</time><span>Started the project "Customer portal"</span><a href="19-handoff-copying.html">Open</a></li>
+      </ol>
+    </div>
+
+    <div class="pm-content">
+      <div class="pm-title">
+        <h1>Your requirements</h1>
+        <p class="pm-title-sentence">Bring a document, or answer questions about your code.</p>
+      </div>
+
+      <div class="pm-arch-task2">
+        <form class="hf-form" id="pm-job" data-job onsubmit="return false">
+          <div class="pm-field">
+            <span class="pm-label" id="f-req-l">Have a requirements document? (.md or .txt, under 1 MB)</span>
+            <div class="pm-file"><input type="file" id="f-req" class="pm-sr" aria-labelledby="f-req-l" accept=".md,.txt" data-max-mb="1" aria-describedby="f-req-h"><label for="f-req" class="pm-btn pm-btn--quiet">Choose a file</label><span class="pm-file-name pm-mono" data-file-name></span></div>
+            <span class="pm-help" id="f-req-h">Skip it if you have none. The interview asks instead.</span>
+          </div>
+          <div class="pm-stitch" aria-hidden="true"></div>
+          <div class="pm-field">
+            <label class="pm-label" for="req-text">Or paste it here</label>
+            <div class="pm-composer-row pm-composer-row--nosend"><textarea class="pm-textarea hf-reading" id="req-text" name="text" rows="8" placeholder="For example:&#10;What the product is for, and who uses it.&#10;What people need to do in it, step by step.&#10;What must keep working while Pramaan builds."></textarea><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-dictate="#req-text"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button></div>
+            <span class="pm-help" data-dictate-status>Paste the document, or dictate it.</span>
+          </div>
+          <div class="pm-stitch" aria-hidden="true"></div>
+          <p class="hf-consequence">Pramaan turns it into your first Requirements draft. You read it before anything is built.</p>
+          <div class="hf-actions">
+            <span class="pm-btn-reason" id="use-r">Add a document first.</span>
+            <button class="pm-btn pm-btn--quiet" type="button" aria-disabled="true" aria-describedby="use-r" data-enable-when="text" data-for="req-text" onclick="if (this.getAttribute('aria-disabled') !== 'true') location.href = '08-documents.html'">Use this document</button>
+          </div>
+        </form>
+        <aside class="pm-copyflow pm-panel--fit pm-panel--sticky" aria-label="Where your code goes">
+          <h2>Where your code goes</h2>
+          <p class="hf-ready"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-pin-sentence">Your private copy is ready.</span></p>
+          <div class="pm-flow">
+            <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 38 MB</span><span class="pm-chip pm-flow-chip">Read once &middot; never changed</span></div>
+            <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+            <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip" data-status="done">Ready</span></div>
+          </div>
+          <p class="pm-flow-sentence">Your original code stays unchanged.</p>
+          <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project. <span class="pm-mono">pramaan-build/customer-portal-3f9a1c2e</span></div></details>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

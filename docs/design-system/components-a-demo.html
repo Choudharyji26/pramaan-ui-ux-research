@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Components A demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="components-a.css">
+<script>
+  try { var t = localStorage.getItem("pm.theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+  /* Demo-only layout, tokens only. main.pm-main and .pm-section-head are the real ones from shell.css.
+     This page has no rail and no top bar: the sticky action bar (52px) stands in for the top bar, section heads
+     stick under it (.demo-head, top 52px), and table headers stick under both (--pm-topbar-h: 92px, demo only). */
+  .demo-main { --pm-topbar-h: 92px; --pm-rail-w: 0px; }
+  .demo-wrap { max-width: var(--pm-content-max); margin: 0 auto; padding: var(--pm-space-6) var(--pm-content-pad) var(--pm-space-10); }
+  .demo-lede { margin-top: var(--pm-space-1); color: var(--pm-sys-text-muted); }
+  .demo-head { top: 52px; display: flex; align-items: center; justify-content: space-between; height: 40px; padding: 0 var(--pm-space-3); }
+  .demo-section { margin-top: var(--pm-space-7); }
+  .demo-body { padding-top: var(--pm-space-4); display: grid; gap: var(--pm-space-5); }
+  .demo-body > *, .demo-two > * { min-width: 0; }
+  .demo-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--pm-space-4); }
+  .demo-cap { display: block; margin-bottom: var(--pm-space-2); color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); }
+  .demo-panel { padding: var(--pm-space-4); background: var(--pm-sys-surface-raised); border: var(--pm-hairline); border-radius: var(--pm-radius-card); }
+  .demo-static .pm-actionbar { position: static; border: var(--pm-hairline); border-radius: var(--pm-radius-card); }
+  .demo-pins { display: grid; gap: var(--pm-space-3); }
+  .demo-form { max-width: 720px; display: grid; gap: var(--pm-space-6); }
+  .demo-wide th { min-width: 140px; }
+  .demo-wide th:nth-child(2) { min-width: 300px; }
+  .demo-wide td { vertical-align: top; }
+  .demo-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--pm-space-4); align-items: start; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+  <symbol id="pm-i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></symbol>
+</defs></svg>
+
+<main class="pm-main demo-main">
+  <div class="pm-actionbar">
+    <div class="pm-actionbar-main">
+      <span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span>
+      <span class="pm-pin-sentence">Draft 1. Nobody has accepted it yet.</span>
+    </div>
+    <div class="pm-actionbar-actions">
+      <button class="pm-btn pm-btn--quiet" type="button">Ask for changes (1)</button>
+      <button class="pm-btn pm-btn--thread" type="button" data-thread>Accept this draft <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></button>
+    </div>
+  </div>
+
+  <div class="demo-wrap">
+    <div class="demo-row" style="justify-content:space-between">
+      <div><h1>Components A</h1><p class="demo-lede">Buttons, pins, banners, cards, digits, table, forms and feedback in every state.</p></div>
+      <div class="demo-row">
+        <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" id="theme-toggle">Switch theme</button>
+        <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" id="density-toggle">Compact rows</button>
+      </div>
+    </div>
+    <p class="pm-meta" style="margin-top:8px">The bar above is this page's one thread. Every other thread sample is inert and has no data-thread attribute.</p>
+
+    <section class="demo-section" id="buttons">
+      <header class="pm-section-head demo-head"><h2>Buttons</h2><span class="pm-meta">D.1</span></header>
+      <div class="demo-body">
+        <div>
+          <span class="demo-cap">Thread: default, hover, focus, active, disabled with reason, loading, 40px</span>
+          <div inert hidden-thread class="demo-row">
+            <button class="pm-btn pm-btn--thread-demo" type="button">Approve the plan <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></button>
+            <button class="pm-btn pm-btn--thread-demo is-hover" type="button">Hover</button>
+            <button class="pm-btn pm-btn--thread-demo is-focus" type="button">Focus</button>
+            <button class="pm-btn pm-btn--thread-demo is-active" type="button">Active</button>
+            <span class="demo-row"><button class="pm-btn pm-btn--thread-demo" type="button" aria-disabled="true" aria-describedby="r-thread">Accept sprint 1</button><span class="pm-btn-reason" id="r-thread">Answer all 5 to accept.</span></span>
+            <button class="pm-btn pm-btn--thread-demo" type="button" aria-busy="true"><span class="pm-spinner" aria-hidden="true"></span>Approving…</button>
+            <button class="pm-btn pm-btn--thread-demo pm-btn--lg" type="button">Approve the plan and start building</button>
+          </div>
+        </div>
+        <div>
+          <span class="demo-cap">Ink, quiet, ghost, danger: default and hover</span>
+          <div class="demo-row">
+            <button class="pm-btn pm-btn--ink" type="button">New project</button>
+            <button class="pm-btn pm-btn--ink is-hover" type="button">Hover</button>
+            <button class="pm-btn pm-btn--quiet" type="button">Take a copy</button>
+            <button class="pm-btn pm-btn--quiet is-hover" type="button">Hover</button>
+            <button class="pm-btn pm-btn--ghost" type="button">History</button>
+            <button class="pm-btn pm-btn--ghost is-hover" type="button">Hover</button>
+            <button class="pm-btn pm-btn--danger" type="button">Stop the sprint</button>
+            <button class="pm-btn pm-btn--danger is-hover" type="button">Hover</button>
+          </div>
+        </div>
+        <div>
+          <span class="demo-cap">Quiet: focus, active, disabled with reason, loading; sizes 40, 36, 32; icon buttons</span>
+          <div class="demo-row">
+            <button class="pm-btn pm-btn--quiet is-focus" type="button">Focus</button>
+            <button class="pm-btn pm-btn--quiet is-active" type="button">Active</button>
+            <span class="demo-row"><button class="pm-btn pm-btn--quiet" type="button" aria-disabled="true" aria-describedby="r-quiet">Save name</button><span class="pm-btn-reason" id="r-quiet">Nothing changed yet.</span></span>
+            <button class="pm-btn pm-btn--quiet" type="button" aria-busy="true"><span class="pm-spinner" aria-hidden="true"></span>Saving…</button>
+            <button class="pm-btn pm-btn--quiet pm-btn--lg" type="button">Large 40</button>
+            <button class="pm-btn pm-btn--quiet" type="button">Default 36</button>
+            <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button">Small 32</button>
+            <button class="pm-btn pm-btn--ghost pm-btn--icon" type="button" aria-label="Clear"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg></button>
+            <button class="pm-btn pm-btn--quiet pm-btn--icon pm-btn--sm" type="button" aria-label="Next"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="actionbar">
+      <header class="pm-section-head demo-head"><h2>Action bar</h2><span class="pm-meta">D.1</span></header>
+      <div class="demo-body demo-static">
+        <div class="pm-actionbar pm-actionbar--gate">
+          <div class="pm-actionbar-main"><div><div class="pm-actionbar-question">Approve this plan?</div><div class="pm-actionbar-consequence">4 sprints. Sprint 1 builds your private checklist. Nothing is built until you approve.</div></div></div>
+          <div class="pm-actionbar-actions" inert hidden-thread><button class="pm-btn pm-btn--quiet pm-btn--lg" type="button">Ask for changes to the plan</button><button class="pm-btn pm-btn--thread-demo pm-btn--lg" type="button">Approve the plan and start building</button></div>
+        </div>
+        <div class="pm-actionbar">
+          <div class="pm-actionbar-main"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-pin-sentence">Accepted by you Tuesday 14:10.</span></div>
+          <div class="pm-actionbar-actions"><button class="pm-btn pm-btn--quiet" type="button">Ask for a new draft</button></div>
+        </div>
+        <div class="pm-actionbar">
+          <div class="pm-actionbar-main"><span class="pm-pin" data-status="locked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-lock"/></svg></span><span class="pm-pin-label">Locked</span></span><span class="pm-pin-sentence">Read only while sprint 1 is being built.</span></div>
+          <div class="pm-actionbar-actions"><button class="pm-btn pm-btn--quiet" type="button">Request a revision</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="pins">
+      <header class="pm-section-head demo-head"><h2>Status pins</h2><span class="pm-meta">D.5</span></header>
+      <div class="demo-body">
+        <div class="demo-pins">
+          <div class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span><span class="pm-pin-sentence">Answer the next interview question.</span></div>
+          <div class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span><span class="pm-pin-sentence">Pramaan is building sprint 1 (building). Nothing needed from you.</span></div>
+          <div class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span><span class="pm-pin-sentence">Starts after sprint 1 is accepted.</span></div>
+          <div class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span><span class="pm-pin-sentence">Accepted by you Tuesday 14:10.</span></div>
+          <div class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span><span class="pm-pin-sentence">Paused because the monthly budget is used up. Raise it in Settings to continue.</span></div>
+          <div class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span><span class="pm-pin-sentence">A check did not pass. Pramaan is fixing it; nothing needed from you.</span></div>
+          <div class="pm-pin" data-status="locked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-lock"/></svg></span><span class="pm-pin-label">Locked</span><span class="pm-pin-sentence">Read only while sprint 1 is being built. Open Build to see progress.</span></div>
+        </div>
+        <div>
+          <span class="demo-cap">Tint chips (board cells and callouts) and a Working pin that is not live</span>
+          <div class="demo-row">
+            <span class="pm-pin pm-pin--tint" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span>
+            <span class="pm-pin pm-pin--tint" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span>
+            <span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span>
+            <span class="pm-pin pm-pin--tint" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span>
+            <span class="pm-pin pm-pin--tint" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span></span>
+            <span class="pm-pin pm-pin--tint" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>
+            <span class="pm-pin pm-pin--tint" data-status="locked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-lock"/></svg></span><span class="pm-pin-label">Locked</span></span>
+            <span class="pm-pin" data-status="working"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="banners">
+      <header class="pm-section-head demo-head"><h2>Banners</h2><span class="pm-meta">D.6</span></header>
+      <div class="demo-body">
+        <div class="pm-banner pm-banner--needs-you"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span>
+          <div><h3 class="pm-banner-title">Read the product brief.</h3><p class="pm-banner-text">Pramaan wrote draft 1 on Tuesday at 20:59. Nothing is built until you accept it.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body"><span class="pm-mono">product/brief.md · draft 1</span></div></details></div>
+          <button class="pm-btn pm-btn--quiet pm-banner-action" type="button">Open Documents</button></div>
+        <div class="pm-banner pm-banner--working"><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span>
+          <div><h3 class="pm-banner-title">Pramaan is building sprint 1.</h3><p class="pm-banner-text">1 of 3 features ready. Nothing needed from you.</p></div></div>
+        <div class="pm-banner pm-banner--paused"><span class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span></span>
+          <div><h3 class="pm-banner-title">The monthly budget is used up.</h3><p class="pm-banner-text">Raise it in Settings to continue.</p></div><button class="pm-btn pm-btn--quiet pm-banner-action" type="button">Open Settings</button></div>
+        <div class="pm-banner pm-banner--blocked"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>
+          <div><h3 class="pm-banner-title">A check did not pass on sign-up and log-in.</h3><p class="pm-banner-text">Pramaan is fixing it. Nothing needed from you.</p></div></div>
+        <div class="pm-banner pm-banner--done"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span>
+          <div><h3 class="pm-banner-title">All planned sprints accepted.</h3><p class="pm-banner-text">Nothing further is scheduled. Open your product any time.</p></div></div>
+        <div class="pm-banner pm-banner--info"><span class="pm-pin" data-status="info"><span class="pm-pin-head"></span></span>
+          <div><h3 class="pm-banner-title">Your private workspace is ready.</h3><p class="pm-banner-text">Pramaan keeps every draft and decision here.</p></div></div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="cards">
+      <header class="pm-section-head demo-head"><h2>Project cards</h2><span class="pm-meta">D.7</span></header>
+      <div class="demo-body">
+        <p class="pm-muted">9 projects</p>
+        <div class="pm-card-grid">
+          <a class="pm-card pm-card--project pm-card--decision" href="#cards"><span class="pm-card-tile" aria-hidden="true">T</span><span class="pm-card-name">test</span><span class="pm-pin" data-status="needs-you"><svg class="pm-card-pen" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="50" cy="20" rx="49" ry="19"/></svg><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-card-next"><span class="pm-card-next-text">Answer the next interview question.</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">0 of 3 documents accepted · Updated 3 days ago</span></a>
+          <a class="pm-card pm-card--project" href="#cards"><span class="pm-card-tile" aria-hidden="true">U</span><span class="pm-card-name">ui test</span><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-card-next"><span class="pm-card-next-text">Create your product brief; the interview is finished.</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">0 of 3 documents accepted · Updated 42 minutes ago</span></a>
+          <a class="pm-card pm-card--project" href="#cards"><span class="pm-card-tile" aria-hidden="true">T</span><span class="pm-card-name">todo</span><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span><span class="pm-card-next"><span class="pm-card-next-text">Pramaan is building sprint 1 of 4 (building). Nothing needed from you.</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">3 of 3 documents accepted · Sprint 1 of 4 · Updated 22 minutes ago</span></a>
+          <a class="pm-card pm-card--project" href="#cards"><span class="pm-card-tile" aria-hidden="true">W</span><span class="pm-card-name">WP VC app</span><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span><span class="pm-card-next"><span class="pm-card-next-text">Pramaan is drafting your product brief (defining).</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">0 of 3 documents accepted · Updated 1 day ago</span></a>
+          <a class="pm-card pm-card--project" href="#cards"><span class="pm-card-tile" aria-hidden="true">P</span><span class="pm-card-name">provider-update-demo-npm-stack</span><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span><span class="pm-card-next"><span class="pm-card-next-text">Plan approved. Sprint 1 starts in a moment.</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">0 of 3 documents accepted · Updated 6 days ago</span></a>
+          <a class="pm-card pm-card--project" href="#cards"><span class="pm-card-tile" aria-hidden="true">O</span><span class="pm-card-name">omnibound-vlmk-craft</span><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span><span class="pm-card-next"><span class="pm-card-next-text">Plan approved. Sprint 1 starts in a moment.</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">0 of 3 documents accepted · Updated 1 week ago</span></a>
+          <a class="pm-card pm-card--project" href="#cards"><span class="pm-card-tile" aria-hidden="true">T</span><span class="pm-card-name">Todo list</span><span class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span></span><span class="pm-card-next"><span class="pm-card-next-text">Paused because the monthly budget is used up. Raise it in Settings to continue.</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">3 of 3 documents accepted · Updated 22 hours ago</span></a>
+          <a class="pm-card pm-card--project" href="#cards"><span class="pm-card-tile" aria-hidden="true">I</span><span class="pm-card-name">insight-weaver-537</span><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span><span class="pm-card-next"><span class="pm-card-next-text">The starting code did not pass its checks. Pramaan is fixing it; nothing needed from you.</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">0 of 3 documents accepted · Updated 1 week ago</span></a>
+          <a class="pm-card pm-card--project is-hover" href="#cards"><span class="pm-card-tile" aria-hidden="true">T</span><span class="pm-card-name">test first</span><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-card-next"><span class="pm-card-next-text">All 1 planned sprints accepted. Open your product any time.</span><svg class="pm-icon pm-card-arrow" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></span><span class="pm-card-meta">3 of 3 documents accepted · Sprint 1 of 1 · Updated 22 hours ago</span></a>
+        </div>
+        <p class="pm-meta">The last card shows the hover state (.is-hover). Focus a card with Tab for the ring.</p>
+      </div>
+    </section>
+
+    <section class="demo-section" id="digits">
+      <header class="pm-section-head demo-head"><h2>Metric digits</h2><span class="pm-meta">D.8</span></header>
+      <div class="demo-body demo-two">
+        <div><span class="demo-cap">Project test</span>
+          <dl class="pm-digits">
+            <div class="pm-digit"><dt>Documents accepted</dt><dd class="pm-digit-value"><span>0</span><span class="pm-digit-sep">/</span><span>3</span></dd><dd class="pm-digit-sentence">Answer the interview to unlock them.</dd></div>
+            <div class="pm-digit pm-digit--none"><dt>Sprints</dt><dd class="pm-digit-value"><span class="pm-sr">none yet</span></dd><dd class="pm-digit-sentence">No sprints yet. The plan comes after the documents.</dd></div>
+            <div class="pm-digit"><dt>Monthly budget used</dt><dd class="pm-digit-value"><span>2</span><span class="pm-digit-sep">%</span></dd><dd class="pm-digit-sentence">Resets 1 October.</dd></div>
+          </dl></div>
+        <div><span class="demo-cap">Project Todo list, paused</span>
+          <dl class="pm-digits">
+            <div class="pm-digit"><dt>Documents accepted</dt><dd class="pm-digit-value"><span>3</span><span class="pm-digit-sep">/</span><span>3</span></dd><dd class="pm-digit-sentence">All three unlock the plan.</dd></div>
+            <div class="pm-digit"><dt>Sprints</dt><dd class="pm-digit-value"><span>1</span><span class="pm-digit-sep">/</span><span>4</span></dd><dd class="pm-digit-sentence"><span class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span><span class="pm-pin-sentence">Sprint 1 is paused; the budget is used up.</span></span></dd></div>
+            <div class="pm-digit"><dt>Monthly budget used</dt><dd class="pm-digit-value"><span>100</span><span class="pm-digit-sep">%</span></dd><dd class="pm-digit-sentence">Raise it in Settings to continue.</dd></div>
+          </dl></div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="tables">
+      <header class="pm-section-head demo-head"><h2>Tables</h2><span class="pm-meta">D.9</span></header>
+      <div class="demo-body">
+        <div id="doc-table-wrap"><span class="demo-cap">Documents (sticky header, row link, hover, focus ring on the third row)</span>
+          <table class="pm-table"><thead><tr><th>Document</th><th class="pm-col-status">Status</th><th class="pm-col-version">Version</th><th class="pm-col-updated">Updated</th></tr></thead><tbody>
+            <tr><td><a class="pm-rowlink" href="#tables">Product brief</a></td><td><span class="pm-cell-status"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-muted">accepted Tuesday</span></span></td><td class="pm-tnum pm-t-label">Draft 1</td><td class="pm-meta pm-tnum" title="Tuesday 14:10">21 hours ago</td></tr>
+            <tr><td><a class="pm-rowlink" href="#tables">Requirements</a></td><td><span class="pm-cell-status"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-muted">accepted Tuesday</span></span></td><td class="pm-tnum pm-t-label">Draft 1</td><td class="pm-meta pm-tnum">21 hours ago</td></tr>
+            <tr class="is-focus"><td><a class="pm-rowlink" href="#tables">User journey</a></td><td><span class="pm-cell-status"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-muted">accepted Tuesday</span></span></td><td class="pm-tnum pm-t-label">Draft 1</td><td class="pm-meta pm-tnum">21 hours ago</td></tr>
+            <tr><td><a class="pm-rowlink" href="#tables">Sprint plan</a></td><td><span class="pm-cell-status"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-muted">Draft 2 is waiting for you to read it.</span></span></td><td class="pm-tnum pm-t-label">Draft 2 <span class="pm-meta pm-t-meta">newest</span></td><td class="pm-meta pm-tnum">31 minutes ago</td></tr>
+          </tbody></table></div>
+        <div class="demo-two">
+          <div><span class="demo-cap">Loading: skeleton rows</span>
+            <table class="pm-table"><thead><tr><th>Document</th><th>Status</th></tr></thead><tbody>
+              <tr class="pm-table-skeleton"><td><span class="pm-skeleton pm-skeleton--60"></span></td><td><span class="pm-skeleton pm-skeleton--40"></span></td></tr>
+              <tr class="pm-table-skeleton"><td><span class="pm-skeleton pm-skeleton--40"></span></td><td><span class="pm-skeleton pm-skeleton--30"></span></td></tr>
+              <tr class="pm-table-skeleton"><td><span class="pm-skeleton pm-skeleton--30"></span></td><td><span class="pm-skeleton pm-skeleton--60"></span></td></tr>
+            </tbody></table></div>
+          <div><span class="demo-cap">Empty</span>
+            <table class="pm-table"><thead><tr><th>Document</th><th>Status</th></tr></thead><tbody>
+              <tr class="pm-table-empty"><td colspan="2"><p>No documents yet.</p><p class="pm-muted">Pramaan drafts them after the interview.</p><button class="pm-btn pm-btn--quiet" type="button">Open the interview</button></td></tr>
+            </tbody></table></div>
+        </div>
+        <div><span class="demo-cap">Wide table inside a document (horizontal scroll, sticky first column, mono IDs)</span>
+          <div class="pm-table-scroll"><table class="pm-table demo-wide"><thead><tr><th>ID</th><th>Measure or binary condition</th><th>Baseline</th><th>Target</th><th>Window</th><th>Data source</th><th>Owner</th></tr></thead><tbody>
+            <tr><td class="pm-cell-id">KPI-1</td><td>Two people can complete a game on the same screen and see the correct winner or draw.</td><td>Unknown, measure in Phase 0</td><td>True for every completed game checked</td><td>At product acceptance</td><td>Reproducible game walkthrough on the preview</td><td>Founder</td></tr>
+            <tr><td class="pm-cell-id">G-1</td><td>Moves accepted after a winner or draw is shown</td><td>0</td><td>0</td><td>At product acceptance</td><td>Attempt a move after each end-game result on the preview.</td><td>Founder</td></tr>
+          </tbody></table></div></div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="forms">
+      <header class="pm-section-head demo-head"><h2>Forms</h2><span class="pm-meta">D.17</span></header>
+      <div class="demo-body"><div class="demo-form">
+        <form id="save-form" class="pm-field" onsubmit="return false"><label class="pm-label" for="f-name">Project name</label>
+          <input class="pm-input" id="f-name" value="todo" autocomplete="off">
+          <div class="pm-save"><button class="pm-btn pm-btn--quiet" type="button" id="save-btn" aria-disabled="true" aria-describedby="save-reason">Save name</button><span class="pm-btn-reason" id="save-reason">Nothing changed yet.</span><span class="pm-saved" id="saved" hidden><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span>Saved 14:10</span></div></form>
+        <div class="pm-field"><label class="pm-label" for="f-budget">Monthly budget</label><input class="pm-input" id="f-budget" value="20,000,000" inputmode="numeric"><span class="pm-help">18% used this month. Resets 1 October.</span>
+          <details class="pm-details"><summary>Details</summary><div class="pm-details-body">5,415,812 of 20,000,000 tokens this month</div></details></div>
+        <div class="pm-field"><span class="pm-label">Hover, focus, error, disabled</span>
+          <input class="pm-input is-hover" aria-label="Hover" value="Hover state">
+          <input class="pm-input is-focus" aria-label="Focus" value="Focus state">
+          <input class="pm-input" aria-label="Error" aria-invalid="true" aria-describedby="e1" value="">
+          <span class="pm-help pm-help--error" id="e1"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>Give the project a name.</span>
+          <input class="pm-input" aria-label="Disabled" aria-disabled="true" readonly value="todo" aria-describedby="d1"><span class="pm-help" id="d1">You cannot rename a project while sprint 1 is being built.</span></div>
+        <div class="pm-field"><label class="pm-label" for="f-sort">Sort</label><select class="pm-select" id="f-sort"><option>Needs you first</option><option>Name</option><option>Last updated</option></select></div>
+        <div class="pm-field"><label class="pm-label" for="f-note">Anything Pramaan should know?</label><textarea class="pm-textarea" id="f-note" placeholder="Say it the way you would tell a friend."></textarea></div>
+        <div class="demo-row"><label class="pm-checkbox"><input type="checkbox" checked> Send me a note when a draft is ready</label><label class="pm-checkbox"><input type="radio" name="r" checked> Two people</label><label class="pm-checkbox"><input type="radio" name="r"> One person</label></div>
+        <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="sw" aria-describedby="sw-t"><div><label class="pm-label" for="sw">Dependency monitoring</label><p class="pm-muted" id="sw-t">Monitoring is off for this project. Turn it on to see your dependencies and updates.</p></div></div>
+        <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="sw2" checked aria-label="Show requests"><div><label class="pm-label" for="sw2">Show requests</label><p class="pm-muted">Requests are shown in the live logs.</p></div></div>
+        <p class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span><span class="pm-pin-sentence">Export to GitHub is not available yet. Your code stays yours; take a copy any time.</span></p>
+        <div><button class="pm-btn pm-btn--quiet" type="button">Take a copy</button></div>
+      </div></div>
+    </section>
+
+    <section class="demo-section" id="search">
+      <header class="pm-section-head demo-head"><h2>Search, chips, disclosure, skeleton</h2><span class="pm-meta">D.18</span></header>
+      <div class="demo-body">
+        <div class="demo-row">
+          <div class="pm-search"><svg class="pm-icon pm-search-icon" aria-hidden="true"><use href="#pm-i-search"/></svg><input class="pm-input" type="search" placeholder="Find a project" aria-label="Find a project"><button class="pm-btn pm-btn--ghost pm-btn--icon pm-btn--sm pm-search-clear" type="button" aria-label="Clear search"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg></button></div>
+          <div class="pm-search"><svg class="pm-icon pm-search-icon" aria-hidden="true"><use href="#pm-i-search"/></svg><input class="pm-input" type="search" value="todo" aria-label="Find a project"><button class="pm-btn pm-btn--ghost pm-btn--icon pm-btn--sm pm-search-clear" type="button" aria-label="Clear search"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg></button></div>
+          <span class="pm-muted">2 of 9 match 'todo'</span>
+        </div>
+        <div class="demo-row" role="group" aria-label="Filter"><button class="pm-chip" type="button" role="checkbox" aria-checked="true">Needs you</button><button class="pm-chip" type="button" role="checkbox" aria-checked="false">Working</button><button class="pm-chip is-hover" type="button" role="checkbox" aria-checked="false">Done</button><button class="pm-chip is-focus" type="button" role="checkbox" aria-checked="false">Paused</button><span class="demo-row"><button class="pm-chip" type="button" role="checkbox" aria-checked="false" aria-disabled="true" aria-describedby="r-chip">Locked</button><span class="pm-btn-reason" id="r-chip">No locked projects right now.</span></span></div>
+        <div class="demo-two">
+          <details class="pm-details" open><summary>Review advanced technical documents (4)</summary><div class="pm-details-body">System design, Data model, API specification, Test plan. <span class="pm-mono">pramaan-build/ui-test-52da6713</span></div></details>
+          <div class="pm-skeleton-lines" aria-hidden="true"><span class="pm-skeleton"></span><span class="pm-skeleton pm-skeleton--60"></span><span class="pm-skeleton pm-skeleton--40"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" id="feedback">
+      <header class="pm-section-head demo-head"><h2>Empty, locked, error, popover, dialog, toast</h2><span class="pm-meta">D.16</span></header>
+      <div class="demo-body">
+        <div class="demo-panel"><div class="pm-empty"><span class="pm-empty-glyph" aria-hidden="true"></span><p class="pm-empty-title">No projects yet.</p><p class="pm-empty-text">Start with an idea; Pramaan asks the rest.</p><button class="pm-btn pm-btn--quiet" type="button">New project</button></div></div>
+        <div class="pm-locked"><span class="pm-pin" data-status="locked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-lock"/></svg></span><span class="pm-pin-label">Locked</span></span><p class="pm-locked-title">Read only while sprint 1 is being built.</p><p>You can still:</p><ul class="pm-locked-list"><li><a href="#feedback">Read your decisions</a></li><li><a href="#feedback">Request a revision</a>, Pramaan drafts it after the sprint</li><li><a href="#feedback">Open Build</a> to see progress</li></ul></div>
+        <div class="pm-error" role="alert"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span><p class="pm-error-title">The plan could not be saved.</p><p>The connection dropped. Try again; your text is kept.</p><button class="pm-btn pm-btn--quiet" type="button">Try again</button></div>
+        <div class="demo-row" style="align-items:flex-start">
+          <div><span class="demo-cap">Popover (static copy, and a live one from the button)</span><div class="pm-popover pm-popover--static"><p class="pm-label">Comment on this passage</p><p class="pm-muted" style="margin:4px 0 12px">Your comments are sent together when you ask for changes.</p><textarea class="pm-textarea" aria-label="Comment"></textarea><div class="pm-dialog-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button">Cancel</button><button class="pm-btn pm-btn--ink pm-btn--sm" type="button">Add comment</button></div></div></div>
+          <div class="demo-row"><button class="pm-btn pm-btn--quiet" type="button" id="pop-btn" popovertarget="pop">Open popover</button><button class="pm-btn pm-btn--quiet" type="button" id="dlg-btn">Open dialog</button><button class="pm-btn pm-btn--quiet" type="button" id="toast-btn">Show toast</button></div>
+        </div>
+        <div><span class="demo-cap">Toast (static copy)</span><div class="pm-toast" role="status"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span>Draft 1 accepted. The plan opens next.</span><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button">Undo</button></div></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="pm-popover" id="pop" popover><p class="pm-label">Comment on this passage</p><p class="pm-muted" style="margin-top:4px">Your comments are sent together when you ask for changes.</p></div>
+  <dialog class="pm-dialog" id="dlg" aria-labelledby="dlg-t"><h2 class="pm-dialog-title" id="dlg-t">Stop this sprint?</h2><p class="pm-dialog-text">Pramaan stops building now. Work that already passed its checks stays saved.</p><div class="pm-dialog-actions"><button class="pm-btn pm-btn--quiet" type="button" data-close>Keep going</button><button class="pm-btn pm-btn--danger" type="button" data-close>Stop the sprint</button></div></dialog>
+  <div class="pm-toast-host" id="toast-host"></div>
+</main>
+
+<script>
+  var root = document.documentElement;
+  document.getElementById("theme-toggle").addEventListener("click", function () {
+    var next = root.dataset.theme === "dark" ? "light" : "dark"; root.dataset.theme = next;
+    try { localStorage.setItem("pm.theme", next); } catch (e) {}
+  });
+  document.getElementById("density-toggle").addEventListener("click", function () {
+    var wrap = document.getElementById("doc-table-wrap"), on = wrap.dataset.density !== "compact";
+    if (on) wrap.dataset.density = "compact"; else wrap.removeAttribute("data-density");
+    this.textContent = on ? "Comfortable rows" : "Compact rows";
+  });
+  var nameEl = document.getElementById("f-name"), save = document.getElementById("save-btn"), reason = document.getElementById("save-reason"), saved = document.getElementById("saved");
+  nameEl.addEventListener("input", function () {
+    var changed = nameEl.value !== "todo"; saved.hidden = true;
+    save.setAttribute("aria-disabled", changed ? "false" : "true"); reason.hidden = changed;
+  });
+  save.addEventListener("click", function () {
+    if (save.getAttribute("aria-disabled") === "true") return;
+    save.setAttribute("aria-disabled", "true"); reason.hidden = true; saved.hidden = false;
+  });
+  document.querySelectorAll(".pm-chip").forEach(function (c) { c.addEventListener("click", function () { if (c.getAttribute("aria-disabled") === "true") return; c.setAttribute("aria-checked", c.getAttribute("aria-checked") === "true" ? "false" : "true"); }); });
+  var pop = document.getElementById("pop"), popBtn = document.getElementById("pop-btn");
+  pop.addEventListener("beforetoggle", function () { var r = popBtn.getBoundingClientRect(); pop.style.left = r.left + "px"; pop.style.top = (r.bottom + 8) + "px"; });
+  var dlg = document.getElementById("dlg");
+  document.getElementById("dlg-btn").addEventListener("click", function () { dlg.showModal(); });
+  dlg.addEventListener("click", function (e) { if (e.target.hasAttribute("data-close")) dlg.close(); });
+  document.getElementById("toast-btn").addEventListener("click", function () {
+    var host = document.getElementById("toast-host"), t = document.createElement("div"), timer;
+    t.className = "pm-toast"; t.setAttribute("role", "status"); t.dataset.state = "enter";
+    t.innerHTML = '<span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span>Draft 1 accepted. The plan opens next.</span>';
+    function leave() { t.dataset.state = "leave"; setTimeout(function () { t.remove(); }, 90); }
+    function arm() { timer = setTimeout(leave, 6000); }
+    t.addEventListener("mouseenter", function () { clearTimeout(timer); }); t.addEventListener("mouseleave", arm);
+    host.appendChild(t); arm();
+  });
+</script>
+</body>
+</html>

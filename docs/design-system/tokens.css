@@ -1,0 +1,362 @@
+/* Tape and Thread tokens. Layers: --pm-ref-* (raw), --pm-sys-* (roles), --pm-cmp-* (component). Only this file may contain colour literals. */
+
+:root {
+  color-scheme: light;
+
+  /* Layer 1: reference colour. Hex first, OKLCH second. Custom properties are not validated when parsed, so the OKLCH line always wins; the hex line is the checked sRGB equivalent (from tools/contrast.mjs) for tools and readers, not a runtime fallback. Every supported browser renders OKLCH. */
+  --pm-ref-ink-950: #080b10;
+  --pm-ref-ink-950: oklch(15% 0.012 260);
+  --pm-ref-ink-900: #15181f;
+  --pm-ref-ink-900: oklch(21% 0.014 260);
+  --pm-ref-ink-800: #272c32;
+  --pm-ref-ink-800: oklch(29% 0.014 260);
+  --pm-ref-ink-700: #3f4349;
+  --pm-ref-ink-700: oklch(38% 0.012 260);
+  --pm-ref-ink-600: #55585e;
+  --pm-ref-ink-600: oklch(46% 0.010 260);
+  --pm-ref-ink-500: #606369;
+  --pm-ref-ink-500: oklch(50% 0.010 260);
+  --pm-ref-ink-400: #898c92;
+  --pm-ref-ink-400: oklch(64% 0.010 260);
+  --pm-ref-ink-300: #b4b7bd;
+  --pm-ref-ink-300: oklch(78% 0.008 260);
+  --pm-ref-ink-200: #d2d4d8;
+  --pm-ref-ink-200: oklch(87% 0.006 260);
+  --pm-ref-ink-100: #e6e8eb;
+  --pm-ref-ink-100: oklch(93% 0.005 260);
+  --pm-ref-ink-50: #f5f6f8;
+  --pm-ref-ink-50: oklch(97.3% 0.003 260);
+  --pm-ref-ink-0: #ffffff;
+  --pm-ref-ink-0: oklch(100% 0 0);
+  --pm-ref-thread-500: #fad622;
+  --pm-ref-thread-500: oklch(88% 0.175 96);
+  --pm-ref-thread-600: #e2b40a;
+  --pm-ref-thread-600: oklch(79% 0.160 90);
+  --pm-ref-thread-700: #855a00;
+  --pm-ref-thread-700: oklch(50% 0.115 80);
+  --pm-ref-thread-800: #633f00;
+  --pm-ref-thread-800: oklch(40% 0.095 78);
+  --pm-ref-chalk-700: #1d5178;
+  --pm-ref-chalk-700: oklch(42% 0.085 245);
+  --pm-ref-chalk-600: #326893;
+  --pm-ref-chalk-600: oklch(50% 0.090 245);
+  --pm-ref-chalk-400: #80aace;
+  --pm-ref-chalk-400: oklch(72% 0.070 245);
+  --pm-ref-chalk-300: #aac8e3;
+  --pm-ref-chalk-300: oklch(82% 0.050 245);
+  --pm-ref-chalk-100: #e1edf8;
+  --pm-ref-chalk-100: oklch(94% 0.020 245);
+  --pm-ref-chalk-50: #f0f6fc;
+  --pm-ref-chalk-50: oklch(97% 0.010 245);
+  --pm-ref-moss-600: #146d34;
+  --pm-ref-moss-600: oklch(47% 0.120 150);
+  --pm-ref-moss-400: #69c27e;
+  --pm-ref-moss-400: oklch(74% 0.130 150);
+  --pm-ref-moss-100: #d7f4dc;
+  --pm-ref-moss-100: oklch(94% 0.045 150);
+  --pm-ref-moss-900: #122d19;
+  --pm-ref-moss-900: oklch(27% 0.050 150);
+  --pm-ref-clay-600: #a64a18;
+  --pm-ref-clay-600: oklch(52% 0.135 45);
+  --pm-ref-clay-400: #e79363;
+  --pm-ref-clay-400: oklch(74% 0.120 50);
+  --pm-ref-clay-100: #ffe5d8;
+  --pm-ref-clay-100: oklch(94% 0.035 45);
+  --pm-ref-clay-900: #3d2013;
+  --pm-ref-clay-900: oklch(28% 0.050 45);
+  --pm-ref-red-600: #a92321;
+  --pm-ref-red-600: oklch(48% 0.170 27);
+  --pm-ref-red-400: #f47b74;
+  --pm-ref-red-400: oklch(72% 0.150 25);
+  --pm-ref-red-100: #ffe3df;
+  --pm-ref-red-100: oklch(94% 0.035 27);
+  --pm-ref-red-900: #3f1916;
+  --pm-ref-red-900: oklch(27% 0.060 27);
+
+  /* Layer 2: system roles (light). Components use only these and --pm-cmp-*. */
+  --pm-sys-ground: var(--pm-ref-ink-50);
+  --pm-sys-surface-raised: var(--pm-ref-ink-0);
+  --pm-sys-surface-sunken: var(--pm-ref-ink-100);
+  --pm-sys-surface-rail: var(--pm-ref-ink-900);
+  --pm-sys-surface-rail-active: var(--pm-ref-ink-800);
+  --pm-sys-text: var(--pm-ref-ink-900);
+  --pm-sys-text-secondary: var(--pm-ref-ink-700);
+  --pm-sys-text-muted: var(--pm-ref-ink-600);
+  --pm-sys-text-meta: var(--pm-ref-ink-500);
+  --pm-sys-text-on-rail: var(--pm-ref-ink-100);
+  --pm-sys-text-on-rail-muted: var(--pm-ref-ink-300);
+  --pm-sys-text-on-ink: var(--pm-ref-ink-0);
+  --pm-sys-hairline: var(--pm-ref-ink-200);
+  --pm-sys-hairline-on-rail: var(--pm-ref-ink-700);
+  --pm-sys-control-border: var(--pm-ref-ink-400);
+  --pm-sys-thread: var(--pm-ref-thread-500);
+  --pm-sys-thread-hover: var(--pm-ref-thread-600);
+  --pm-sys-thread-text: var(--pm-ref-thread-700);
+  --pm-sys-thread-text-hover: var(--pm-ref-thread-800);
+  --pm-sys-on-thread: var(--pm-ref-ink-900);
+  --pm-sys-chalk: var(--pm-ref-chalk-600);
+  --pm-sys-chalk-text: var(--pm-ref-chalk-700);
+  --pm-sys-chalk-tint: var(--pm-ref-chalk-100);
+  --pm-sys-chalk-on-rail: var(--pm-ref-chalk-300);
+  --pm-sys-status-needs-you: var(--pm-ref-ink-900);
+  --pm-sys-status-needs-you-tint: var(--pm-ref-ink-100);
+  --pm-sys-status-working: var(--pm-ref-chalk-600);
+  --pm-sys-status-working-tint: var(--pm-ref-chalk-100);
+  --pm-sys-status-waiting: var(--pm-ref-ink-500);
+  --pm-sys-status-waiting-tint: var(--pm-ref-ink-50);
+  --pm-sys-status-done: var(--pm-ref-moss-600);
+  --pm-sys-status-done-tint: var(--pm-ref-moss-100);
+  --pm-sys-status-paused: var(--pm-ref-clay-600);
+  --pm-sys-status-paused-tint: var(--pm-ref-clay-100);
+  --pm-sys-status-blocked: var(--pm-ref-red-600);
+  --pm-sys-status-blocked-tint: var(--pm-ref-red-100);
+  --pm-sys-status-locked: var(--pm-ref-ink-500);
+  --pm-sys-status-locked-tint: var(--pm-ref-ink-100);
+  --pm-sys-focus: var(--pm-ref-ink-900);
+  --pm-sys-focus-halo: var(--pm-ref-ink-0);
+  --pm-sys-focus-on-rail: var(--pm-ref-chalk-300);
+  --pm-sys-selection-bg: var(--pm-ref-thread-500);
+  --pm-sys-selection-text: var(--pm-ref-ink-900);
+  --pm-sys-scrim: rgba(21, 24, 31, 0.55);
+  --pm-sys-scrim: oklch(21% 0.014 260 / 0.55);
+
+  /* Type families */
+  --pm-font-text: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
+  --pm-font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  /* Type steps: size / line / weight / tracking */
+  --pm-type-digits-size: 28px;
+  --pm-type-digits-line: 32px;
+  --pm-type-digits-weight: 600;
+  --pm-type-digits-tracking: -0.01em;
+  --pm-type-title-size: 22px;
+  --pm-type-title-line: 28px;
+  --pm-type-title-weight: 600;
+  --pm-type-title-tracking: -0.01em;
+  --pm-type-heading-size: 17px;
+  --pm-type-heading-line: 24px;
+  --pm-type-heading-weight: 600;
+  --pm-type-heading-tracking: 0;
+  --pm-type-reading-size: 17px;
+  --pm-type-reading-line: 28px;
+  --pm-type-reading-weight: 400;
+  --pm-type-reading-tracking: 0;
+  --pm-type-body-size: 15px;
+  --pm-type-body-line: 22px;
+  --pm-type-body-weight: 400;
+  --pm-type-body-tracking: 0;
+  --pm-type-label-size: 14px;
+  --pm-type-label-line: 16px;
+  --pm-type-label-weight: 500;
+  --pm-type-label-tracking: 0;
+  --pm-type-meta-size: 12px;
+  --pm-type-meta-line: 16px;
+  --pm-type-meta-weight: 400;
+  --pm-type-meta-tracking: 0.01em;
+
+  /* Spacing (4px stitch grid) */
+  --pm-space-1: 4px;
+  --pm-space-2: 8px;
+  --pm-space-3: 12px;
+  --pm-space-4: 16px;
+  --pm-space-5: 20px;
+  --pm-space-6: 24px;
+  --pm-space-7: 32px;
+  --pm-space-8: 40px;
+  --pm-space-9: 48px;
+  --pm-space-10: 64px;
+
+  /* Radius, hairline, stitch */
+  --pm-radius-chip: 4px;
+  --pm-radius-control: 6px;
+  --pm-radius-card: 10px;
+  --pm-radius-round: 999px;
+  --pm-hairline: 1px solid var(--pm-sys-hairline);
+  --pm-stitch: repeating-linear-gradient(90deg, var(--pm-sys-hairline) 0 6px, transparent 6px 10px);
+
+  /* Elevation: floating layers only */
+  --pm-shadow-float: 0 8px 24px -8px rgba(21, 24, 31, 0.28), 0 2px 6px -2px rgba(21, 24, 31, 0.16);
+  --pm-shadow-float: 0 8px 24px -8px oklch(21% 0.014 260 / 0.28), 0 2px 6px -2px oklch(21% 0.014 260 / 0.16);
+  --pm-shadow-dialog: 0 24px 48px -16px rgba(21, 24, 31, 0.4);
+  --pm-shadow-dialog: 0 24px 48px -16px oklch(21% 0.014 260 / 0.4);
+
+  /* Motion */
+  --pm-motion-state: 120ms;
+  --pm-motion-reveal: 180ms;
+  --pm-motion-layout: 240ms;
+  --pm-ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --pm-ease-in: cubic-bezier(0.3, 0, 1, 1);
+
+  /* Z-index map */
+  --pm-z-content: 0;
+  --pm-z-sticky-section: 10;
+  --pm-z-action-bar: 20;
+  --pm-z-topbar: 30;
+  --pm-z-rail: 40;
+  --pm-z-popover: 50;
+  --pm-z-toast: 60;
+  --pm-z-dialog: 70;
+  --pm-z-skip: 80;
+
+  /* Layout constants (values at < 1440; the 1440 overrides are below) */
+  --pm-rail-w: 248px;
+  --pm-topbar-h: 56px;
+  --pm-strip-h: 28px;
+  --pm-content-pad: 24px;
+  --pm-content-max: 1120px;
+  --pm-reading-w: 68ch;
+  --pm-panel-w: 320px;
+  --pm-toc-w: 200px;
+  --pm-tape-w: 360px; /* minimum width; the tape grows up to --pm-tape-w-max when space allows (SPEC B.9, D.3) */
+  --pm-tape-w-max: 440px;
+  --pm-row-h: 46px; /* comfortable: 12 + 22 + 12 (SPEC B.7); compact overrides to 36px */
+  --pm-control-h: 36px;
+  --pm-scroll-pad: calc(var(--pm-topbar-h) + 16px);
+
+  /* Density (comfortable defaults) */
+  --pm-cell-pad-y: 12px;
+  --pm-cell-pad-x: 16px;
+
+  /* Layer 3: component tokens (lazy; each points at a system token) */
+  --pm-cmp-button-thread-bg: var(--pm-sys-thread);
+  --pm-cmp-button-thread-fg: var(--pm-sys-on-thread);
+  --pm-cmp-button-thread-border: var(--pm-sys-text);
+  --pm-cmp-button-ink-bg: var(--pm-sys-text);
+  --pm-cmp-button-ink-fg: var(--pm-sys-text-on-ink);
+  --pm-cmp-button-quiet-border: var(--pm-sys-control-border);
+  --pm-cmp-button-h: var(--pm-control-h);
+  --pm-cmp-button-radius: var(--pm-radius-control);
+  --pm-cmp-tape-tick: var(--pm-sys-text);
+  --pm-cmp-tape-pin: var(--pm-sys-text);
+  --pm-cmp-tape-done: var(--pm-sys-status-done);
+  --pm-cmp-pin-size: 10px;
+  --pm-cmp-card-pad: 16px;
+  --pm-cmp-row-h: var(--pm-row-h);
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --pm-content-pad: 32px;
+    --pm-panel-w: 360px;
+    --pm-toc-w: 220px;
+  }
+}
+
+[data-rail="collapsed"] {
+  --pm-rail-w: 64px;
+}
+
+[data-density="compact"] {
+  --pm-row-h: 36px;
+  --pm-cmp-row-h: var(--pm-row-h);
+  --pm-cell-pad-y: 8px;
+  --pm-cell-pad-x: 12px;
+  --pm-type-body-size: 14px;
+  --pm-type-body-line: 20px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  /* pm:dark-begin */
+  /* generated by tools/gen-theme.mjs: change the mapping there, not here */
+  --pm-sys-ground: var(--pm-ref-ink-950);
+  --pm-sys-surface-raised: var(--pm-ref-ink-900);
+  --pm-sys-surface-sunken: var(--pm-ref-ink-800);
+  --pm-sys-surface-rail: var(--pm-ref-ink-900);
+  --pm-sys-surface-rail-active: var(--pm-ref-ink-800);
+  --pm-sys-text: var(--pm-ref-ink-100);
+  --pm-sys-text-secondary: var(--pm-ref-ink-300);
+  --pm-sys-text-muted: var(--pm-ref-ink-300);
+  --pm-sys-text-meta: var(--pm-ref-ink-400);
+  --pm-sys-text-on-rail: var(--pm-ref-ink-100);
+  --pm-sys-text-on-rail-muted: var(--pm-ref-ink-300);
+  --pm-sys-text-on-ink: var(--pm-ref-ink-950);
+  --pm-sys-hairline: var(--pm-ref-ink-700);
+  --pm-sys-hairline-on-rail: var(--pm-ref-ink-700);
+  --pm-sys-control-border: var(--pm-ref-ink-400);
+  --pm-sys-thread: var(--pm-ref-thread-500);
+  --pm-sys-thread-hover: var(--pm-ref-thread-600);
+  --pm-sys-thread-text: var(--pm-ref-thread-600);
+  --pm-sys-thread-text-hover: var(--pm-ref-thread-500);
+  --pm-sys-on-thread: var(--pm-ref-ink-950);
+  --pm-sys-chalk: var(--pm-ref-chalk-400);
+  --pm-sys-chalk-text: var(--pm-ref-chalk-300);
+  --pm-sys-chalk-tint: var(--pm-ref-ink-800);
+  --pm-sys-chalk-on-rail: var(--pm-ref-chalk-300);
+  --pm-sys-status-needs-you: var(--pm-ref-ink-100);
+  --pm-sys-status-needs-you-tint: var(--pm-ref-ink-800);
+  --pm-sys-status-working: var(--pm-ref-chalk-400);
+  --pm-sys-status-working-tint: var(--pm-ref-ink-800);
+  --pm-sys-status-waiting: var(--pm-ref-ink-400);
+  --pm-sys-status-waiting-tint: var(--pm-ref-ink-900);
+  --pm-sys-status-done: var(--pm-ref-moss-400);
+  --pm-sys-status-done-tint: var(--pm-ref-moss-900);
+  --pm-sys-status-paused: var(--pm-ref-clay-400);
+  --pm-sys-status-paused-tint: var(--pm-ref-clay-900);
+  --pm-sys-status-blocked: var(--pm-ref-red-400);
+  --pm-sys-status-blocked-tint: var(--pm-ref-red-900);
+  --pm-sys-status-locked: var(--pm-ref-ink-400);
+  --pm-sys-status-locked-tint: var(--pm-ref-ink-900);
+  --pm-sys-focus: var(--pm-ref-ink-100);
+  --pm-sys-focus-halo: var(--pm-ref-ink-950);
+  --pm-sys-focus-on-rail: var(--pm-ref-chalk-300);
+  --pm-sys-selection-bg: var(--pm-ref-thread-600);
+  --pm-sys-selection-text: var(--pm-ref-ink-950);
+  --pm-sys-scrim: rgba(8, 11, 16, 0.7);
+  --pm-sys-scrim: oklch(15% 0.012 260 / 0.7);
+  /* pm:dark-end */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    /* pm:dark-begin */
+    /* generated by tools/gen-theme.mjs: change the mapping there, not here */
+    --pm-sys-ground: var(--pm-ref-ink-950);
+    --pm-sys-surface-raised: var(--pm-ref-ink-900);
+    --pm-sys-surface-sunken: var(--pm-ref-ink-800);
+    --pm-sys-surface-rail: var(--pm-ref-ink-900);
+    --pm-sys-surface-rail-active: var(--pm-ref-ink-800);
+    --pm-sys-text: var(--pm-ref-ink-100);
+    --pm-sys-text-secondary: var(--pm-ref-ink-300);
+    --pm-sys-text-muted: var(--pm-ref-ink-300);
+    --pm-sys-text-meta: var(--pm-ref-ink-400);
+    --pm-sys-text-on-rail: var(--pm-ref-ink-100);
+    --pm-sys-text-on-rail-muted: var(--pm-ref-ink-300);
+    --pm-sys-text-on-ink: var(--pm-ref-ink-950);
+    --pm-sys-hairline: var(--pm-ref-ink-700);
+    --pm-sys-hairline-on-rail: var(--pm-ref-ink-700);
+    --pm-sys-control-border: var(--pm-ref-ink-400);
+    --pm-sys-thread: var(--pm-ref-thread-500);
+    --pm-sys-thread-hover: var(--pm-ref-thread-600);
+    --pm-sys-thread-text: var(--pm-ref-thread-600);
+    --pm-sys-thread-text-hover: var(--pm-ref-thread-500);
+    --pm-sys-on-thread: var(--pm-ref-ink-950);
+    --pm-sys-chalk: var(--pm-ref-chalk-400);
+    --pm-sys-chalk-text: var(--pm-ref-chalk-300);
+    --pm-sys-chalk-tint: var(--pm-ref-ink-800);
+    --pm-sys-chalk-on-rail: var(--pm-ref-chalk-300);
+    --pm-sys-status-needs-you: var(--pm-ref-ink-100);
+    --pm-sys-status-needs-you-tint: var(--pm-ref-ink-800);
+    --pm-sys-status-working: var(--pm-ref-chalk-400);
+    --pm-sys-status-working-tint: var(--pm-ref-ink-800);
+    --pm-sys-status-waiting: var(--pm-ref-ink-400);
+    --pm-sys-status-waiting-tint: var(--pm-ref-ink-900);
+    --pm-sys-status-done: var(--pm-ref-moss-400);
+    --pm-sys-status-done-tint: var(--pm-ref-moss-900);
+    --pm-sys-status-paused: var(--pm-ref-clay-400);
+    --pm-sys-status-paused-tint: var(--pm-ref-clay-900);
+    --pm-sys-status-blocked: var(--pm-ref-red-400);
+    --pm-sys-status-blocked-tint: var(--pm-ref-red-900);
+    --pm-sys-status-locked: var(--pm-ref-ink-400);
+    --pm-sys-status-locked-tint: var(--pm-ref-ink-900);
+    --pm-sys-focus: var(--pm-ref-ink-100);
+    --pm-sys-focus-halo: var(--pm-ref-ink-950);
+    --pm-sys-focus-on-rail: var(--pm-ref-chalk-300);
+    --pm-sys-selection-bg: var(--pm-ref-thread-600);
+    --pm-sys-selection-text: var(--pm-ref-ink-950);
+    --pm-sys-scrim: rgba(8, 11, 16, 0.7);
+    --pm-sys-scrim: oklch(15% 0.012 260 / 0.7);
+    /* pm:dark-end */
+  }
+}

@@ -1,0 +1,426 @@
+/* Tape and Thread components-b: reading document, chat workbench, sprint route, feature board, approval gate, preview stage and checklist, log viewer. Link after tokens.css, base.css, shell.css and components-a.css. Uses --pm-sys-* and --pm-cmp-* only (SPEC D.10 to D.15, D.17, G.3). Buttons, pins, chips, details, popovers, tables, fields and the action bar are components-a classes and are not restyled here. */
+
+/* A hidden attribute must win over any display rule on buttons, pins or bars. */
+[hidden] { display: none !important; }
+
+/* The gate observer hides the on-page thread copy while the top-bar slot copy is showing (Law 1: one visible thread). */
+[data-thread][data-offscreen] { visibility: hidden; }
+
+:root {
+  --pm-cmp-work-h: calc(100vh - var(--pm-topbar-h) - var(--pm-strip-h));
+  --pm-cmp-log-h: calc(100vh - var(--pm-topbar-h) - 108px);
+  --pm-cmp-board-digits-size: 22px;
+  --pm-cmp-reader-bar-h: 52px;
+  --pm-cmp-verdict-h: 28px;
+}
+
+/* Shared: the tape line (4px ink track) used by the chat header, decisions, checklist and sprint header. */
+.pm-progress { display: inline-flex; align-items: center; gap: var(--pm-space-2); }
+.pm-progress-track { position: relative; display: block; width: 120px; height: 4px; border-radius: 2px; background: var(--pm-sys-hairline); overflow: hidden; }
+.pm-progress-fill { display: block; height: 100%; width: var(--pm-progress, 0%); background: var(--pm-sys-text); transition: width var(--pm-motion-layout) var(--pm-ease-out); }
+.pm-progress--wide { display: flex; width: 100%; max-width: 360px; }
+.pm-progress--wide .pm-progress-track { width: 100%; }
+.pm-progress--line { position: absolute; inset: auto 0 0 0; display: block; }
+.pm-progress--line .pm-progress-track { width: 100%; border-radius: 0; }
+
+/* Workbench pair: a main region plus the fixed side panel (chat + decisions, stage + checklist). */
+.pm-wb { display: grid; grid-template-columns: minmax(0, 1fr) var(--pm-panel-w); height: var(--pm-cmp-work-h); min-height: 0; }
+
+/* Copy button (16px) with a 2s "Copied" label. */
+.pm-copy { position: relative; display: inline-grid; place-items: center; width: 16px; height: 16px; padding: 0; border: 0; border-radius: var(--pm-radius-chip); background: transparent; color: var(--pm-sys-text-muted); cursor: pointer; }
+.pm-copy svg { width: 12px; height: 12px; }
+.pm-copy:hover { color: var(--pm-sys-text); background: var(--pm-sys-surface-sunken); }
+
+.pm-copy[data-copied="true"]::after {
+  content: "Copied";
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--pm-z-popover);
+  padding: 2px var(--pm-space-2);
+  border-radius: var(--pm-radius-chip);
+  background: var(--pm-sys-text);
+  color: var(--pm-sys-text-on-ink);
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---------- D.10 Reading Document ---------- */
+.pm-reader { display: grid; grid-template-columns: var(--pm-toc-w) minmax(0, 1fr); column-gap: var(--pm-space-6); height: var(--pm-cmp-work-h); min-height: 0; padding: 0 var(--pm-content-pad); }
+.pm-toc { align-self: start; max-height: 100%; overflow-y: auto; padding: var(--pm-space-6) 0 var(--pm-space-4); }
+.pm-toc-title { margin-bottom: var(--pm-space-2); padding-left: var(--pm-space-3); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+.pm-toc ol { margin: 0; padding: 0; list-style: none; }
+
+.pm-toc a {
+  display: block;
+  padding: 6px var(--pm-space-3);
+  border-radius: 0 var(--pm-radius-control) var(--pm-radius-control) 0;
+  box-shadow: inset 2px 0 0 transparent;
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight);
+  color: var(--pm-sys-text-secondary);
+  text-decoration: none;
+}
+
+.pm-toc a:hover { background: var(--pm-sys-surface-sunken); color: var(--pm-sys-text); }
+.pm-toc a[aria-current="location"] { box-shadow: inset 2px 0 0 var(--pm-sys-text); color: var(--pm-sys-text); font-weight: 600; }
+.pm-toc ol ol { margin: 0 0 var(--pm-space-1); }
+.pm-toc ol ol a { padding-left: var(--pm-space-5); font-weight: 400; color: var(--pm-sys-text-muted); }
+.pm-toc ol ol a:hover { color: var(--pm-sys-text); }
+.pm-toc ol ol a[aria-current="location"] { color: var(--pm-sys-text); font-weight: 600; }
+.pm-toc-links { display: grid; gap: var(--pm-space-1); margin-top: var(--pm-space-4); padding-top: var(--pm-space-4); border-top: var(--pm-hairline); }
+.pm-toc-links a { font-weight: 400; color: var(--pm-sys-text-muted); }
+
+/* The reading column is the one scroller (C.5). It spans the reading measure and the chalk margin. */
+.pm-reader-body { position: relative; min-width: 0; height: 100%; overflow-y: auto; scroll-padding-top: calc(var(--pm-cmp-reader-bar-h) - 1px); background: var(--pm-sys-surface-raised); border-inline: var(--pm-hairline); }
+.pm-reader-doc { padding: 0 var(--pm-space-6) var(--pm-space-10); }
+.pm-byline { display: flex; flex-wrap: wrap; align-items: center; gap: var(--pm-space-2) var(--pm-space-4); max-width: var(--pm-reading-w); padding: var(--pm-space-4) 0 var(--pm-space-2); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+.pm-versions { display: inline-flex; align-items: center; gap: var(--pm-space-2); }
+.pm-reader-note { max-width: var(--pm-reading-w); margin: 0; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted); }
+.pm-byline-details { max-width: var(--pm-reading-w); margin: var(--pm-space-2) 0 var(--pm-space-2); }
+/* Reading size on the article so 68ch resolves at 17px (about 706px), not at the 15px body size. Tables and h3 reset to Body. */
+.pm-article { max-width: var(--pm-reading-w); font-size: var(--pm-type-reading-size); line-height: var(--pm-type-reading-line); }
+.pm-article h3, .pm-article .pm-table { font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); }
+.pm-reader-sec, .pm-reader-sub { position: relative; padding-bottom: var(--pm-space-7); }
+/* The sticky section head (C.5, A2): an opaque reader-surface mask with a 1px hairline. It sits at the bar's bottom edge minus 1px (so the hairline row of the bar overlaps it), and a ::before extends the same opaque surface 8px UP, behind the bar, so no strip of the previous section's text can ever show between the bar and the heading, whatever the scroll offset. There is no fade: a fade under the hairline left half-faded glyph tops showing, so the mask now ends in a clean hairline and text is cut cleanly by it. */
+.pm-reader-sec > h2, .pm-reader-sub > h2 { position: sticky; top: calc(var(--pm-cmp-reader-bar-h) - 1px); z-index: var(--pm-z-sticky-section); margin: 0; padding: var(--pm-space-3) 0; background: var(--pm-sys-surface-raised); border-bottom: var(--pm-hairline); }
+.pm-reader-sec > h2::before, .pm-reader-sub > h2::before { content: ""; position: absolute; inset: calc(-1 * var(--pm-space-2)) 0 100% 0; background: var(--pm-sys-surface-raised); pointer-events: none; }
+.pm-reader-sec > h2 + *, .pm-reader-sub > h2 + * { margin-top: var(--pm-space-4); }
+/* One plain sentence under a section head: what the section is for, in words a founder uses. The heading itself stays the brief's own wire label. */
+.pm-article .pm-gloss { margin-top: var(--pm-space-2); max-width: var(--pm-reading-w); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+.pm-article .pm-gloss + * { margin-top: var(--pm-space-4); }
+/* The advanced group: one closed disclosure holding the sections about how Pramaan works (D.10). */
+.pm-reader-adv { max-width: var(--pm-reading-w); margin-bottom: var(--pm-space-7); padding-top: var(--pm-space-4); border-top: var(--pm-hairline); }
+.pm-reader-adv > summary { color: var(--pm-sys-text); font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); font-weight: 600; }
+.pm-reader-adv[open] > summary { margin-bottom: var(--pm-space-2); }
+.pm-article h3 { margin: var(--pm-space-6) 0 var(--pm-space-1); }
+.pm-article p, .pm-article li { max-width: var(--pm-reading-w); font-size: var(--pm-type-reading-size); line-height: var(--pm-type-reading-line); font-weight: var(--pm-type-reading-weight); }
+.pm-article ul, .pm-article ol { margin: 0; padding-left: var(--pm-space-5); }
+.pm-article li + li { margin-top: var(--pm-space-2); }
+.pm-article :where(p, ul, ol, .pm-table-scroll) + :where(p, ul, ol, .pm-table-scroll) { margin-top: var(--pm-space-4); }
+/* Wide tables (D.9): cells keep a readable width so the table scrolls sideways instead of squeezing text into narrow columns (id cells use .pm-cell-id, one line). */
+.pm-article .pm-table-scroll .pm-table :is(th, td):not(:first-child) { min-width: 180px; }
+.pm-article code { padding: 1px var(--pm-space-1); border-radius: var(--pm-radius-chip); background: var(--pm-sys-surface-sunken); font-family: var(--pm-font-mono); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); }
+
+/* A commented passage and its mark in the chalk margin (G.3). The mark hangs off the passage's block (.pm-has-mark). */
+.pm-marked { text-decoration: underline; text-decoration-color: var(--pm-sys-chalk); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.pm-has-mark { position: relative; }
+
+.pm-chalk-mark {
+  position: absolute;
+  top: 2px;
+  left: calc(100% + var(--pm-space-4));
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pm-radius-round);
+  background: var(--pm-sys-chalk-tint);
+  box-shadow: inset 0 0 0 1px var(--pm-sys-chalk);
+  color: var(--pm-sys-chalk-text);
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pm-chalk-mark:hover { box-shadow: inset 0 0 0 2px var(--pm-sys-chalk); }
+.pm-chalk-mark[aria-disabled="true"] { cursor: default; }
+
+/* Floating "Comment on this passage" (fixed so it escapes the scroller); the comment popover content block. */
+.pm-comment-cta { position: fixed; z-index: var(--pm-z-popover); background: var(--pm-sys-surface-raised); box-shadow: var(--pm-shadow-float); }
+.pm-comment-cta--static { position: static; }
+.pm-quote { margin: 0; padding: var(--pm-space-2); border-radius: var(--pm-radius-chip); background: var(--pm-sys-chalk-tint); font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); color: var(--pm-sys-text); }
+.pm-comment { display: grid; gap: var(--pm-space-2); max-width: 328px; }
+.pm-comment-by { font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted); }
+.pm-comment-text { margin: 0; }
+
+/* Empty variant: a Working sentence plus six paragraph bars. */
+.pm-reader-empty { display: grid; gap: var(--pm-space-4); max-width: var(--pm-reading-w); padding: var(--pm-space-6) 0; }
+.pm-skel-p { display: grid; gap: 10px; }
+.pm-skel-p .pm-skeleton:nth-child(1) { width: 100%; }
+.pm-skel-p .pm-skeleton:nth-child(2) { width: 96%; }
+.pm-skel-p .pm-skeleton:nth-child(3) { width: 88%; }
+.pm-skel-p .pm-skeleton:nth-child(4) { width: 100%; }
+.pm-skel-p .pm-skeleton:nth-child(5) { width: 92%; }
+.pm-skel-p .pm-skeleton:nth-child(6) { width: 60%; }
+
+/* ---------- D.11 Chat Workbench ---------- */
+.pm-chat { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: var(--pm-cmp-work-h); min-width: 0; min-height: 0; }
+.pm-chat-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--pm-space-4); height: 48px; padding: 0 var(--pm-content-pad); border-bottom: var(--pm-hairline); }
+.pm-chat-head h2 { margin: 0; }
+.pm-chat-topics { display: flex; align-items: center; gap: var(--pm-space-2); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+.pm-chat-thread { min-height: 0; overflow-y: auto; scroll-padding-bottom: var(--pm-space-4); }
+.pm-chat-flow { max-width: 720px; margin: 0 auto; padding: var(--pm-space-6); }
+.pm-msg { min-width: 0; }
+.pm-msg + .pm-msg { margin-top: var(--pm-space-6); }
+.pm-msg:not(.pm-msg--you) + .pm-msg:not(.pm-msg--you) { padding-top: var(--pm-space-6); border-top: var(--pm-hairline); }
+.pm-msg-head { display: flex; align-items: baseline; gap: var(--pm-space-2); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+.pm-msg-who { font-weight: 600; color: var(--pm-sys-text-muted); }
+.pm-msg-time { color: var(--pm-sys-text-meta); }
+.pm-msg-body { margin-top: var(--pm-space-1); font-size: var(--pm-type-reading-size); line-height: var(--pm-type-reading-line); font-weight: var(--pm-type-reading-weight); }
+.pm-msg-body p + p { margin-top: var(--pm-space-3); }
+.pm-msg--you { padding: var(--pm-space-3) var(--pm-space-4); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-sunken); }
+/* On sunken, meta (dark ink-400 on ink-800) is 4.2:1; muted is 5.8:1 light and 7.0:1 dark. */
+.pm-msg--you .pm-msg-time { color: var(--pm-sys-text-muted); }
+.pm-msg-stream { display: flex; align-items: center; gap: var(--pm-space-2); margin-top: var(--pm-space-4); }
+.pm-chat-done { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-2) var(--pm-space-3); margin-top: var(--pm-space-6); padding-top: var(--pm-space-4); border-top: var(--pm-hairline); }
+
+.pm-newreply {
+  position: sticky;
+  bottom: var(--pm-space-2);
+  display: flex;
+  width: fit-content;
+  margin: 0 auto var(--pm-space-2);
+  padding: var(--pm-space-1) var(--pm-space-3);
+  border: 1px solid var(--pm-sys-control-border);
+  border-radius: var(--pm-radius-round);
+  background: var(--pm-sys-surface-raised);
+  box-shadow: var(--pm-shadow-float);
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight);
+  cursor: pointer;
+}
+
+.pm-newreply:hover { background: var(--pm-sys-surface-sunken); }
+
+/* Question card: the last thread item, with a docked footer. */
+.pm-qcard { margin-top: var(--pm-space-6); overflow: hidden; border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+.pm-qcard-body { display: grid; gap: var(--pm-space-4); padding: var(--pm-space-4) var(--pm-space-5); }
+.pm-qcard-title { margin: 0; }
+.pm-qfield { min-width: 0; margin: 0; padding: 0; border: 0; }
+.pm-qfield legend { padding: 0; margin-bottom: var(--pm-space-1); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: 600; }
+.pm-qopt { display: flex; align-items: center; gap: var(--pm-space-2); min-height: 32px; }
+.pm-qcard-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-3); padding: var(--pm-space-3) var(--pm-space-5); border-top: var(--pm-hairline); background: var(--pm-sys-surface-sunken); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted); }
+
+/* Composer: the last grid row. The textarea grows 1 to 6 lines, then scrolls inside itself. */
+.pm-composer { position: relative; min-height: 96px; padding: var(--pm-space-3) var(--pm-space-6) var(--pm-space-4); background: var(--pm-sys-ground); }
+.pm-composer::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background-image: var(--pm-stitch); }
+.pm-composer-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: end; gap: var(--pm-space-2); max-width: 672px; margin: 0 auto; }
+
+.pm-composer-input {
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  max-height: calc(6 * var(--pm-type-reading-line) + 12px);
+  padding: 6px var(--pm-space-3);
+  border: 1px solid var(--pm-sys-control-border);
+  border-radius: var(--pm-radius-control);
+  background: var(--pm-sys-surface-raised);
+  font-size: var(--pm-type-reading-size);
+  line-height: var(--pm-type-reading-line);
+  resize: none;
+  overflow-y: auto;
+}
+
+.pm-composer-input:hover { border-color: var(--pm-sys-text-muted); }
+.pm-composer-hint { display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-3); max-width: 672px; margin: var(--pm-space-2) auto 0; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+
+/* Decisions panel: sticky header 48, rows at --pm-cmp-row-h, sticky footer 40. */
+.pm-decisions { display: flex; flex-direction: column; height: var(--pm-cmp-work-h); min-height: 0; overflow-y: auto; background: var(--pm-sys-surface-raised); border-left: var(--pm-hairline); }
+.pm-decisions-head { position: sticky; top: 0; z-index: 2; display: flex; flex: none; align-items: center; justify-content: space-between; gap: var(--pm-space-3); height: 48px; padding: 0 var(--pm-space-4); background: var(--pm-sys-surface-raised); }
+.pm-decisions-head h2 { margin: 0; }
+.pm-decisions-count { font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted); }
+.pm-decisions-list { flex: none; margin: 0; padding: 0; list-style: none; }
+.pm-decision { border-top: var(--pm-hairline); }
+/* Two lines per row: the title on its own line, the saved value under it wrapping to at most two lines (never cut to "Make it a playable tic-t..."). */
+.pm-decision-toggle { position: relative; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--pm-space-3); width: 100%; min-height: var(--pm-cmp-row-h); padding: var(--pm-space-3) var(--pm-space-4); border: 0; background: transparent; text-align: left; cursor: pointer; }
+.pm-decision-toggle:hover { background: var(--pm-sys-surface-sunken); }
+.pm-decision-title { flex: 1 0 100%; min-width: 0; overflow: hidden; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); white-space: nowrap; text-overflow: ellipsis; }
+.pm-decision-value { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; flex: 1 1 100%; min-width: 0; overflow: hidden; font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); color: var(--pm-sys-text-muted); white-space: normal; }
+
+.pm-decision-editcue {
+  position: absolute;
+  right: var(--pm-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px var(--pm-space-2);
+  border-radius: var(--pm-radius-chip);
+  background: var(--pm-sys-surface-sunken);
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight);
+  color: var(--pm-sys-text-secondary);
+  visibility: hidden;
+}
+
+.pm-decision-toggle:hover .pm-decision-editcue, .pm-decision-toggle:focus-visible .pm-decision-editcue { visibility: visible; }
+.pm-decision[data-open="true"] .pm-decision-value, .pm-decision[data-open="true"] .pm-decision-editcue { display: none; }
+.pm-decision-editor { display: grid; gap: var(--pm-space-2); padding: 0 var(--pm-space-4) var(--pm-space-3); }
+.pm-decision-actions { display: flex; gap: var(--pm-space-2); }
+.pm-decisions-details { margin: var(--pm-space-3) var(--pm-space-4); }
+.pm-decisions-foot { position: sticky; bottom: 0; z-index: 2; display: flex; flex: none; align-items: center; min-height: 40px; margin-top: auto; padding: var(--pm-space-2) var(--pm-space-4); border-top: var(--pm-hairline); background: var(--pm-sys-surface-raised); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted); }
+
+/* Locked: readable, not editable. */
+.pm-decisions[data-state="locked"] .pm-decision-toggle { cursor: default; }
+.pm-decisions[data-state="locked"] .pm-decision-toggle:hover { background: transparent; }
+.pm-decisions[data-state="locked"] .pm-decision-editcue { display: none; }
+/* Read-only values are shown in full (the locked interview has room and nothing to open). */
+.pm-decisions[data-state="locked"] .pm-decision-value { display: block; overflow: visible; }
+/* Inline variant inside a page-scroll screen (locked interview): natural height, a card edge instead of the panel's left rule. */
+.pm-decisions.pm-panel--inline { height: auto; overflow: visible; border: var(--pm-hairline); border-radius: var(--pm-radius-card); }
+
+/* ---------- D.12 Sprint Route ---------- */
+.pm-route { position: relative; max-width: 800px; margin: 0; padding: 0; list-style: none; }
+.pm-route-node { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); }
+.pm-route-node + .pm-route-node { margin-top: var(--pm-space-6); }
+
+/* The stitched line runs from this dot's centre to the next dot's centre; the dots hide the joins. */
+.pm-route-node:not(:last-child)::before { content: ""; position: absolute; left: 19px; top: 28px; bottom: -52px; width: 2px; background-image: repeating-linear-gradient(180deg, var(--pm-sys-hairline) 0 6px, transparent 6px 10px); }
+
+.pm-route-dot { position: relative; z-index: 1; display: grid; place-items: center; width: 24px; height: 24px; margin: var(--pm-space-4) 0 0 var(--pm-space-2); border-radius: var(--pm-radius-round); background: var(--pm-sys-status-needs-you); color: var(--pm-sys-text-on-ink); box-shadow: 0 0 0 4px var(--pm-sys-ground); }
+.pm-route-glyph { width: 14px; height: 14px; stroke-width: 2; }
+.pm-route-node[data-status="working"] .pm-route-dot { background: var(--pm-sys-status-working); }
+.pm-route-node[data-status="working"] .pm-route-dot::after { content: ""; position: absolute; inset: -5px; border: 2px dashed var(--pm-sys-status-working); border-radius: var(--pm-radius-round); }
+.pm-route-node[data-status="working"][data-live="true"] .pm-route-dot::after { animation: pm-route-dash 8s linear infinite; }
+
+@keyframes pm-route-dash {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pm-route-node[data-status="waiting"] .pm-route-dot { background: var(--pm-sys-ground); box-shadow: inset 0 0 0 2px var(--pm-sys-status-waiting), 0 0 0 4px var(--pm-sys-ground); }
+.pm-route-node[data-status="done"] .pm-route-dot { background: var(--pm-sys-status-done); }
+.pm-route-node[data-status="paused"] .pm-route-dot { background: var(--pm-sys-status-paused); }
+.pm-route-node[data-status="blocked"] .pm-route-dot { background: var(--pm-sys-status-blocked); }
+.pm-route-node[data-status="locked"] .pm-route-dot { background: var(--pm-sys-status-locked); }
+.pm-route-card { grid-column: 2; min-width: 0; max-width: 760px; padding: var(--pm-space-4) var(--pm-space-5); border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+.pm-route-title { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--pm-space-1) var(--pm-space-3); }
+.pm-route-title h2, .pm-route-title h3 { margin: 0; font-size: var(--pm-type-heading-size); line-height: var(--pm-type-heading-line); font-weight: var(--pm-type-heading-weight); }
+.pm-route-label { margin: var(--pm-space-3) 0 var(--pm-space-1); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+
+/* Hollow 6px ticks instead of arrows and chips. */
+.pm-route-outcomes, .pm-ticks { display: grid; gap: var(--pm-space-1); margin: 0; padding: 0; list-style: none; }
+.pm-route-outcomes > li, .pm-ticks > li { position: relative; padding-left: var(--pm-space-5); font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); }
+.pm-route-outcomes > li::before, .pm-ticks > li::before { content: ""; position: absolute; left: 2px; top: 8px; width: 6px; height: 6px; border-radius: var(--pm-radius-round); box-shadow: inset 0 0 0 1.5px var(--pm-sys-text-muted); }
+.pm-route-try { margin: var(--pm-space-3) 0 0; padding: var(--pm-space-3) var(--pm-space-4); border-radius: var(--pm-radius-control); background: var(--pm-sys-chalk-tint); font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); color: var(--pm-sys-chalk-text); }
+.pm-route-try strong { font-weight: 600; }
+.pm-route-then { margin: var(--pm-space-3) 0 0; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+.pm-route-open { display: inline-block; margin-top: var(--pm-space-2); color: var(--pm-sys-text-secondary); text-decoration: underline; }
+.pm-route-open:hover { color: var(--pm-sys-text); }
+.pm-route-end { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: start; margin-top: var(--pm-space-6); padding-top: var(--pm-space-4); color: var(--pm-sys-text-muted); }
+.pm-route-end::before { content: ""; justify-self: center; width: 12px; height: 12px; margin-top: 5px; border-radius: var(--pm-radius-round); background: var(--pm-sys-ground); box-shadow: inset 0 0 0 2px var(--pm-sys-hairline); }
+.pm-route-end p { max-width: 60ch; }
+
+/* Drafting: three skeleton nodes. */
+.pm-route--drafting .pm-route-card { display: grid; gap: var(--pm-space-2); }
+.pm-route--drafting .pm-skeleton:nth-child(1) { width: 40%; }
+.pm-route--drafting .pm-skeleton:nth-child(2) { width: 90%; }
+.pm-route--drafting .pm-skeleton:nth-child(3) { width: 70%; }
+
+/* Your words on the plan (G.3): shown only when the page carries data-words="on". */
+.pm-said { display: none; }
+[data-words="on"] .pm-said { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-1) var(--pm-space-3); margin: var(--pm-space-1) 0; padding: var(--pm-space-1) var(--pm-space-2); border-radius: var(--pm-radius-chip); background: var(--pm-sys-chalk-tint); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-chalk-text); }
+.pm-said-edit { color: inherit; font-weight: 600; text-decoration: underline; }
+
+/* ---------- D.13 Feature Board (a .pm-table with .pm-board) ---------- */
+.pm-sprint-head { display: grid; gap: var(--pm-space-2); padding-bottom: var(--pm-space-5); }
+.pm-sprint-head-top { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-2) var(--pm-space-3); }
+.pm-sprint-head-top h2 { margin: 0; }
+.pm-sprint-progress { display: flex; align-items: baseline; gap: var(--pm-space-2); margin-top: var(--pm-space-1); }
+.pm-sprint-digits { font-size: var(--pm-cmp-board-digits-size); line-height: 28px; font-weight: var(--pm-type-digits-weight); letter-spacing: var(--pm-type-digits-tracking); font-variant-numeric: tabular-nums lining-nums; }
+.pm-sprint-unit { color: var(--pm-sys-text-muted); }
+.pm-board-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--pm-space-6); }
+
+@media (min-width: 1280px) {
+  .pm-board-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+  }
+}
+
+.pm-board { table-layout: fixed; }
+.pm-board td { vertical-align: middle; }
+.pm-board-name { display: block; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: 600; }
+.pm-board-sentence { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; margin-top: var(--pm-space-1); overflow: hidden; color: var(--pm-sys-text-muted); }
+/* A row's Details toggle is a button that opens the row below it, so it wears the same chevron as every other disclosure (D.18): 6px corner chevron, right when closed, down when open. */
+.pm-board .pm-btn[data-toggle-target] { gap: var(--pm-space-2); }
+.pm-board .pm-btn[data-toggle-target]::before { content: ""; flex: none; width: 6px; height: 6px; margin: 0 3px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(-45deg); transition: transform var(--pm-motion-reveal) var(--pm-ease-out); }
+.pm-board .pm-btn[data-toggle-target][aria-expanded="true"]::before { transform: rotate(45deg); }
+.pm-board-detail td { height: auto; background: var(--pm-sys-surface-sunken); }
+.pm-board-raw { margin: 0; font-family: var(--pm-font-mono); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); white-space: pre-wrap; overflow-wrap: anywhere; }
+.pm-activity h2 { margin: 0 0 var(--pm-space-2); }
+.pm-activity ol { margin: 0; padding: 0; list-style: none; border-top: var(--pm-hairline); }
+.pm-activity li { display: flex; align-items: baseline; justify-content: space-between; gap: var(--pm-space-4); padding: var(--pm-space-2) 0; border-bottom: var(--pm-hairline); }
+.pm-activity-time { flex: none; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-meta); }
+.pm-activity-empty { margin: 0; padding: var(--pm-space-3) 0; color: var(--pm-sys-text-muted); }
+.pm-thissprint { padding: var(--pm-space-4) var(--pm-space-5); border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+
+/* ---------- D.14 Approval Gate (layout of .pm-actionbar--gate; the question and consequence classes are components-a's) ---------- */
+.pm-gate { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--pm-space-1) var(--pm-space-4); padding-block: var(--pm-space-3); }
+/* On a page screen main scrolls under the sticky top bar, so the gate sticks just below it (at top: 0 the thread would slide under the bar). */
+.pm-main:not(.pm-main--workbench) .pm-actionbar.pm-gate { top: var(--pm-topbar-h); }
+/* Headroom when the gate is narrow (< ~760px): the question wraps under its pin before anything overlaps; the pin keeps its width. */
+.pm-gate .pm-actionbar-main { align-items: flex-start; }
+.pm-gate .pm-actionbar-main > .pm-pin { min-height: var(--pm-type-heading-line); }
+.pm-gate .pm-actionbar-question { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.pm-gate-sentence { grid-column: 1 / -1; margin: 0; }
+.pm-gate-reason { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-2) var(--pm-space-3); margin: 0; color: var(--pm-sys-text-muted); }
+.pm-gate-changes { display: grid; gap: var(--pm-space-2); padding: var(--pm-space-4) var(--pm-space-5); border: var(--pm-hairline); border-top: 0; background: var(--pm-sys-surface-raised); }
+.pm-gate-changes-actions { display: flex; gap: var(--pm-space-2); }
+
+/* ---------- D.15 Preview Stage and Checklist ---------- */
+.pm-stage { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 40px minmax(0, 1fr); height: var(--pm-cmp-work-h); min-width: 0; min-height: 0; padding: 0 var(--pm-space-4) var(--pm-space-4) var(--pm-content-pad); }
+.pm-stage-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-3); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+.pm-stage-bar > span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pm-stage-body { position: relative; min-height: 0; }
+.pm-stage iframe, .pm-stage-frame { display: block; width: 100%; height: 100%; border: 0; border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); outline: var(--pm-hairline); outline-offset: -1px; }
+/* The frame's hairline is drawn with outline, so focus needs its own ring (B.6) or keyboard users lose their place. */
+.pm-stage iframe:focus-visible { outline: 2px solid var(--pm-sys-focus); outline-offset: 2px; box-shadow: 0 0 0 4px var(--pm-sys-focus-halo); }
+.pm-stage-state { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--pm-space-3); padding: var(--pm-space-6); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); outline: var(--pm-hairline); outline-offset: -1px; text-align: center; }
+.pm-stage-state h2, .pm-stage-state p { margin: 0; max-width: 420px; }
+.pm-stage-state p { color: var(--pm-sys-text-muted); }
+.pm-stage-state .pm-skeleton { width: 240px; }
+.pm-checklist { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: var(--pm-cmp-work-h); min-height: 0; background: var(--pm-sys-surface-raised); border-left: var(--pm-hairline); }
+.pm-checklist-head { position: relative; display: flex; align-items: baseline; justify-content: space-between; gap: var(--pm-space-3); padding: var(--pm-space-3) var(--pm-space-4); }
+.pm-checklist-head h2 { margin: 0; }
+.pm-checklist-count { font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted); }
+.pm-checklist-items { min-height: 0; margin: 0; padding: 0; list-style: none; overflow-y: auto; }
+.pm-checklist .pm-check { display: grid; align-items: stretch; gap: 0; padding: 6px var(--pm-space-4); border-top: var(--pm-hairline); }
+.pm-check-task { margin: 0; font-weight: 500; }
+.pm-check-expected { margin: 0; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+.pm-verdicts { display: flex; gap: var(--pm-space-2); margin-top: var(--pm-space-1); }
+.pm-verdict { height: var(--pm-cmp-verdict-h); padding: 0 10px; border: 1px solid var(--pm-sys-control-border); border-radius: var(--pm-radius-control); background: transparent; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); cursor: pointer; }
+.pm-verdict:hover { background: var(--pm-sys-surface-sunken); }
+.pm-verdict[aria-checked="true"] { border-color: var(--pm-sys-text); background: var(--pm-sys-text); color: var(--pm-sys-text-on-ink); }
+.pm-verdict-note { margin-top: var(--pm-space-1); }
+.pm-verdict-note .pm-textarea { min-height: 34px; height: 34px; padding-block: 4px; resize: none; }
+.pm-checklist-foot { display: grid; gap: 6px; padding: var(--pm-space-3) var(--pm-space-4); border-top: var(--pm-hairline); }
+.pm-checklist-foot-row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-2); }
+.pm-checklist-foot .pm-btn { padding: 0 var(--pm-space-3); }
+.pm-checklist-foot p { margin: 0; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+
+/* ---------- D.17 Log Viewer ---------- */
+/* A flex column so the list gives back height when the log sits in a height-bound region (.pm-arch-log row): the title row and the paused banner never push the list's end out of the viewport. */
+.pm-log { display: flex; flex-direction: column; gap: var(--pm-space-3); min-height: 0; }
+.pm-log-filters { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-3); }
+.pm-log-filters .pm-select, .pm-log-filters .pm-input { height: 32px; }
+.pm-log-filter { display: inline-flex; align-items: center; gap: var(--pm-space-2); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); }
+.pm-log-filter .pm-select { width: auto; }
+.pm-log-count { margin: 0; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); }
+.pm-log-paused { display: none; align-items: center; justify-content: space-between; gap: var(--pm-space-3); padding: var(--pm-space-2) var(--pm-space-3); border-radius: var(--pm-radius-control); background: var(--pm-sys-status-paused-tint); color: var(--pm-sys-text); }
+.pm-log[data-paused="true"] .pm-log-paused { display: flex; }
+.pm-log-list { flex: 0 1 auto; height: var(--pm-cmp-log-h); min-height: 160px; margin: 0; padding: 0; list-style: none; overflow-y: auto; border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+.pm-log-hour { position: sticky; top: 0; z-index: var(--pm-z-sticky-section); padding: var(--pm-space-1) var(--pm-space-4); border-bottom: var(--pm-hairline); background: var(--pm-sys-surface-sunken); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); font-weight: 600; color: var(--pm-sys-text-muted); }
+.pm-log-entry { display: grid; grid-template-columns: 72px minmax(0, 1fr); column-gap: var(--pm-space-3); padding: var(--pm-cell-pad-y) var(--pm-space-4); border-bottom: var(--pm-hairline); }
+.pm-log-time { font-family: var(--pm-font-mono); font-size: 13px; line-height: 20px; font-variant-numeric: tabular-nums lining-nums; color: var(--pm-sys-text-muted); }
+.pm-log-main { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-1) var(--pm-space-3); min-width: 0; }
+/* The 32px Details button takes a 20px line, so every entry keeps the same rhythm and the time stays level with the event name. */
+.pm-log-main .pm-btn { margin-block: -6px; margin-left: auto; }
+/* Level: the word in its status colour (INFO Working, WARN Paused, ERROR Blocked; all checked on raised in B.2), led by a head of the same colour. */
+.pm-log-level { --lvl: var(--pm-sys-status-working); display: inline-flex; align-items: center; gap: 6px; font-family: var(--pm-font-mono); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); font-weight: 600; color: var(--lvl); }
+.pm-log-level::before { content: ""; width: var(--pm-cmp-pin-size); height: var(--pm-cmp-pin-size); border-radius: var(--pm-radius-round); background: var(--lvl); }
+.pm-log-level[data-level="warn"] { --lvl: var(--pm-sys-status-paused); }
+.pm-log-level[data-level="error"] { --lvl: var(--pm-sys-status-blocked); }
+.pm-log-wire { font-family: var(--pm-font-mono); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted); }
+.pm-log-facts { grid-column: 2; display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-1) var(--pm-space-4); margin-top: 2px; font-family: var(--pm-font-mono); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted); }
+.pm-fact { display: inline-flex; align-items: center; gap: var(--pm-space-1); }
+.pm-log-raw { grid-column: 2; margin: var(--pm-space-2) 0 0; padding: var(--pm-space-3); border-radius: var(--pm-radius-chip); background: var(--pm-sys-surface-sunken); font-family: var(--pm-font-mono); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); white-space: pre-wrap; overflow-wrap: anywhere; }

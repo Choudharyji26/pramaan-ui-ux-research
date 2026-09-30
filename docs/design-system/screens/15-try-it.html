@@ -1,0 +1,254 @@
+<!doctype html>
+<!-- Generated from _skeleton.html by the WP7 builder. Proposal screen: 15-try-it.html. -->
+<html lang="en" data-rail="expanded">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Try it</title>
+<script>
+  /* Before first paint: saved rail and theme (see shell.js). */
+  (function () { var d = document.documentElement, r = null, t = null; try { r = localStorage.getItem("pm.rail"); t = localStorage.getItem("pm.theme"); } catch (e) {}
+  if (innerWidth < 1024 || r === "collapsed" || (r !== "expanded" && innerWidth < 1280)) d.setAttribute("data-rail", "collapsed"); if (t === "dark" || t === "light") d.setAttribute("data-theme", t); })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../base.css">
+<link rel="stylesheet" href="../shell.css">
+<link rel="stylesheet" href="../components-a.css">
+<link rel="stylesheet" href="../components-b.css">
+<link rel="stylesheet" href="../components-c.css">
+<script defer src="../shell.js"></script>
+<script defer src="../components.js"></script>
+<style>
+  /* Try it: a title row of one table row (--pm-row-h) sits above the stage and the checklist; both are sized from tokens. */
+  .pm-try { --pm-cmp-work-h: calc(100vh - var(--pm-topbar-h) - var(--pm-strip-h) - var(--pm-row-h)); }
+  .pm-try-title { display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-4); height: var(--pm-row-h); padding: 0 var(--pm-content-pad); }
+  /* The fitted checklist card sits inset beside the stage and never stretches to the row (SPEC P.2 F7). */
+  .pm-wb .pm-checklist.pm-panel--fit { align-self: start; margin: var(--pm-space-4) var(--pm-space-4) 0 0; max-height: calc(var(--pm-cmp-work-h) - 2 * var(--pm-space-4)); overflow: hidden; grid-template-rows: auto minmax(0, 1fr) auto; }
+  .pm-wb .pm-checklist.pm-panel--fit .pm-checklist-items { overflow-y: auto; }
+  .pm-words { display: inline-flex; align-items: center; gap: var(--pm-space-2); cursor: pointer; }
+</style>
+</head>
+<body>
+<a class="pm-skip" href="#pm-job">Skip to the main job</a>
+
+<!-- CANONICAL SPRITE (copy it whole into every screen). Shell icons: i-*, 20x20 viewBox, used with .pm-i (20px),
+     .pm-i--16 or .pm-i--12. Component glyphs: pm-*, 16x16 viewBox, used with .pm-icon or .pm-pin-glyph. All strokes render at
+     1.5px with round caps; stroke and fill come from the CSS class, never from the symbol. -->
+<svg width="0" height="0" style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="i-overview" viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></symbol>
+  <symbol id="i-interview" viewBox="0 0 20 20"><path d="M4 4.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9.5L6 17v-3.5H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M6.5 8h7M6.5 10.5h4"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 20 20"><path d="M6 2.5h5.5l4 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1z"/><path d="M11.5 2.5v4h4M7.5 10.5h5M7.5 13.5h5"/></symbol>
+  <symbol id="i-roadmap" viewBox="0 0 20 20"><circle cx="4.5" cy="14.5" r="1.75"/><circle cx="10" cy="5.5" r="1.75"/><circle cx="15.5" cy="14.5" r="1.75"/><path d="M5.4 13l3.7-6M10.9 7l3.7 6"/></symbol>
+  <symbol id="i-build" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5"/><path d="M3 8h14M3 12h14M10 4v4M7 8v4M13 8v4M10 12v4"/></symbol>
+  <symbol id="i-try-it" viewBox="0 0 20 20"><path d="M5.5 3.5l10 4.2-4.3 1.6-1.7 4.4z"/><path d="M12.5 12.5l3.5 3.5"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 20 20"><path d="M3 6h2M9 6h8M3 14h8M15 14h2"/><circle cx="7" cy="6" r="2"/><circle cx="13" cy="14" r="2"/></symbol>
+  <symbol id="i-live-logs" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><path d="M6 8l3 2-3 2M11 12.5h3.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 20 20"><path d="M3 6.5a1 1 0 0 1 1-1h4l1.8 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 20 20"><path d="M16 10H4M9 5l-5 5 5 5"/></symbol>
+  <symbol id="i-collapse" viewBox="0 0 20 20"><path d="M10 5l-5 5 5 5M16 5l-5 5 5 5"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 20 20"><path d="M4 5l5 5-5 5M10 5l5 5-5 5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5"/><path d="M13 13l4 4"/></symbol>
+  <symbol id="i-attach" viewBox="0 0 20 20"><path d="M15.5 9.5l-5.8 5.8a3.2 3.2 0 0 1-4.5-4.5l6-6a2.1 2.1 0 0 1 3 3l-6 6a1 1 0 0 1-1.5-1.5l5.3-5.3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 20 20"><path d="M10 16V4M5 9l5-5 5 5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 20 20"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 20 20"><path d="M7 5v10M13 5v10"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 20 20"><path d="M5 10h10"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="9" rx="1.5"/><path d="M13 7V5.5A1.5 1.5 0 0 0 11.5 4h-6A1.5 1.5 0 0 0 4 5.5v6A1.5 1.5 0 0 0 5.5 13H7"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></symbol>
+  <symbol id="i-external" viewBox="0 0 20 20"><path d="M8 4.5H5.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12M11 4.5h4.5V9M15.5 4.5L9 11"/></symbol>
+  <!-- Component glyphs, 16x16 viewBox (components-a/-b): <svg class="pm-icon"><use href="#pm-i-..."/></svg> for 16px icons,
+       <svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-..."/></svg> inside .pm-pin-head (Done check, Blocked x, Paused bar, Locked lock). -->
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+  <symbol id="pm-i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></symbol>
+  <symbol id="pm-i-attach" viewBox="0 0 16 16"><path d="M13 7.5l-5 5a3 3 0 01-4.2-4.2l5.5-5.5a2 2 0 012.8 2.8L6.6 11a1 1 0 01-1.4-1.4l4.6-4.6"/></symbol>
+  <symbol id="pm-i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/></symbol>
+  <symbol id="pm-i-external" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></symbol>
+  <symbol id="i-requests" viewBox="0 0 20 20"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="15" r="2"/><circle cx="14" cy="8" r="2"/><path d="M6 7v6M14 10c0 3-3 3-6 4"/></symbol>
+  <symbol id="pm-i-mic" viewBox="0 0 16 16"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3.5 7.5a4.5 4.5 0 0 0 9 0M8 12v2.5M5.5 14.5h5"/></symbol>
+  <symbol id="pm-i-stop" viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="1.5"/></symbol>
+  <symbol id="pm-i-upload" viewBox="0 0 16 16"><path d="M8 10.5v-8M4.5 6L8 2.5 11.5 6M3 12.5h10"/></symbol>
+  <symbol id="pm-i-arrow-down" viewBox="0 0 16 16"><path d="M8 3v10M4.5 9.5L8 13l3.5-3.5"/></symbol>
+</svg>
+
+<div class="pm-app">
+
+  <!-- RAIL. Fixed, ink, never scrolls. Heights (SPEC C.2): 56 + 40 + 1 + 56 + 8x36 + 12 + spacer + 44 + 48. -->
+  <aside class="pm-rail" id="pm-rail" aria-label="Sidebar">
+    <div class="pm-rail-head">
+      <a class="pm-wordmark" href="01-projects.html" aria-label="pramaan, all projects">pramaan</a>
+      <span class="pm-monogram" aria-hidden="true">p</span>
+      <button class="pm-rail-toggle" type="button" aria-expanded="true" aria-controls="pm-rail" aria-label="Collapse navigation">
+        <svg class="pm-i pm-i-collapse"><use href="#i-collapse"/></svg>
+        <svg class="pm-i pm-i-expand"><use href="#i-expand"/></svg>
+      </button>
+    </div>
+
+    <nav class="pm-rail-nav" aria-label="Projects and destinations">
+      <a class="pm-rail-item pm-rail-all" href="01-projects.html"><svg class="pm-i"><use href="#i-folder"/></svg><span class="pm-rail-label">All projects</span><span class="pm-rail-meta">Test</span></a>
+      <div class="pm-rail-seam" role="separator"></div>
+      <div class="pm-rail-project" title="test first, Needs you">
+        <span class="pm-rail-tile" aria-hidden="true">T</span>
+        <span class="pm-rail-project-text"><span class="pm-rail-project-name">test first</span><span class="pm-rail-status" data-status="needs-you">Needs you</span></span>
+      </div>
+      <ul class="pm-rail-list">
+        <li><a class="pm-rail-item" href="03-overview-decision.html"><svg class="pm-i"><use href="#i-overview"/></svg><span class="pm-rail-label">Overview</span></a></li>
+        <li><a class="pm-rail-item" href="06-interview-finished.html"><svg class="pm-i"><use href="#i-interview"/></svg><span class="pm-rail-label">Interview</span></a></li>
+        <li><a class="pm-rail-item" href="08-documents.html"><svg class="pm-i"><use href="#i-documents"/></svg><span class="pm-rail-label">Documents</span><span class="pm-rail-meta pm-tnum">3/3</span></a></li>
+        <li><a class="pm-rail-item" href="12-roadmap-approved.html"><svg class="pm-i"><use href="#i-roadmap"/></svg><span class="pm-rail-label">Roadmap</span></a></li>
+        <li><a class="pm-rail-item" href="13-sprints-building.html"><svg class="pm-i"><use href="#i-build"/></svg><span class="pm-rail-label">Build</span></a></li>
+        <li><a class="pm-rail-item" href="15-try-it.html" aria-current="page"><svg class="pm-i"><use href="#i-try-it"/></svg><span class="pm-rail-label">Try it<svg class="pm-pen" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false"><ellipse cx="50" cy="16" rx="49" ry="15" vector-effect="non-scaling-stroke"/></svg></span></a></li>
+        <li><a class="pm-rail-item" href="16-settings.html"><svg class="pm-i"><use href="#i-settings"/></svg><span class="pm-rail-label">Settings</span></a></li>
+        <li class="pm-rail-item--dev"><span class="pm-sr">Development</span><a class="pm-rail-item" href="17-live-logs.html"><svg class="pm-i"><use href="#i-live-logs"/></svg><span class="pm-rail-label">Live logs</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="pm-rail-spacer"></div>
+
+    <div class="pm-rail-budget" role="group" aria-label="Monthly budget 15% used" title="Monthly budget 15% used">
+      <div class="pm-rail-budget-text"><span class="pm-rail-budget-label">Monthly budget</span><span class="pm-rail-budget-value">15% used</span></div>
+      <div class="pm-rail-track" aria-hidden="true"><div class="pm-rail-fill" style="--pm-fill: 15%"></div></div>
+    </div>
+
+    <button class="pm-rail-user" type="button" popovertarget="pm-user-menu" aria-label="Account menu, Aditya Choudhary" title="Aditya Choudhary">
+      <span class="pm-rail-avatar" aria-hidden="true">AC</span>
+      <span class="pm-rail-user-text"><span class="pm-rail-user-name">Aditya Choudhary</span><span class="pm-rail-user-sub">Signed in</span></span>
+    </button>
+    <div class="pm-rail-menu" id="pm-user-menu" popover aria-label="Account">
+      <button class="pm-rail-menu-item" type="button" role="switch" aria-checked="false" data-theme-switch><span>Dark theme</span><span class="pm-rail-switch" aria-hidden="true"></span></button>
+      <a class="pm-rail-menu-item" href="#">Switch organisation</a>
+      <a class="pm-rail-menu-item" href="#">Sign out</a>
+    </div>
+  </aside>
+
+  <!-- PAGE MAIN. The one scroller on page screens. -->
+  <main class="pm-main pm-main--workbench" id="pm-main">
+
+    <!-- TOP BAR. Sticky, 56px, stitch bottom edge. -->
+    <header class="pm-topbar">
+      <a class="pm-back" href="03-overview-decision.html" aria-label="Back to test first"><svg class="pm-i"><use href="#i-back"/></svg></a>
+
+      <nav class="pm-crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="01-projects.html">Projects</a></li>
+          <li><a href="03-overview-decision.html">test first</a></li>
+          <li><span aria-current="page">Try it</span></li>
+        </ol>
+      </nav>
+
+      <nav class="pm-tape" aria-label="Your journey">
+        <ol>
+          <li data-state="done"><a class="pm-tape-step" href="06-interview-finished.html"><span class="pm-tape-label"><span class="pm-sr">Step 1, </span>Interview<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+          <li data-state="done" data-progress="3/3"><a class="pm-tape-step" href="08-documents.html" title="Documents: 3 of 3 accepted"><span class="pm-tape-label"><span class="pm-sr">Step 2, </span>Documents<span class="pm-sr">, 3 of 3 accepted, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span><span class="pm-tape-ticks" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span></a></li>
+          <li data-state="done"><a class="pm-tape-step" href="12-roadmap-approved.html"><span class="pm-tape-label"><span class="pm-sr">Step 3, </span>Roadmap<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+          <li data-state="done"><a class="pm-tape-step" href="13-sprints-building.html"><span class="pm-tape-label"><span class="pm-sr">Step 4, </span>Build<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+          <li data-state="current"><a class="pm-tape-step" href="15-try-it.html" aria-current="step"><span class="pm-tape-label"><span class="pm-sr">Step 5, </span>Try it<span class="pm-sr">. You are here</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">5</span></a></li>
+        </ol>
+        <span class="pm-tape-pin" aria-hidden="true"></span>
+      </nav>
+
+      <div class="pm-slot">
+        <span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-pin-sentence pm-slot-sentence" title="Try sprint 1 and answer the 5 checks.">Try sprint 1 here.</span>
+      </div>
+    </header>
+
+    <!-- STRIP: Nothing-is-lost (28px). Two <time> values and a History popover with 8 rows. -->
+    <div class="pm-strip">
+      <span class="pm-strip-text">Last saved: your answer to check 3, <time datetime="2026-09-30T14:10">14:10</time> &middot; Last accepted: Sprint plan draft 2, <time datetime="2026-09-29">Tuesday</time></span>
+      <button class="pm-strip-history" type="button" popovertarget="pm-history">History</button>
+    </div>
+    <div class="pm-history" id="pm-history" popover aria-label="Recently saved or accepted">
+      <ol>
+        <li><time datetime="2026-09-30T14:10">14:10</time><span>Saved answer to check 3, Not quite</span><a href="15-try-it.html">Open</a></li>
+        <li><time datetime="2026-09-30T14:08">14:08</time><span>Saved answer to check 2, Yes</span><a href="15-try-it.html">Open</a></li>
+        <li><time datetime="2026-09-30T14:06">14:06</time><span>Saved answer to check 1, Yes</span><a href="15-try-it.html">Open</a></li>
+        <li><time datetime="2026-09-29">Tuesday</time><span>Accepted Sprint plan, draft 2</span><a href="08-documents.html">Open</a></li>
+      </ol>
+    </div>
+
+    <div class="pm-workbench pm-try">
+      <div class="pm-try-title"><h1>Try it</h1><label class="pm-words"><input class="pm-switch" type="checkbox" role="switch" data-words-toggle><span class="pm-t-label">Show my words</span></label></div>
+      <div class="pm-wb" id="pm-job">
+        <section class="pm-stage" aria-label="Private preview">
+          <div class="pm-stage-bar">
+            <span title="Private preview · Sprint 1: Calculator on every device">Private preview · Sprint 1</span>
+            <div class="pm-device-switch" role="radiogroup" aria-label="Preview width">
+              <button class="pm-chip" type="button" role="radio" aria-checked="false" data-device-w="390px" data-caption="390 px">Phone</button>
+              <button class="pm-chip" type="button" role="radio" aria-checked="false" data-device-w="820px" data-caption="820 px">Tablet</button>
+              <button class="pm-chip" type="button" role="radio" aria-checked="true" data-caption="Fills the stage">Computer</button>
+            </div>
+            <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button">Open in a new tab <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-external"/></svg></button>
+          </div>
+          <div class="pm-stage-body">
+            <figure class="pm-device"><div class="pm-device-frame"><iframe title="Calculator preview, sprint 1" srcdoc="&lt;!doctype html&gt;&lt;meta charset='utf-8'&gt;&lt;title&gt;Calculator&lt;/title&gt;&lt;body style='font-family:system-ui,sans-serif;margin:0;padding:24px;max-width:460px'&gt;&lt;h2 style='font-size:20px;margin:0 0 16px'&gt;Calculator&lt;/h2&gt;&lt;label for='c'&gt;Current calculation&lt;/label&gt;&lt;br&gt;&lt;input id='c' value='2 + 3 × 4' style='width:100%;padding:8px;margin:8px 0 12px;font-size:16px;box-sizing:border-box'&gt;&lt;br&gt;&lt;button style='padding:8px 16px;font-size:16px'&gt;Calculate&lt;/button&gt;&lt;p style='margin-top:16px'&gt;Result: 20&lt;/p&gt;&lt;/body&gt;"></iframe></div><figcaption class="pm-device-caption">Fills the stage</figcaption></figure>
+          </div>
+        </section>
+        <aside class="pm-checklist pm-panel--fit" aria-label="Try these">
+          <div class="pm-checklist-head"><h2>Try these</h2><span class="pm-checklist-count pm-tnum">3 of 5 answered</span><span class="pm-progress pm-progress--line"><span class="pm-progress-track"><span class="pm-progress-fill" style="--pm-progress: 60%"></span></span></span></div>
+          <ol class="pm-checklist-items">
+            <li class="pm-check" data-verdict="yes">
+              <p class="pm-check-task">Open the calculator in your browser.</p>
+              <p class="pm-check-expected">You see an empty calculation box.</p>
+              <span class="pm-said">You said: 'a simple calculator' <a class="pm-said-edit" href="07-interview-locked.html">See that decision</a></span>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Open the calculator in your browser.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="true" tabindex="0" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note" hidden><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?"></textarea></div>
+            </li>
+            <li class="pm-check" data-verdict="yes">
+              <p class="pm-check-task">Enter 1 + 2 and press Calculate.</p>
+              <p class="pm-check-expected">You see 3.</p>
+              <span class="pm-said">You said: 'just simple mathematical functions' <a class="pm-said-edit" href="07-interview-locked.html">See that decision</a></span>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Enter 1 + 2 and press Calculate.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="true" tabindex="0" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note" hidden><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?"></textarea></div>
+            </li>
+            <li class="pm-check" data-verdict="not-quite">
+              <p class="pm-check-task">Enter 2 + 3 × 4 and press Calculate.</p>
+              <p class="pm-check-expected">You see 14.</p>
+              <span class="pm-said">You said: 'just simple mathematical functions' <a class="pm-said-edit" href="07-interview-locked.html">See that decision</a></span>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Enter 2 + 3 × 4 and press Calculate.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="true" tabindex="0" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note"><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?">I saw 20</textarea></div>
+            </li>
+            <li class="pm-check" data-verdict="">
+              <p class="pm-check-task">Enter 1 ÷ 0 and press Calculate.</p>
+              <p class="pm-check-expected">You see the exact message you asked for.</p>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Enter 1 ÷ 0 and press Calculate.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="0" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note" hidden><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?"></textarea></div>
+            </li>
+            <li class="pm-check" data-verdict="">
+              <p class="pm-check-task">Add the calculator to your phone's home screen and open it.</p>
+              <p class="pm-check-expected">It opens with no login.</p>
+              <span class="pm-said">You said: 'no login or anything' <a class="pm-said-edit" href="07-interview-locked.html">See that decision</a></span>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Add the calculator to your phone's home screen and open it.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="0" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note" hidden><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?"></textarea></div>
+            </li>
+          </ol>
+          <div class="pm-checklist-foot">
+            <p data-check-sentence>Your notes go to Pramaan as the next fix.</p>
+            <div class="pm-checklist-foot-row">
+              <button class="pm-btn pm-btn--thread" type="button" data-thread data-check-thread aria-describedby="chk-reason">Ask for changes (1)</button>
+              <button class="pm-btn pm-btn--quiet" type="button" data-check-anyway>Accept anyway</button>
+              <span class="pm-btn-reason" id="chk-reason" data-check-reason hidden></span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

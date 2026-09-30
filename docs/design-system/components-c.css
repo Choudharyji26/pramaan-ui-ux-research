@@ -1,0 +1,311 @@
+/* Tape and Thread components C (pass 2): the shared components of SPEC P.5 and the four trend items of P.4. Link after tokens.css, base.css, shell.css, components-a.css and components-b.css.
+   Colours come only from --pm-sys-* and --pm-cmp-*; every text and surface pair is one of SPEC B.2; the dark theme follows because only system tokens are used. Class names of earlier files (pins, chips, buttons, details, fields, the composer row, the question card) are reused, never restyled, except the additive rules named in P.5.13.
+   Order: P.5.2 lanes, P.5.3 choice, P.5.4 file, P.5.5 copy flow, P.5.6 decisions brief, P.5.7 steps and check, P.5.8 action cards, P.5.9 meter, P.5.10 document head, P.5.11 request composer and list, P.4.1 dictation, P.4.2 setting, P.4.3 bento, P.4.4 milestone, P.5.13 other patterns. */
+
+/* ---------- P.5.2 Lane switcher: a 44px row of three chips with a stitch above and below ---------- */
+.pm-lanes { position: relative; display: flex; align-items: center; height: 44px; margin-bottom: var(--pm-space-4); }
+.pm-lanes::before, .pm-lanes::after { content: ""; position: absolute; left: 0; right: 0; height: 1px; background-image: var(--pm-stitch); }
+.pm-lanes::before { top: 0; }
+.pm-lanes::after { bottom: 0; }
+.pm-lanes ol { display: flex; align-items: center; gap: var(--pm-space-2); min-width: 0; margin: 0; padding: 0; list-style: none; }
+.pm-lanes li { flex: none; }
+.pm-lanes a.pm-chip { text-decoration: none; }
+.pm-lanes .pm-chip[aria-current="page"] { border-color: var(--pm-sys-text); background: var(--pm-sys-text); color: var(--pm-sys-text-on-ink); cursor: default; }
+.pm-lanes-label { margin-left: var(--pm-space-2); color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+
+/* ---------- P.5.3 Choice cards (a radio card) and choice list (a radio list) ---------- */
+.pm-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--pm-space-3); min-width: 0; margin: 0; padding: 0; border: 0; }
+.pm-choices > legend, .pm-choice-list > legend { padding: 0; margin-bottom: var(--pm-space-2); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); }
+.pm-choice {
+  position: relative; display: grid; grid-template-columns: 10px minmax(0, 1fr); column-gap: var(--pm-space-3); align-content: center;
+  min-height: 64px; padding: var(--pm-space-3) var(--pm-space-4); border: 1px solid var(--pm-sys-hairline); border-radius: var(--pm-radius-card);
+  background: var(--pm-sys-surface-raised); cursor: pointer; transition: border-color var(--pm-motion-state) var(--pm-ease-out);
+}
+/* The pin head at the left: a hollow ring until chosen, then a filled ink head (the Needs-you head). */
+.pm-choice::before { content: ""; grid-row: 1 / span 2; align-self: start; width: var(--pm-cmp-pin-size); height: var(--pm-cmp-pin-size); margin-top: 3px; border-radius: var(--pm-radius-round); box-shadow: inset 0 0 0 2px var(--pm-sys-status-waiting); }
+.pm-choice:hover { border-color: var(--pm-sys-control-border); }
+.pm-choice:has(input:checked) { border-color: var(--pm-sys-text); }
+.pm-choice:has(input:checked)::before { background: var(--pm-sys-text); box-shadow: none; }
+.pm-choice:has(input:focus-visible) { outline: 2px solid var(--pm-sys-focus); outline-offset: 2px; box-shadow: 0 0 0 4px var(--pm-sys-focus-halo); }
+.pm-choice-title { grid-column: 2; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: 600; }
+.pm-choice-meta { grid-column: 2; margin-top: var(--pm-space-1); color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+.pm-choice:has(input:disabled) { border-color: var(--pm-sys-hairline); background: var(--pm-sys-surface-sunken); cursor: not-allowed; }
+.pm-choice:has(input:disabled)::before { box-shadow: inset 0 0 0 2px var(--pm-sys-text-muted); }
+.pm-choice:has(input:disabled) .pm-choice-title { color: var(--pm-sys-text-muted); }
+
+.pm-choice-list { min-width: 0; margin: 0; padding: 0; border: 0; }
+.pm-choice-rows { display: grid; border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); overflow: hidden; }
+.pm-choice-row { position: relative; display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: center; column-gap: var(--pm-space-3); min-height: 40px; padding: 0 var(--pm-space-3); cursor: pointer; }
+.pm-choice-row + .pm-choice-row::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--pm-sys-hairline); }
+.pm-choice-row > input { width: 16px; height: 16px; margin: 0; }
+.pm-choice-row:hover { background: var(--pm-sys-surface-sunken); }
+.pm-choice-row:has(input:checked) { background: var(--pm-sys-surface-sunken); }
+.pm-choice-row:has(input:focus-visible) { outline: 2px solid var(--pm-sys-focus); outline-offset: -2px; box-shadow: none; }
+/* Repository and file names are 13/20 mono, like the log (controller ruling, RV7), so a 37-character name fits at 1142 with the rail collapsed. */
+.pm-choice-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--pm-font-mono); font-size: 13px; line-height: 20px; }
+.pm-choice-row:has(input:checked) .pm-choice-name { font-weight: 600; }
+.pm-choice-note { color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); white-space: nowrap; }
+.pm-choice-row[aria-disabled="true"] { cursor: not-allowed; color: var(--pm-sys-text-muted); }
+.pm-choice-row[aria-disabled="true"]:hover { background: transparent; }
+.pm-choice-row[aria-disabled="true"] .pm-choice-name { color: var(--pm-sys-text-muted); }
+[data-density="compact"] .pm-choice-row { min-height: 32px; }
+
+/* ---------- P.5.4 File field: a quiet button, the chosen name beside it; the error state puts the blocked border on the button ---------- */
+.pm-file { display: flex; align-items: center; gap: var(--pm-space-3); min-width: 0; }
+.pm-file > label.pm-btn { flex: none; }
+.pm-file:has(input:focus-visible) > label.pm-btn { outline: 2px solid var(--pm-sys-focus); outline-offset: 2px; box-shadow: 0 0 0 4px var(--pm-sys-focus-halo); }
+.pm-file-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); }
+.pm-file-name:empty::before { content: "No file chosen yet"; color: var(--pm-sys-text-muted); }
+/* A chosen file name is 13/20 mono, like repository names (controller ruling, RV7); the empty cue keeps the sans Body face. */
+.pm-file-name.pm-mono { font-size: 13px; line-height: 20px; }
+.pm-file-name.pm-mono:empty::before { font-family: var(--pm-font-text); font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); }
+.pm-file--error > label.pm-btn { border-color: var(--pm-sys-status-blocked); }
+.pm-file--error > label.pm-btn:hover { background: var(--pm-sys-status-blocked-tint); }
+/* The Blocked pin in a field's helper keeps its width when the sentence wraps (additive to D.17). */
+.pm-help--error > .pm-pin { flex: none; }
+
+/* ---------- P.5.5 Copy flow: two sunken boxes with an arrow between them, then a sentence and a closed Details ---------- */
+.pm-copyflow { display: grid; align-content: start; gap: var(--pm-space-4); padding: var(--pm-space-4) var(--pm-space-5); }
+.pm-copyflow > h2 { margin: 0; }
+.pm-flow { display: grid; justify-items: stretch; gap: var(--pm-space-2); }
+.pm-flow-box { display: grid; justify-items: start; gap: var(--pm-space-1); min-width: 0; padding: var(--pm-space-3) var(--pm-space-4); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-sunken); }
+.pm-flow-label { color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+.pm-flow-value { max-width: 100%; overflow-wrap: anywhere; font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); font-weight: 500; }
+.pm-flow-value.pm-mono { font-size: 13px; line-height: 20px; }
+.pm-flow-arrow { justify-self: center; width: 16px; height: 16px; color: var(--pm-sys-text-muted); }
+/* The chip is the D.18 quiet chip, static: no hover, no pointer. Done and Blocked wear their own tint, label on its own tint (B.2). */
+.pm-chip.pm-flow-chip { border-color: var(--pm-sys-hairline); background: var(--pm-sys-surface-raised); cursor: default; }
+.pm-chip.pm-flow-chip:hover { background: var(--pm-sys-surface-raised); }
+.pm-flow-chip[data-status="done"] { border-color: transparent; background: var(--pm-sys-status-done-tint); color: var(--pm-sys-status-done); }
+.pm-flow-chip[data-status="done"]:hover { background: var(--pm-sys-status-done-tint); }
+.pm-flow-chip[data-status="blocked"] { border-color: transparent; background: var(--pm-sys-status-blocked-tint); color: var(--pm-sys-status-blocked); }
+.pm-flow-chip[data-status="blocked"]:hover { background: var(--pm-sys-status-blocked-tint); }
+.pm-flow-sentence { margin: 0; color: var(--pm-sys-text-muted); }
+
+/* ---------- P.5.6 Decisions brief block: six 40px rows under the decisions list, or one Done line ---------- */
+.pm-decisions-brief { flex: none; padding: 0 var(--pm-space-4); }
+.pm-decisions-brief-title { position: relative; display: flex; align-items: center; height: 32px; margin: 0; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: 600; }
+.pm-decisions-brief-title::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background-image: var(--pm-stitch); }
+.pm-brief-list { margin: 0; padding: 0; list-style: none; }
+.pm-brief-row { display: grid; grid-template-columns: var(--pm-cmp-pin-size) minmax(0, 1fr); align-items: center; column-gap: var(--pm-space-3); height: 40px; }
+.pm-brief-ring { grid-row: 1 / span 2; display: grid; place-items: center; width: var(--pm-cmp-pin-size); height: var(--pm-cmp-pin-size); border-radius: var(--pm-radius-round); box-shadow: inset 0 0 0 1.5px var(--pm-sys-status-waiting); color: var(--pm-sys-surface-raised); }
+.pm-brief-ring .pm-pin-glyph { display: none; }
+.pm-brief-row[data-fed="true"] .pm-brief-ring { background: var(--pm-sys-status-done); box-shadow: none; }
+.pm-brief-row[data-fed="true"] .pm-brief-ring .pm-pin-glyph { display: block; }
+.pm-brief-name { grid-column: 2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); }
+.pm-brief-gloss { grid-column: 2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+/* Interview finished: the whole list collapses to one 40px Done line. */
+.pm-brief-line { display: flex; align-items: center; gap: var(--pm-space-2); min-height: 40px; margin: 0; }
+.pm-brief-line > .pm-pin { flex: none; }
+
+/* ---------- P.5.7 Steps (rows of 44px on a thin stitched line), mini steps (four 8px squares) and the check ---------- */
+.pm-steps { margin: 0; padding: 0; list-style: none; }
+.pm-step { position: relative; display: grid; grid-template-columns: 88px minmax(0, 1fr); align-content: center; align-items: center; column-gap: var(--pm-space-3); min-height: 44px; padding: 6px 0; }
+.pm-step > .pm-pin { grid-row: 1 / span 2; align-self: center; }
+/* The line is drawn in two pieces per row, from a head's edge to the row's edge, so a hollow Waiting head never shows it through. */
+.pm-step::before, .pm-step::after { content: ""; position: absolute; left: 4px; width: 2px; background-image: repeating-linear-gradient(180deg, var(--pm-sys-hairline) 0 6px, transparent 6px 10px); }
+.pm-step::before { top: 0; height: calc(50% - 5px); }
+.pm-step::after { top: calc(50% + 5px); bottom: 0; }
+.pm-step:first-child::before, .pm-step:last-child::after { display: none; }
+.pm-step-title { grid-column: 2; min-width: 0; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); }
+.pm-steps-fact { grid-column: 2; min-width: 0; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+[data-density="compact"] .pm-step { min-height: 36px; padding: 2px 0; }
+/* Inside a tinted lead tile the fact keeps the ink text, since muted is only checked on the neutral surfaces. */
+.pm-banner .pm-steps-fact { color: var(--pm-sys-text); }
+
+.pm-steps--mini { display: inline-flex; align-items: center; gap: var(--pm-space-1); margin: 0; padding: 0; list-style: none; }
+.pm-steps--mini > * { flex: none; display: block; width: 8px; height: 8px; border-radius: 2px; background: transparent; box-shadow: inset 0 0 0 1px var(--pm-sys-control-border); }
+.pm-steps--mini > [data-state="done"] { background: var(--pm-sys-status-done); box-shadow: none; }
+.pm-steps--mini > [data-state="working"] { background: var(--pm-sys-status-working); box-shadow: none; }
+.pm-steps--mini > [data-state="blocked"] { background: var(--pm-sys-status-blocked); box-shadow: none; }
+
+/* The check: a callout-sized result (the GitHub App check). It is a div; label.pm-check and li.pm-check belong to earlier files. */
+div.pm-check { display: grid; gap: var(--pm-space-1); padding: var(--pm-space-3) var(--pm-space-4); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-sunken); color: var(--pm-sys-text); }
+div.pm-check[data-status="done"] { background: var(--pm-sys-status-done-tint); }
+div.pm-check[data-status="blocked"] { background: var(--pm-sys-status-blocked-tint); }
+div.pm-check[data-status="working"] { background: var(--pm-sys-status-working-tint); }
+div.pm-check[data-status="needs-you"] { background: var(--pm-sys-status-needs-you-tint); }
+div.pm-check .pm-pin-sentence { color: var(--pm-sys-text); }
+.pm-check-text { margin: 0; padding-left: calc(var(--pm-cmp-pin-size) + var(--pm-space-2)); color: var(--pm-sys-text); }
+
+/* ---------- P.5.8 Action cards: three equal cards, the action on line one and its sentence on line two ---------- */
+.pm-actioncards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--pm-space-3); margin: 0; padding: 0; list-style: none; }
+.pm-actioncard { display: grid; align-content: start; gap: var(--pm-space-2); min-height: 88px; padding: var(--pm-space-3) var(--pm-space-4); border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+.pm-actioncard-action { justify-self: start; padding: 0; border: 0; background: transparent; color: var(--pm-sys-text); font-family: inherit; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; cursor: pointer; }
+.pm-actioncard-action:hover { color: var(--pm-sys-text-secondary); }
+.pm-actioncard-action[aria-disabled="true"] { color: var(--pm-sys-text-muted); cursor: not-allowed; text-decoration: none; }
+.pm-actioncard-text { margin: 0; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+
+/* ---------- P.5.9 Meter: the rail's budget line drawn in page colours ---------- */
+.pm-meter { display: grid; gap: var(--pm-space-2); }
+.pm-meter-label { margin: 0; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+.pm-meter-track { position: relative; height: 4px; background: var(--pm-sys-hairline); }
+.pm-meter-fill { position: absolute; inset: 0 auto 0 0; width: var(--pm-fill, 0%); background: var(--pm-sys-text); }
+
+/* ---------- P.5.10 Document head: title left, version chips right on one line, the byline under it ---------- */
+.pm-doc-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--pm-space-4); row-gap: var(--pm-space-1); }
+.pm-doc-title { grid-column: 1; margin: 0; min-width: 0; }
+.pm-doc-head > .pm-versions { grid-column: 3; justify-self: end; }
+.pm-doc-byline { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: var(--pm-space-1) var(--pm-space-3); margin: 0; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+.pm-doc-details-link { color: var(--pm-sys-text-muted); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.pm-doc-details-link:hover { color: var(--pm-sys-text); }
+/* Details variant: the byline is a details element; its summary is the byline sentence with a link-styled "Details" at its end, and the body opens below. */
+.pm-doc-byline.pm-details { display: block; }
+.pm-doc-byline.pm-details > summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--pm-space-1) var(--pm-space-3); color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); font-weight: 400; }
+.pm-doc-byline.pm-details > summary::before { display: none; }
+.pm-doc-byline.pm-details > summary:hover .pm-doc-details-link { color: var(--pm-sys-text); }
+.pm-doc-byline.pm-details > .pm-details-body { margin-top: var(--pm-space-2); }
+.pm-doc-head > .pm-byline-details { grid-column: 1 / -1; margin: var(--pm-space-2) 0 0; }
+
+/* ---------- P.5.11 Request composer and request list ---------- */
+.pm-request-composer { display: grid; gap: var(--pm-space-2); padding: var(--pm-space-4) var(--pm-space-5); border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+.pm-request-composer .pm-composer-row { max-width: none; margin: 0; }
+.pm-request-composer .pm-composer-input { min-height: calc(3 * var(--pm-type-reading-line) + 14px); max-height: calc(8 * var(--pm-type-reading-line) + 14px); }
+.pm-request-composer .pm-composer-hint { max-width: none; margin: 0; }
+
+.pm-request-list { margin: 0; padding: 0; list-style: none; border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); overflow: hidden; }
+.pm-request { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--pm-space-4); padding: 12px 16px 14px; }
+.pm-request + .pm-request::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--pm-sys-hairline); }
+.pm-request:hover { background: var(--pm-sys-surface-sunken); }
+.pm-request:has(.pm-rowlink:focus-visible) { outline: 2px solid var(--pm-sys-focus); outline-offset: -2px; box-shadow: none; }
+.pm-request-line { display: flex; align-items: center; gap: var(--pm-space-3); min-width: 0; height: 22px; }
+.pm-request-line > .pm-pin { flex: none; }
+.pm-request-title { flex: none; max-width: 50%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: 600; }
+.pm-request-sentence { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pm-sys-text-muted); }
+.pm-request-meta { min-width: 0; height: 16px; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+.pm-request-meta a { position: relative; z-index: 1; color: var(--pm-sys-text-secondary); }
+/* The branch name is 13px mono (controller ruling, RV7) on the Meta line height, so the row stays 64px. */
+.pm-request-meta .pm-mono { font-size: 13px; line-height: inherit; }
+.pm-request > .pm-steps--mini { grid-column: 2; grid-row: 1 / span 2; }
+[data-density="compact"] .pm-request { padding: 8px 16px 10px; }
+
+/* ---------- P.4.1 Dictation: a 40px ghost icon button; listening wears the Working dash ring (the only motion, Ruling 16) ---------- */
+.pm-dictate {
+  position: relative; display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; padding: 0; border: 0;
+  border-radius: var(--pm-radius-round); background: transparent; color: var(--pm-sys-text-secondary); cursor: pointer;
+  transition: background-color var(--pm-motion-state) var(--pm-ease-out), color var(--pm-motion-state) var(--pm-ease-out);
+}
+.pm-dictate:is(:hover, .is-hover) { background: var(--pm-sys-surface-sunken); color: var(--pm-sys-text); }
+.pm-dictate[aria-pressed="true"], .pm-dictate[data-state="listening"] { background: var(--pm-sys-surface-sunken); color: var(--pm-sys-text); }
+.pm-dictate[aria-pressed="true"]::after, .pm-dictate[data-state="listening"]::after, .pm-dictate[data-live="true"]::after {
+  content: ""; position: absolute; inset: -3px; border: 2px dashed var(--pm-sys-chalk); border-radius: var(--pm-radius-round); pointer-events: none;
+}
+.pm-dictate[data-live="true"]::after { animation: pm-pin-dash 2s linear infinite; }
+.pm-dictate[aria-disabled="true"], .pm-dictate[aria-disabled="true"]:is(:hover, :active) { background: transparent; border-color: transparent; color: var(--pm-sys-text-meta); cursor: not-allowed; opacity: 0.7; transform: none; }
+/* The status line in the composer hint: one sentence, with a Blocked pin when a run ends in an error. */
+.pm-dictate-status { display: inline-flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-1) var(--pm-space-2); min-width: 0; }
+.pm-dictate-status .pm-pin { font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); }
+.pm-composer-row--dictate { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+/* A field with dictation and no send (screen 20): the textarea, then the button at its lower right edge. */
+.pm-composer-row--nosend { grid-template-columns: minmax(0, 1fr) auto; max-width: none; margin: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .pm-dictate[data-live="true"]::after { animation: none; }
+}
+
+/* ---------- P.4.2 Setting: a switch row whose consequence sentence changes with the state ---------- */
+.pm-setting { display: grid; gap: var(--pm-space-3); min-width: 0; }
+.pm-setting-title { margin: 0; }
+.pm-setting .pm-switch-row { align-items: flex-start; }
+.pm-setting-text { display: grid; gap: var(--pm-space-1); min-width: 0; }
+.pm-setting-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--pm-space-1) var(--pm-space-3); }
+.pm-setting-label { font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); cursor: pointer; }
+.pm-setting-consequence { margin: 0; color: var(--pm-sys-text-muted); }
+.pm-setting-reason { color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+.pm-setting:has(.pm-switch:disabled) .pm-setting-label { color: var(--pm-sys-text-muted); cursor: not-allowed; }
+
+/* ---------- P.4.3 Bento: DOM order is reading order, no order property anywhere ---------- */
+.pm-bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--pm-space-5); margin-top: var(--pm-space-5); }
+.pm-tile { display: grid; align-content: start; gap: var(--pm-space-2); min-width: 0; min-height: 120px; padding: var(--pm-space-4) var(--pm-space-5); border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+.pm-tile > h2 { margin: 0; }
+.pm-tile--lead { grid-column: 1 / -1; min-height: 104px; }
+.pm-tile--wide { grid-column: span 2; }
+/* The lead tile is the decision banner: it keeps its tint, its own columns and no card border. */
+.pm-banner.pm-tile { gap: 0 var(--pm-space-4); border: 0; background: var(--tint); }
+/* Digits line up at the top of every digit tile, so a tile that also holds a Details disclosure matches its neighbours (RV8). */
+.pm-tile--digit { align-content: start; }
+.pm-tile--digit .pm-digits { display: block; }
+.pm-tile--digit .pm-digit { grid-template-columns: 96px minmax(0, 1fr); height: auto; min-height: 72px; border-bottom: 0; }
+/* Three columns down to an 800px content box (the three digit tiles fit at about 264px each, 1142 with the rail expanded); one column below. */
+@container pm-content (max-width: 799px) {
+  .pm-bento { grid-template-columns: minmax(0, 1fr); }
+  .pm-tile--wide { grid-column: auto; }
+}
+
+/* ---------- P.4.4 Quiet milestone: the checks draw themselves once, the sub-progress ticks fill, a line fades in. Never on load, nothing loops. ----------
+   The dash properties are set on the svg element, not on its path: the check is a use of a sprite symbol, and stroke-dasharray and stroke-dashoffset are inherited, so they reach the path inside the use tree (a selector ending in svg path never matches there). */
+@keyframes pm-milestone-draw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+@keyframes pm-milestone-tick { from { background: var(--pm-sys-hairline); } }
+@keyframes pm-milestone-in { from { opacity: 0; } }
+.pm-tape[data-milestone] li[data-state="done"] .pm-tape-num svg { stroke-dasharray: 24; stroke-dashoffset: 0; animation: pm-milestone-draw 240ms var(--pm-ease-out) backwards; }
+.pm-tape[data-milestone] li:nth-child(1) .pm-tape-num svg { animation-delay: 0ms; }
+.pm-tape[data-milestone] li:nth-child(2) .pm-tape-num svg { animation-delay: 80ms; }
+.pm-tape[data-milestone] li:nth-child(3) .pm-tape-num svg { animation-delay: 160ms; }
+.pm-tape[data-milestone] li:nth-child(4) .pm-tape-num svg { animation-delay: 240ms; }
+.pm-tape[data-milestone] li:nth-child(5) .pm-tape-num svg { animation-delay: 320ms; }
+.pm-tape[data-milestone] li[data-state="current"] .pm-tape-ticks i.on { animation: pm-milestone-tick 120ms var(--pm-ease-out) backwards; }
+.pm-tape[data-milestone] li[data-state="current"] .pm-tape-ticks i:nth-child(1) { animation-delay: 0ms; }
+.pm-tape[data-milestone] li[data-state="current"] .pm-tape-ticks i:nth-child(2) { animation-delay: 120ms; }
+.pm-tape[data-milestone] li[data-state="current"] .pm-tape-ticks i:nth-child(3) { animation-delay: 240ms; }
+.pm-tape[data-milestone] li[data-state="current"] .pm-tape-ticks i:nth-child(4) { animation-delay: 360ms; }
+.pm-tape[data-milestone] li[data-state="current"] .pm-tape-ticks i:nth-child(5) { animation-delay: 480ms; }
+/* The line fades in only when pmMilestone reveals it (data-milestone-enter, 700ms); a line shown in the static markup never animates on load. */
+.pm-milestone-line { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-1) var(--pm-space-2); margin: 0; }
+/* Any [data-milestone-line] fades on a pmMilestone call: 13's line, and 14's banner title (the line there, no extra element). */
+[data-milestone-line][data-milestone-enter] { animation: pm-milestone-in var(--pm-motion-reveal) var(--pm-ease-out) both; }
+@media (prefers-reduced-motion: reduce) {
+  .pm-tape[data-milestone] li[data-state="done"] .pm-tape-num svg,
+  .pm-tape[data-milestone] li[data-state="current"] .pm-tape-ticks i.on { animation: none; }
+  [data-milestone-line][data-milestone-enter] { animation: none; }
+}
+
+/* ---------- P.5.13 Other page-level patterns ---------- */
+/* Two-line table rows: the row link (Body 500) over its plain purpose (Meta muted). 12 + 22 + 16 + 14 = 64, where the 14 is 13px of padding plus the 1px row hairline (the same convention as the 46px row: 11 + 1). */
+.pm-table--two-line td { padding: 12px 16px 13px; }
+.pm-table--two-line .pm-row-purpose { display: block; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); font-weight: 400; }
+.pm-table--two-line[data-density="compact"] td, [data-density="compact"] .pm-table--two-line td { padding: 8px 12px 9px; }
+
+/* Device switch: three chips centred in the stage bar; the frame is centred in the stage body with a caption under it. */
+.pm-device-switch { display: inline-flex; align-items: center; gap: var(--pm-space-2); }
+.pm-stage-bar:has(.pm-device-switch) { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+.pm-stage-bar:has(.pm-device-switch) > :last-child { justify-self: end; }
+/* --pm-device-w is the content (iframe) width: Phone 390, Tablet 820; the frame adds its two 1px borders. Computer (unset) fills the stage. */
+.pm-device { display: grid; grid-template-rows: minmax(0, 1fr) auto; width: min(calc(var(--pm-device-w, 100%) + 2px), 100%); height: 100%; margin: 0 auto; }.pm-device-frame { min-height: 0; overflow: hidden; border: 1px solid var(--pm-sys-control-border); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+.pm-device-frame iframe { outline: 0; border-radius: 0; }
+.pm-device-caption { margin-top: var(--pm-space-2); color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); text-align: center; }
+
+/* Plan aside: a fitted card of 40px sprint rows; the sprint in view carries a 2px ink bar and weight 600 (scroll spy on [data-spy]). */
+.pm-plan-aside { display: grid; align-content: start; gap: var(--pm-space-3); padding: var(--pm-space-4) 0; }
+.pm-plan-aside > h2 { margin: 0; padding: 0 var(--pm-space-4); }
+.pm-plan-aside ol { margin: 0; padding: 0; list-style: none; }
+.pm-plan-aside li a { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; column-gap: var(--pm-space-2); height: 40px; padding: 0 var(--pm-space-4); box-shadow: inset 2px 0 0 transparent; color: var(--pm-sys-text-secondary); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); text-decoration: none; }
+.pm-plan-aside li a:hover { background: var(--pm-sys-surface-sunken); color: var(--pm-sys-text); }
+.pm-plan-aside li a[aria-current="location"] { box-shadow: inset 2px 0 0 var(--pm-sys-text); color: var(--pm-sys-text); font-weight: 600; }
+.pm-plan-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pm-plan-aside > p { margin: 0; padding: 0 var(--pm-space-4); color: var(--pm-sys-text-muted); }
+/* A pin line in the narrow aside wraps its sentence: the head and label sit on the first line, not the middle of the block (11b, 14). */
+.pm-plan-aside > p > .pm-pin { align-items: flex-start; }
+.pm-plan-aside > p > .pm-pin > .pm-pin-head { margin-top: calc((var(--pm-type-label-line) - var(--pm-cmp-pin-size)) / 2); }
+.pm-plan-aside > p > .pm-pin > .pm-pin-sentence { line-height: var(--pm-type-label-line); }
+
+/* Skeleton route card: six bars, the height of a real route card (title 40%, four outcome lines, one try block at 44px). */
+.pm-route-card--skeleton { display: grid; align-content: start; gap: var(--pm-space-3); min-height: 232px; }
+.pm-route-card--skeleton > .pm-skeleton:nth-child(1) { width: 40%; height: 16px; margin-bottom: var(--pm-space-2); }
+.pm-route-card--skeleton > .pm-skeleton:nth-child(2) { width: 90%; }
+.pm-route-card--skeleton > .pm-skeleton:nth-child(3) { width: 85%; }
+.pm-route-card--skeleton > .pm-skeleton:nth-child(4) { width: 88%; }
+.pm-route-card--skeleton > .pm-skeleton:nth-child(5) { width: 80%; }
+.pm-route-card--skeleton > .pm-skeleton:nth-child(6) { width: 100%; height: 44px; margin-top: var(--pm-space-2); border-radius: var(--pm-radius-control); }
+
+/* Passage comments in the reader's contents rail: a Meta list under the contents links. */
+.pm-toc-comments { display: grid; gap: var(--pm-space-1); margin: var(--pm-space-2) 0 0; padding: 0; list-style: none; }
+.pm-toc .pm-toc-comments a { padding: 4px var(--pm-space-3); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); font-weight: 400; color: var(--pm-sys-text-muted); }
+.pm-toc .pm-toc-comments a:hover { color: var(--pm-sys-text); }
+/* The visible label above the list: p.pm-toc-title.pm-toc-comments-title "Passage comments (1)" (the list takes aria-labelledby). */
+.pm-toc-title.pm-toc-comments-title { margin: var(--pm-space-4) 0 0; }
+.pm-toc-comments-title + .pm-toc-comments, .pm-toc-comments-title + .pm-toc-comments-empty { margin-top: var(--pm-space-1); }
+.pm-toc-comments-empty { margin: var(--pm-space-2) 0 0; padding: 0 var(--pm-space-3); color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+
+/* Question card: two columns when the card is wide (a container query is not available inside the card, so auto-fit does it).
+   The track minimum is at least half the body, so a wide card never grows a third, empty column under the spanning title. */
+.pm-qcard-body { grid-template-columns: repeat(auto-fit, minmax(max(300px, calc(50% - 12px)), 1fr)); column-gap: var(--pm-space-6); }
+.pm-qcard-title { grid-column: 1 / -1; }

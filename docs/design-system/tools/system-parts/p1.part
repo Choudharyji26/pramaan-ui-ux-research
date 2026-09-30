@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en" data-rail="expanded">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design system</title>
+<script>
+  /* Before first paint: saved rail and theme (see shell.js). */
+  (function () { var d = document.documentElement, r = null, t = null; try { r = localStorage.getItem("pm.rail"); t = localStorage.getItem("pm.theme"); } catch (e) {}
+  if (innerWidth < 1024 || r === "collapsed" || (r !== "expanded" && innerWidth < 1280)) d.setAttribute("data-rail", "collapsed"); if (t === "dark" || t === "light") d.setAttribute("data-theme", t); })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="components-a.css">
+<link rel="stylesheet" href="components-b.css">
+<link rel="stylesheet" href="components-c.css">
+<link rel="stylesheet" href="showcase.css">
+<script defer src="shell.js"></script>
+<script defer src="components.js"></script>
+</head>
+<body>
+<a class="pm-skip" href="#ss-top">Skip to the guide</a>
+<!--SPRITE-->
+<div class="pm-app">
+
+  <aside class="pm-rail" id="pm-rail" aria-label="Sidebar">
+    <div class="pm-rail-head">
+      <a class="pm-wordmark" href="screens/01-projects.html" aria-label="pramaan, all projects">pramaan</a>
+      <span class="pm-monogram" aria-hidden="true">p</span>
+      <button class="pm-rail-toggle" type="button" aria-expanded="true" aria-controls="pm-rail" aria-label="Collapse navigation">
+        <svg class="pm-i pm-i-collapse"><use href="#i-collapse"/></svg>
+        <svg class="pm-i pm-i-expand"><use href="#i-expand"/></svg>
+      </button>
+    </div>
+    <nav class="pm-rail-nav" aria-label="Projects and destinations">
+      <a class="pm-rail-item pm-rail-all" href="screens/01-projects.html"><svg class="pm-i"><use href="#i-folder"/></svg><span class="pm-rail-label">All projects</span><span class="pm-rail-meta">Test</span></a>
+      <div class="pm-rail-seam" role="separator"></div>
+      <ul class="pm-rail-list">
+        <li class="pm-rail-item--dev"><span class="pm-sr">Development</span><a class="pm-rail-item" href="screens/17-live-logs.html"><svg class="pm-i"><use href="#i-live-logs"/></svg><span class="pm-rail-label">Live logs</span></a></li>
+      </ul>
+    </nav>
+    <div class="pm-rail-spacer"></div>
+    <div class="pm-rail-budget" role="group" aria-label="Monthly budget 18% used" title="Monthly budget 18% used">
+      <div class="pm-rail-budget-text"><span class="pm-rail-budget-label">Monthly budget</span><span class="pm-rail-budget-value">18% used</span></div>
+      <div class="pm-rail-track" aria-hidden="true"><div class="pm-rail-fill" style="--pm-fill: 18%"></div></div>
+    </div>
+    <button class="pm-rail-user" type="button" popovertarget="pm-user-menu" aria-label="Account menu, Aditya Choudhary" title="Aditya Choudhary">
+      <span class="pm-rail-avatar" aria-hidden="true">AC</span>
+      <span class="pm-rail-user-text"><span class="pm-rail-user-name">Aditya Choudhary</span><span class="pm-rail-user-sub">Signed in</span></span>
+    </button>
+    <div class="pm-rail-menu" id="pm-user-menu" popover aria-label="Account">
+      <button class="pm-rail-menu-item" type="button" role="switch" aria-checked="false" data-theme-switch><span>Dark theme</span><span class="pm-rail-switch" aria-hidden="true"></span></button>
+      <a class="pm-rail-menu-item" href="#">Switch organisation</a>
+      <a class="pm-rail-menu-item" href="#">Sign out</a>
+    </div>
+  </aside>
+
+  <main class="pm-main" id="pm-main" data-thread-none="done">
+    <header class="pm-topbar">
+      <a class="pm-back pm-back--hidden" href="screens/01-projects.html" aria-label="Back to Projects" tabindex="-1" aria-hidden="true"><svg class="pm-i"><use href="#i-back"/></svg></a>
+      <nav class="pm-crumb" aria-label="Breadcrumb"><ol><li><span aria-current="page">Design system</span></li></ol></nav>
+      <div class="pm-slot ss-slot">
+        <span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span>
+        <span class="pm-pin-sentence pm-slot-sentence">Tape and Thread 1.0</span>
+        <a class="pm-btn pm-btn--quiet pm-btn--sm" href="flow.html">Open the flow prototype</a>
+      </div>
+    </header>
+
+    <div class="pm-content ss-content" id="ss-top">
+      <div class="pm-title">
+        <h1>Design system</h1>
+        <p class="pm-title-sentence">Tape and Thread, the Pramaan builder style guide. Every sample uses the real CSS.</p>
+        <div class="pm-title-actions ss-tools">
+          <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" id="ss-theme" aria-pressed="false">Dark theme</button>
+          <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" id="ss-density" aria-pressed="false">Compact rows</button>
+        </div>
+      </div>
+
+      <div class="ss-layout">
+        <nav class="pm-toc" aria-label="On this page">
+          <p class="pm-toc-title">On this page</p>
+          <ol>
+            <li><a href="#laws" aria-current="location">Six laws</a></li>
+            <li><a href="#tokens">Tokens</a></li>
+            <li><a href="#type">Type</a></li>
+            <li><a href="#layout">Shell and layout</a></li>
+            <li><a href="#components">Components</a></li>
+            <li><a href="#lanes">Lanes and trends</a></li>
+            <li><a href="#status">Status words</a></li>
+            <li><a href="#coverage">Coverage</a></li>
+            <li><a href="#decisions">Decisions</a></li>
+            <li><a href="#moves">Three moves</a></li>
+            <li><a href="#risks">Risks and limits</a></li>
+          </ol>
+          <div class="pm-toc-links"><a href="flow.html">Flow prototype</a><a href="screens/01-projects.html">The 34 screens</a></div>
+        </nav>
+
+        <div class="ss-guide">
+
+<!-- 1. Name, thesis, laws -->
+<section class="ss-sec" id="laws" aria-labelledby="h-laws">
+  <header class="pm-section-head pm-section-head--page ss-head"><h2 id="h-laws">Name, thesis and the six laws</h2><span class="pm-meta">SPEC A</span></header>
+  <div class="ss-body">
+    <div class="ss-card">
+      <h3 class="pm-t-heading">Tape and Thread</h3>
+      <p class="ss-lede">A made-to-measure fitting, not a dashboard. One <strong>tape</strong> shows where the work stands. One <strong>thread</strong> is held out to you: the next decision only you can make. Everything else is ink, paper and chalk. The tailoring lives in the visuals and never in the words. The product keeps its own vocabulary: Interview, Documents, Roadmap, Build, Try it.</p>
+    </div>
+    <div>
+      <span class="ss-cap ss-cap--block">Take every word away and you should still recognise the app by these five things.</span>
+      <div class="ss-carriers">
+        <div class="ss-carrier"><div class="ss-carrier-stage"><div class="ss-carrier-rail"><i></i></div></div><p class="pm-t-label">1. The ink rail<span class="pm-meta" style="display:block;font-weight:400">Always on the left, ink coloured.</span></p></div>
+        <div class="ss-carrier ss-carrier--wide"><div class="ss-carrier-stage"><div class="ss-tape" data-tape="done,current:2/3,upcoming,upcoming,locked"></div></div><p class="pt-label pm-t-label">2. The tape<span class="pm-meta" style="display:block;font-weight:400">A measure with a pin, in a hairline bar. It shows where the project really is.</span></p></div>
+        <div class="ss-carrier"><div class="ss-carrier-stage"><button class="pm-btn pm-btn--thread-demo" type="button">Approve the plan</button></div><p class="pm-t-label">3. One canary thread<span class="pm-meta" style="display:block;font-weight:400">The next decision. Only one per screen.</span></p></div>
+        <div class="ss-carrier"><div class="ss-carrier-stage"><div class="ss-carrier-pins"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span></span><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span></span><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span></span><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span></span><span class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span></span><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span></span><span class="pm-pin" data-status="locked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-lock"/></svg></span></span></div></div><p class="pm-t-label">4. Pin-head status dots<span class="pm-meta" style="display:block;font-weight:400">Seven fixed states, each with a glyph.</span></p></div>
+        <div class="ss-carrier"><div class="ss-carrier-stage"><span class="ss-carrier-chalk pm-has-mark"><span class="pm-marked">A commented passage</span><span class="pm-chalk-mark" role="img" aria-label="Comment 1">1</span></span></div><p class="pm-t-label">5. Chalk in the margin<span class="pm-meta" style="display:block;font-weight:400">Annotations and the pen circle.</span></p></div>
+      </div>
+    </div>
+    <div class="pm-table-scroll">
+      <table class="pm-table ss-plain ss-wide">
+        <thead><tr><th scope="col">Law</th><th scope="col">The rule, in one line</th><th scope="col">Automated check</th><th scope="col">Reviewer feedback it kills</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1. One Thread</strong></td><td>Exactly one element per screen wears the canary fill. It is the next decision and it never scrolls away. If nothing needs you, the slot says why in a sentence.</td><td>Visible <span class="pm-mono">[data-thread]</span> count is 1, or 0 only when <span class="pm-mono">main[data-thread-none]</span> exists. The thread sits fully inside the viewport at scroll 0 and after scrolling.</td><td><span class="pm-mono">S1.2</span> New project not sticky. <span class="pm-mono">S2.2</span> Continue looks secondary. <span class="pm-mono">S3.3</span> Start button weak. <span class="pm-mono">S4.4</span> Submit not prominent. <span class="pm-mono">S4.7</span> Create brief at the bottom. <span class="pm-mono">S6.2</span> Accept at the bottom. <span class="pm-mono">S7.1</span> No approve button visible. <span class="pm-mono">S7.3</span> Top right empty. Three equal buttons on accepted sprints. Theme: call to action buried.</td></tr>
+          <tr><td><strong>2. One Scroll</strong></td><td>One element scrolls in the main area. The rail and the top bar never scroll. Chat, logs and previews size to the viewport.</td><td>Scrollers inside <span class="pm-mono">main</span> is 1 (main counts). Rail <span class="pm-mono">scrollHeight</span> equals <span class="pm-mono">clientHeight</span>.</td><td><span class="pm-mono">A3</span> Sidebar taller than the window. <span class="pm-mono">A4</span> Scroll inside scroll. <span class="pm-mono">S4.3</span>, <span class="pm-mono">S4.6</span> Reply box after two scrolls. <span class="pm-mono">S4.8</span> Decisions grow without limit. <span class="pm-mono">S9.2</span> and <span class="pm-mono">A8</span> Preview at the bottom, fixed height. Live logs nested scroll.</td></tr>
+          <tr><td><strong>3. Always Know Where You Are</strong></td><td>Every project screen has the sticky bar with Back, a clickable breadcrumb and the tape. The pin sits on the project's real stage, not the route.</td><td>Tape links plus locked steps equal the step count. Two or more crumb links. Top bar is sticky at top 0.</td><td><span class="pm-mono">A1</span> No sticky header. <span class="pm-mono">A2</span> Sections clipped. <span class="pm-mono">S5.2</span> Journey bar unclear. <span class="pm-mono">S5.4</span>, <span class="pm-mono">S5.5</span>, <span class="pm-mono">S6.1</span> No way back. <span class="pm-mono">B2</span> Journey not clickable. Interview locked highlights step 1. Titles cut off on settings and logs.</td></tr>
+          <tr><td><strong>4. The Main Job Owns The Space</strong></td><td>The job begins within 140px of the top and takes at least 60% of the width. One <span class="pm-mono">h1</span>. No hero, no eyebrow, no explainer wider than 320px.</td><td>Exactly one <span class="pm-mono">h1</span>. Layout probes at 1142 by 732 and 1440 by 900 on every screen.</td><td><span class="pm-mono">S1.3</span> Dashboard not intuitive. <span class="pm-mono">S1.5</span> Hero too big. <span class="pm-mono">S1.6</span> Build-it-for-me buried. <span class="pm-mono">S2.1</span> Overview too airy. <span class="pm-mono">S2.3</span> Metric cards weak. <span class="pm-mono">S3.1</span>, <span class="pm-mono">S3.2</span> Form white space, explainer too big. <span class="pm-mono">S4.2</span> Chat not dominant. <span class="pm-mono">S9.1</span> Checklist fills the page. Two stacked headings.</td></tr>
+          <tr><td><strong>5. Plain Words, Fixed States</strong></td><td>Seven status pins with fixed labels, each followed by one plain sentence. Engineering facts live under Details. A disabled control always says why. Actions name their consequence. No em dash.</td><td>No em dash in visible text. Every disabled control has a reason beside it. Vocabulary review on every screen.</td><td><span class="pm-mono">B3</span> Six phrasings for one status. <span class="pm-mono">S5.3</span> Status and version unclear. <span class="pm-mono">S7.2</span> Chips and arrows. Disabled buttons with no reason. Ids and token counts up front. 95% next to 3 of 3. Green number under Paused. Two primary colours.</td></tr>
+          <tr><td><strong>6. No Dead Space</strong></td><td>On the first viewport nothing empty is 240 by 160 or larger. The top-right corner is never an empty 240 by 120. No scroll holds an empty 240 by 240, and its tail is at most 240 tall. Breathing room is enumerated, not argued.</td><td><a href="tools/whitespace.mjs"><span class="pm-mono">tools/whitespace.mjs</span></a> ends <span class="pm-mono">0 failing</span> at 1142 by 732 and 1440 by 900, light theme, default rail. Details below.</td><td>The most repeated reviewer complaint: white space, an empty right column, an empty top-right corner, a page that feels unfinished. Audit findings <span class="pm-mono">F1</span> to <span class="pm-mono">F16</span>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <h3 class="pm-t-heading" id="law6">Law 6 in detail: the No Dead Space rule</h3>
+      <p class="ss-lede">Measured on the 8px cell grid of the content box (<span class="pm-mono">main</span> minus the sticky top bar and the strip, inset by <span class="pm-mono">--pm-content-pad</span> on the top, left and right). Every rectangle of ground colour with nothing in it is found by the tool, at both viewports, and judged against the constants below. Run it from the <span class="pm-mono">pramaan-web</span> folder:</p>
+      <pre class="ss-ascii" aria-label="The whitespace command">node docs/design-system/tools/whitespace.mjs [files] [--rail expanded|collapsed] [--quiet]</pre>
+      <p class="ss-cap">With no files it takes every <span class="pm-mono">screens/*.html</span> except the skeleton. It writes <span class="pm-mono">shots/whitespace/&lt;screen&gt;-&lt;viewport&gt;-first-annot.png</span> (red is a violation, blue is classified breathing room) and <span class="pm-mono">report.json</span>, and exits 1 when anything fails. The whole set is 34 screens at two viewports: 68 checks, 0 failing.</p>
+    </div>
+    <div class="ss-grid2">
+      <div>
+        <h4 class="pm-t-label">The thresholds (constants in the tool)</h4>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Constant</th><th scope="col">Value</th><th scope="col">What it forbids</th></tr></thead><tbody>
+          <tr><td class="pm-mono">FIRST</td><td class="ss-num">240 by 160</td><td>L6.1: an empty rectangle this size or larger in the first viewport.</td></tr>
+          <tr><td class="pm-mono">CORNER</td><td class="ss-num">240 by 120</td><td>L6.2: the empty rectangle anchored at the content box's top-right corner may not be both this wide and this tall.</td></tr>
+          <tr><td class="pm-mono">SCROLL</td><td class="ss-num">240 by 240</td><td>L6.3: an empty rectangle this size or larger anywhere in the stitched whole scroll of a scroller.</td></tr>
+          <tr><td class="pm-mono">TAIL_MAX</td><td class="ss-num">240px</td><td>An empty band touching the end of the content may be at most this tall.</td></tr>
+        </tbody></table>
+        <p class="ss-cap" style="margin-top:var(--pm-space-2)">Nobody widens a threshold or adds an allowlist row without a ruling (Ruling 9).</p>
+      </div>
+      <div>
+        <h4 class="pm-t-label">The allowlist (exactly four rows)</h4>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Selector</th><th scope="col">Why it is breathing room</th></tr></thead><tbody>
+          <tr><td class="pm-mono">.pm-arch-task, .pm-arch-task2</td><td>The side margins of a deliberately centred column.</td></tr>
+          <tr><td class="pm-mono">.pm-chat-flow</td><td>The thread rest under the last chat message, at most 320px.</td></tr>
+          <tr><td class="pm-mono">.pm-panel--fit, .pm-toc</td><td>The column under a fitted side panel or the contents rail.</td></tr>
+          <tr><td class="pm-mono">.pm-stage-body iframe</td><td>The preview is the customer's app, not ours.</td></tr>
+        </tbody></table>
+        <p class="ss-cap" style="margin-top:var(--pm-space-2)">A page-end tail of at most 240px on a page that does not scroll is also breathing room. Nothing else is exempt.</p>
+      </div>
+    </div>
+    <div>
+      <h4 class="pm-t-label">Measurement tolerances, so each allowlist row measures what it says</h4>
+      <table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Tolerance</th><th scope="col">What it lets the tool do</th></tr></thead><tbody>
+        <tr><td class="pm-mono">T1</td><td>A "below" rectangle may start up to one cell (8px) above the last child's bottom, because cells are rounded.</td></tr>
+        <tr><td class="pm-mono">T2</td><td>The fitted panel and contents rail row accepts a rectangle whose left edge is at most 32px left of the element and whose right edge is at most 32px right of it: the 24px grid gutter that belongs to the same empty column, plus one cell.</td></tr>
+        <tr><td class="pm-mono">T3</td><td>The chat row's rest may span the whole chat column (the scroller that holds the 720px flow) and must end at that column's bottom edge, so the composer under it always counts as real content and the rest stays at most 320px.</td></tr>
+        <tr><td class="pm-mono">T4</td><td>A fitted panel that is the last column of its grid owns the remainder to the grid's right edge, still only under the panel's last child.</td></tr>
+        <tr><td class="pm-mono">T5</td><td>Text fields are content even while empty (<span class="pm-mono">textarea</span>, <span class="pm-mono">select</span>, text <span class="pm-mono">input</span>), and so is a designed empty state (<span class="pm-mono">.pm-empty</span>).</td></tr>
+      </tbody></table>
+    </div>
+    <div class="ss-grid2">
+      <div class="ss-do"><span class="ss-do-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-check"/></svg>How space is absorbed</span><span>A meaningful supporting panel that states facts the system already has. A larger main job: two-line rows, a 10-row textarea, full-height skeletons. A next-step panel. Previews of real content. Better-fitted containers. Centring only for the task-with-aside block.</span></div>
+      <div class="ss-dont"><span class="ss-dont-label"><svg class="pm-icon" aria-hidden="true"><use href="#pm-g-x"/></svg>Never</span><span>Filler sentences, invented statistics, tips, decorative illustrations, "did you know", stretched tables, larger type.</span></div>
+    </div>
+
+    <div>
+      <h3 class="pm-t-heading" id="rulings">Controller rulings</h3>
+      <p class="ss-lede">Rulings 1 to 8 are from pass 1; 9 to 16 are pass 2. A ruling overrides any older sentence and any earlier brief.</p>
+    </div>
+    <div class="pm-table-scroll">
+      <table class="pm-table ss-plain ss-wide">
+        <thead><tr><th scope="col">No.</th><th scope="col">Ruling</th></tr></thead>
+        <tbody>
+          <tr><td class="pm-mono">1</td><td>Tabular numerals only in column contexts: numeric table cells, the log time column, the tape and "n of m" digit blocks.</td></tr>
+          <tr><td class="pm-mono">2</td><td>Status colour fixes: the light Waiting label moves to ink-500, the dark Locked tint to ink-900, and every status label on its own tint is a checked pair.</td></tr>
+          <tr><td class="pm-mono">3</td><td>The comfortable row is 46px; compact stays 36px.</td></tr>
+          <tr><td class="pm-mono">4</td><td><span class="pm-mono">--pm-tape-w-max</span> is 440px; the tape has a 360px minimum.</td></tr>
+          <tr><td class="pm-mono">5</td><td>No OKLCH <span class="pm-mono">@supports</span> fallback: the hex twin beside each reference token is documentation, not a runtime fallback.</td></tr>
+          <tr><td class="pm-mono">6</td><td>Nothing loops except the Working dash and the loading skeleton pulse.</td></tr>
+          <tr><td class="pm-mono">7</td><td>One rail state per user on every screen: expanded 248px or collapsed 64px, stored in <span class="pm-mono">pm.rail</span>. With nothing stored: expanded from 1280px, collapsed below. The collapsed rail keeps a permanent expand button and a one-time hint.</td></tr>
+          <tr><td class="pm-mono">8</td><td>Dark rail lift: in the dark theme the rail is one ink step lighter than the page.</td></tr>
+          <tr><td class="pm-mono">9</td><td>Law 6, No Dead Space, is in force. <span class="pm-mono">whitespace.mjs</span> is a gate like <span class="pm-mono">shoot.mjs</span>: every screen ends 0 failing at both viewports.</td></tr>
+          <tr><td class="pm-mono">10</td><td>A side panel is never taller than its content: it is a fitted card, <span class="pm-mono">.pm-panel--fit</span>, sticky under the top bar on page screens. The full-height edge-to-edge panel survives only where its content fills it.</td></tr>
+          <tr><td class="pm-mono">11</td><td>The overview is a bento (<span class="pm-mono">.pm-bento</span>) on 03, 04 and 19. The lead tile is the decision banner and keeps <span class="pm-mono">data-gate</span>; DOM order is reading order.</td></tr>
+          <tr><td class="pm-mono">12</td><td>The plain centred Task archetype is retired from every screen. Forms use the task-with-aside archetype.</td></tr>
+          <tr><td class="pm-mono">13</td><td>Three lanes, three first-class entries on the projects list: describe your idea (02), hand off your code (18), work in my repository (21, labelled "For engineering teams"). 02, 18 and 21 share the lane switcher.</td></tr>
+          <tr><td class="pm-mono">14</td><td>Two audiences, one voice. Lane B (21 to 23) is for an engineering team: "repository", "pull request", "branch" and "merge" may appear. Every other screen keeps the founder vocabulary; "repository" appears only inside a live safeguard sentence quoted verbatim.</td></tr>
+          <tr><td class="pm-mono">15</td><td>The thread on a form is enabled or absent. A form whose thread cannot be pressed yet declares <span class="pm-mono">data-thread-none="blocked"</span>, shows the reason, and renders the button quiet and <span class="pm-mono">aria-disabled</span>. A disabled button is never filled canary.</td></tr>
+          <tr><td class="pm-mono">16</td><td>Motion, pass 2: the milestone stitch (once, at most 600ms, only on a state change, never on load) and the dictation ring (the Working dash around the mic button while listening). Nothing else new moves.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Tokens -->
+<section class="ss-sec" id="tokens" aria-labelledby="h-tokens">
+  <header class="pm-section-head pm-section-head--page ss-head"><h2 id="h-tokens">Tokens</h2><span class="pm-meta">SPEC B</span></header>
+  <div class="ss-body">
+    <div>
+      <h3 class="pm-t-heading">Reference colour</h3>
+      <p class="ss-lede">Three layers: reference, role (system) and component. Components only read roles. These swatches are read live from <span class="pm-mono">tokens.css</span>. The hex value is the sRGB twin the contrast table is computed from; the browser renders the OKLCH value.</p>
+    </div>
+    <div id="ss-ref"></div>
+    <div>
+      <h3 class="pm-t-heading">Roles, light and dark side by side</h3>
+      <p class="ss-lede">Both columns are live: the page reads each role once in each theme. Switch theme above to see every sample below follow.</p>
+    </div>
+    <div class="pm-table-scroll"><table class="pm-table ss-plain" id="ss-roles"><thead><tr><th scope="col">Role token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody></tbody></table></div>
+    <div>
+      <h3 class="pm-t-heading">Contrast, every pair checked</h3>
+      <p class="ss-lede">This is the exact output of <span class="pm-mono">node docs/design-system/tools/contrast.mjs</span>. <span class="ss-ok">Failures: 0.</span> The table lists both themes, so it does not change when you switch. The two <em>info</em> rows are never the only boundary of a control: the canary button carries an ink border and ink text, and the active rail item carries the pen circle and <span class="pm-mono">aria-current</span>.</p>
+    </div>
+    <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Pair</th><th scope="col">Foreground</th><th scope="col">Background</th><th scope="col">Ratio</th><th scope="col">Min</th><th scope="col">Result</th></tr></thead><tbody>
+<!--CONTRAST-->
+    </tbody></table></div>
+    <div class="ss-grid2">
+      <div>
+        <h3 class="pm-t-heading">Spacing, the 4px stitch grid</h3>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Sample</th></tr></thead><tbody>
+          <tr><td class="pm-mono">--pm-space-1</td><td class="ss-num">4px</td><td><i class="ss-space" style="width:4px"></i></td></tr><tr><td class="pm-mono">--pm-space-2</td><td class="ss-num">8px</td><td><i class="ss-space" style="width:8px"></i></td></tr><tr><td class="pm-mono">--pm-space-3</td><td class="ss-num">12px</td><td><i class="ss-space" style="width:12px"></i></td></tr><tr><td class="pm-mono">--pm-space-4</td><td class="ss-num">16px</td><td><i class="ss-space" style="width:16px"></i></td></tr><tr><td class="pm-mono">--pm-space-5</td><td class="ss-num">20px</td><td><i class="ss-space" style="width:20px"></i></td></tr>
+          <tr><td class="pm-mono">--pm-space-6</td><td class="ss-num">24px</td><td><i class="ss-space" style="width:24px"></i></td></tr><tr><td class="pm-mono">--pm-space-7</td><td class="ss-num">32px</td><td><i class="ss-space" style="width:32px"></i></td></tr><tr><td class="pm-mono">--pm-space-8</td><td class="ss-num">40px</td><td><i class="ss-space" style="width:40px"></i></td></tr><tr><td class="pm-mono">--pm-space-9</td><td class="ss-num">48px</td><td><i class="ss-space" style="width:48px"></i></td></tr><tr><td class="pm-mono">--pm-space-10</td><td class="ss-num">64px</td><td><i class="ss-space" style="width:64px"></i></td></tr>
+        </tbody></table>
+      </div>
+      <div>
+        <h3 class="pm-t-heading">Radius and hairlines</h3>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Used for</th></tr></thead><tbody>
+          <tr><td class="pm-mono">--pm-radius-chip</td><td class="ss-num">4px</td><td><i class="ss-radius" style="display:block;border-radius:var(--pm-radius-chip);height:20px"></i> Table cells, chips</td></tr>
+          <tr><td class="pm-mono">--pm-radius-control</td><td class="ss-num">6px</td><td><i class="ss-radius" style="display:block;border-radius:var(--pm-radius-control);height:20px"></i> Buttons, inputs</td></tr>
+          <tr><td class="pm-mono">--pm-radius-card</td><td class="ss-num">10px</td><td><i class="ss-radius" style="display:block;border-radius:var(--pm-radius-card);height:20px"></i> Cards, panels, dialogs</td></tr>
+          <tr><td class="pm-mono">--pm-radius-round</td><td class="ss-num">999px</td><td><i class="ss-radius" style="display:block;border-radius:var(--pm-radius-round);height:20px"></i> Pin heads, avatar</td></tr>
+          <tr><td class="pm-mono">--pm-hairline</td><td>1px solid</td><td>Card edges, rows, panels</td></tr>
+          <tr><td class="pm-mono">--pm-stitch</td><td>1px dashes</td><td><div class="pm-stitch" style="width:120px"></div> Section seams only</td></tr>
+        </tbody></table>
+        <h3 class="pm-t-heading" style="margin-top:var(--pm-space-5)">Motion</h3>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Used for</th></tr></thead><tbody>
+          <tr><td class="pm-mono">--pm-motion-state</td><td class="ss-num">120ms</td><td>Hover, focus, pressed, pin fill</td></tr>
+          <tr><td class="pm-mono">--pm-motion-reveal</td><td class="ss-num">180ms</td><td>Disclosure, toast, new message</td></tr>
+          <tr><td class="pm-mono">--pm-motion-layout</td><td class="ss-num">240ms</td><td>Rail collapse, tape pin, panel dock</td></tr>
+          <tr><td class="pm-mono">--pm-ease-out / -in</td><td class="pm-mono">0.2,0,0,1 / 0.3,0,1,1</td><td>Enter and settle / exit (90ms)</td></tr>
+        </tbody></table>
+        <p class="ss-cap" style="margin-top:var(--pm-space-2)">Only the Working dash and the loading skeleton pulse loop. Reduced motion stops both.</p>
+      </div>
+    </div>
+    <div class="ss-grid2">
+      <div>
+        <h3 class="pm-t-heading">Layers (z-index)</h3>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Layer</th></tr></thead><tbody>
+          <tr><td class="pm-mono">--pm-z-content</td><td class="ss-num">0</td><td>Page content</td></tr><tr><td class="pm-mono">--pm-z-sticky-section</td><td class="ss-num">10</td><td>Sticky section headers</td></tr><tr><td class="pm-mono">--pm-z-action-bar</td><td class="ss-num">20</td><td>Action bar, checklist header</td></tr><tr><td class="pm-mono">--pm-z-topbar</td><td class="ss-num">30</td><td>Top bar</td></tr><tr><td class="pm-mono">--pm-z-rail</td><td class="ss-num">40</td><td>Ink rail</td></tr>
+          <tr><td class="pm-mono">--pm-z-popover</td><td class="ss-num">50</td><td>Popovers</td></tr><tr><td class="pm-mono">--pm-z-toast</td><td class="ss-num">60</td><td>Toasts</td></tr><tr><td class="pm-mono">--pm-z-dialog</td><td class="ss-num">70</td><td>Scrim and dialog</td></tr><tr><td class="pm-mono">--pm-z-skip</td><td class="ss-num">80</td><td>Skip link</td></tr>
+        </tbody></table>
+      </div>
+      <div>
+        <h3 class="pm-t-heading">Layout constants</h3>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Token</th><th scope="col">Value</th></tr></thead><tbody>
+          <tr><td class="pm-mono">--pm-rail-w</td><td>248px, 64px collapsed</td></tr><tr><td class="pm-mono">--pm-topbar-h</td><td>56px</td></tr><tr><td class="pm-mono">--pm-strip-h</td><td>28px</td></tr><tr><td class="pm-mono">--pm-content-pad</td><td>24px, 32px from 1440</td></tr><tr><td class="pm-mono">--pm-content-max</td><td>1120px</td></tr><tr><td class="pm-mono">--pm-reading-w</td><td>68ch</td></tr>
+          <tr><td class="pm-mono">--pm-panel-w</td><td>320px, 360px from 1440</td></tr><tr><td class="pm-mono">--pm-toc-w</td><td>200px, 220px from 1440</td></tr><tr><td class="pm-mono">--pm-tape-w / -max</td><td>360px minimum, 440px maximum</td></tr><tr><td class="pm-mono">--pm-row-h</td><td>46px, 36px compact</td></tr><tr><td class="pm-mono">--pm-control-h</td><td>36px (40 for gate and composer)</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+</section>

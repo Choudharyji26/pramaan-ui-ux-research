@@ -1,0 +1,719 @@
+/* Tape and Thread components A: buttons, action bar, pins, banners, cards, digits, table, forms, search, chips, disclosure, skeleton, empty/locked/error, popover, dialog, toast. Link after tokens.css and base.css. Colours come only from --pm-sys-* and --pm-cmp-*. Static-state helper classes (.is-hover, .is-active, .is-focus) exist so the demo and style guide can show a state without user input. */
+
+/* Icons and glyphs (inline SVG from a sprite, 16px viewBox, stroked with currentColor) */
+.pm-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.is-focus { outline: 2px solid var(--pm-sys-focus); outline-offset: 2px; box-shadow: 0 0 0 4px var(--pm-sys-focus-halo); }
+
+/* D.1 Buttons. .pm-btn--thread-demo is the same look without data-thread, for style-guide samples only. */
+.pm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pm-space-2);
+  height: var(--pm-cmp-button-h);
+  padding: 0 var(--pm-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--pm-cmp-button-radius);
+  background: transparent;
+  color: var(--pm-sys-text);
+  font-family: inherit;
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight);
+  letter-spacing: var(--pm-type-label-tracking);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--pm-motion-state) var(--pm-ease-out),
+    border-color var(--pm-motion-state) var(--pm-ease-out),
+    color var(--pm-motion-state) var(--pm-ease-out),
+    transform var(--pm-motion-state) var(--pm-ease-out);
+}
+
+.pm-btn--lg { --pm-cmp-button-h: 40px; }
+.pm-btn--sm { --pm-cmp-button-h: 32px; padding: 0 var(--pm-space-3); }
+.pm-btn--icon { width: var(--pm-cmp-button-h); padding: 0; }
+
+.pm-btn--thread,
+.pm-btn--thread-demo {
+  background: var(--pm-cmp-button-thread-bg);
+  color: var(--pm-cmp-button-thread-fg);
+  border-color: var(--pm-cmp-button-thread-border);
+  font-weight: 600;
+}
+
+.pm-btn--thread:is(:hover, .is-hover),
+.pm-btn--thread-demo:is(:hover, .is-hover) { background: var(--pm-sys-thread-hover); }
+.pm-btn--ink { background: var(--pm-cmp-button-ink-bg); color: var(--pm-cmp-button-ink-fg); }
+.pm-btn--ink:is(:hover, .is-hover) { background: var(--pm-sys-text-secondary); }
+.pm-btn--quiet { border-color: var(--pm-cmp-button-quiet-border); }
+.pm-btn--quiet:is(:hover, .is-hover) { background: var(--pm-sys-surface-sunken); }
+.pm-btn--ghost { color: var(--pm-sys-text-secondary); }
+.pm-btn--ghost:is(:hover, .is-hover) { background: var(--pm-sys-surface-sunken); color: var(--pm-sys-text); }
+.pm-btn--danger { border-color: var(--pm-sys-status-blocked); color: var(--pm-sys-status-blocked); }
+.pm-btn--danger:is(:hover, .is-hover) { background: var(--pm-sys-status-blocked-tint); }
+.pm-btn:is(:active, .is-active) { transform: translateY(1px); }
+
+/* Disabled keeps focus (aria-disabled, not disabled) and always has a .pm-btn-reason beside it. */
+.pm-btn[aria-disabled="true"],
+.pm-btn[aria-disabled="true"]:is(:hover, :active) {
+  background: var(--pm-sys-surface-sunken);
+  border-color: var(--pm-sys-hairline);
+  color: var(--pm-sys-text-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pm-btn-reason {
+  color: var(--pm-sys-text-muted);
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+  letter-spacing: var(--pm-type-meta-tracking);
+}
+
+/* Loading: the label is the gerund, a 16px ring replaces the arrow, width is kept by the caller. The ring does not loop (ruling 2026-09-30). */
+.pm-btn[aria-busy="true"] { cursor: progress; }
+
+.pm-spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--pm-radius-round);
+}
+
+.pm-btn[aria-busy="true"] .pm-spinner { display: inline-block; }
+.pm-btn[aria-busy="true"] > .pm-icon { display: none; }
+
+/* D.1 Action bar */
+.pm-actionbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--pm-z-action-bar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pm-space-4);
+  height: 52px;
+  padding: 0 var(--pm-space-6);
+  background: var(--pm-sys-surface-raised);
+  border-bottom: var(--pm-hairline);
+}
+
+.pm-actionbar-main { display: flex; align-items: center; gap: var(--pm-space-3); min-width: 0; }
+/* A pin never shrinks into the sentence beside it (bar and toast). */
+:is(.pm-actionbar-main, .pm-toast) > .pm-pin { flex: none; }
+/* A bar that sits in the flow (a gate inside its own sticky wrapper, a style-guide sample) is static and takes no stacking
+   level, so it never paints over a sticky section head that scrolls past it. */
+.pm-actionbar--static { position: static; z-index: auto; border: var(--pm-hairline); border-radius: var(--pm-radius-card); }
+.pm-actionbar-actions { display: flex; align-items: center; flex: none; gap: var(--pm-space-2); }
+.pm-actionbar--gate { height: auto; min-height: 64px; padding-block: var(--pm-space-2); }
+.pm-actionbar-question { font-size: var(--pm-type-heading-size); line-height: var(--pm-type-heading-line); font-weight: var(--pm-type-heading-weight); }
+.pm-actionbar-consequence { color: var(--pm-sys-text-muted); }
+
+/* D.5 Status pin: seven fixed states. Markup: span.pm-pin[data-status] > span.pm-pin-head > svg.pm-pin-glyph, span.pm-pin-label, optional span.pm-pin-sentence */
+.pm-pin {
+  --pin: var(--pm-sys-text);
+  --pin-tint: var(--pm-sys-surface-sunken);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pm-space-2);
+  min-width: 0;
+  color: var(--pin);
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: 500;
+}
+
+/* RV4 addition: a status label is one fixed word pair and never breaks ("Needs / you" in a narrow action bar). */
+.pm-pin-label { white-space: nowrap; }
+
+.pm-pin[data-status="needs-you"] { --pin: var(--pm-sys-status-needs-you); --pin-tint: var(--pm-sys-status-needs-you-tint); }
+.pm-pin[data-status="working"] { --pin: var(--pm-sys-status-working); --pin-tint: var(--pm-sys-status-working-tint); }
+.pm-pin[data-status="waiting"] { --pin: var(--pm-sys-status-waiting); --pin-tint: var(--pm-sys-status-waiting-tint); }
+.pm-pin[data-status="done"] { --pin: var(--pm-sys-status-done); --pin-tint: var(--pm-sys-status-done-tint); }
+.pm-pin[data-status="paused"] { --pin: var(--pm-sys-status-paused); --pin-tint: var(--pm-sys-status-paused-tint); }
+.pm-pin[data-status="blocked"] { --pin: var(--pm-sys-status-blocked); --pin-tint: var(--pm-sys-status-blocked-tint); }
+.pm-pin[data-status="locked"] { --pin: var(--pm-sys-status-locked); --pin-tint: var(--pm-sys-status-locked-tint); }
+
+/* info is a banner kind, not a status: a chalk head with no label */
+.pm-pin[data-status="info"] { --pin: var(--pm-sys-chalk); --pin-tint: var(--pm-sys-chalk-tint); }
+
+.pm-pin-head {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--pm-cmp-pin-size);
+  height: var(--pm-cmp-pin-size);
+  border-radius: var(--pm-radius-round);
+  background: var(--pin);
+  color: var(--pm-sys-surface-raised);
+  transition: background-color var(--pm-motion-state) var(--pm-ease-out);
+}
+
+.pm-pin-glyph {
+  width: 6px;
+  height: 6px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pm-pin[data-status="needs-you"] .pm-pin-glyph,
+.pm-pin[data-status="working"] .pm-pin-glyph,
+.pm-pin[data-status="waiting"] .pm-pin-glyph,
+.pm-pin[data-status="info"] .pm-pin-glyph { display: none; }
+.pm-pin[data-status="waiting"] .pm-pin-head { background: transparent; box-shadow: inset 0 0 0 2px var(--pin); }
+.pm-pin-sentence { color: var(--pm-sys-text-muted); font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); font-weight: 400; }
+
+/* Working live dash: a dashed ring that turns while data-live="true". Paused under reduced motion. */
+.pm-pin[data-status="working"][data-live="true"] .pm-pin-head::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 1.5px dashed var(--pin);
+  border-radius: var(--pm-radius-round);
+  animation: pm-pin-dash 2s linear infinite;
+}
+
+@keyframes pm-pin-dash {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pm-pin[data-status="working"][data-live="true"] .pm-pin-head::after {
+    animation: none;
+  }
+}
+
+.pm-pin--tint { height: 28px; padding: 0 var(--pm-space-2); border-radius: var(--pm-radius-chip); background: var(--pin-tint); }
+/* Waiting has no tint (D.13): a hollow ring and a muted label on the cell's own surface, in both themes. */
+.pm-pin--tint[data-status="waiting"] { background: transparent; }
+
+/* D.6 Banner. Markup: div.pm-banner.pm-banner--{kind} > pin, .pm-banner-body > (.pm-banner-title, .pm-banner-text, details.pm-details), optional .pm-banner-action */
+.pm-banner {
+  display: grid;
+  grid-template-columns: minmax(104px, auto) minmax(0, 1fr) auto;
+  column-gap: var(--pm-space-4);
+  align-items: start;
+  padding: var(--pm-space-4) var(--pm-space-5);
+  border-radius: var(--pm-radius-card);
+  background: var(--tint);
+  color: var(--pm-sys-text);
+}
+
+.pm-banner--needs-you { --tint: var(--pm-sys-status-needs-you-tint); box-shadow: inset 0 1px 0 var(--pm-sys-text); }
+.pm-banner--working { --tint: var(--pm-sys-status-working-tint); }
+.pm-banner--paused { --tint: var(--pm-sys-status-paused-tint); }
+.pm-banner--blocked { --tint: var(--pm-sys-status-blocked-tint); }
+.pm-banner--done { --tint: var(--pm-sys-status-done-tint); }
+.pm-banner--info { --tint: var(--pm-sys-chalk-tint); grid-template-columns: auto minmax(0, 1fr) auto; }
+.pm-banner > .pm-pin { min-height: 24px; }
+.pm-banner-title { font-size: var(--pm-type-heading-size); line-height: var(--pm-type-heading-line); font-weight: var(--pm-type-heading-weight); }
+.pm-banner-text { max-width: 60ch; margin-top: var(--pm-space-1); }
+.pm-banner-action { align-self: center; }
+.pm-banner .pm-details { margin-top: var(--pm-space-3); }
+.pm-banner .pm-details > summary { color: var(--pm-sys-text); }
+.pm-banner .pm-details-body { background: var(--pm-sys-surface-raised); }
+
+/* D.7 Project card. The whole a.pm-card--project is the link. */
+.pm-card {
+  position: relative;
+  padding: var(--pm-cmp-card-pad);
+  border: var(--pm-hairline);
+  border-radius: var(--pm-radius-card);
+  background: var(--pm-sys-surface-raised);
+  color: var(--pm-sys-text);
+}
+
+.pm-card--project {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-content: start;
+  align-items: center;
+  gap: var(--pm-space-2) var(--pm-space-3);
+  min-height: 124px;
+  text-decoration: none;
+  transition: border-color var(--pm-motion-state) var(--pm-ease-out);
+}
+
+.pm-card--project:is(:hover, .is-hover) { border-color: var(--pm-sys-control-border); }
+
+.pm-card-tile {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--pm-radius-control);
+  background: var(--pm-sys-surface-sunken);
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: 700;
+}
+
+.pm-card-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--pm-type-heading-size);
+  line-height: var(--pm-type-heading-line);
+  font-weight: var(--pm-type-heading-weight);
+}
+
+.pm-card-next { grid-column: 1 / -1; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--pm-space-2); }
+.pm-card-arrow { margin-top: 3px; color: var(--pm-sys-text-muted); opacity: 0; transition: opacity var(--pm-motion-state) var(--pm-ease-out); }
+.pm-card--project:is(:hover, .is-hover, :focus-visible) .pm-card-arrow { opacity: 1; }
+
+.pm-card-meta {
+  grid-column: 1 / -1;
+  color: var(--pm-sys-text-muted);
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+  letter-spacing: var(--pm-type-meta-tracking);
+}
+
+.pm-card--decision .pm-card-next-text { font-weight: 600; }
+
+/* The chalk pen circle: one per list, around the Needs-you pin label. Markup: svg.pm-card-pen > ellipse inside the .pm-pin. */
+.pm-card--decision .pm-pin { position: relative; margin-right: var(--pm-space-2); }
+
+.pm-card-pen {
+  position: absolute;
+  top: -6px;
+  left: -10px;
+  width: calc(100% + 20px);
+  height: calc(100% + 12px);
+  max-width: none;
+  overflow: visible;
+  fill: none;
+  stroke: var(--pm-sys-chalk);
+  stroke-width: 1.5px;
+  transform: rotate(-2deg);
+  pointer-events: none;
+}
+
+.pm-card-pen ellipse { vector-effect: non-scaling-stroke; }
+.pm-card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--pm-space-4); }
+
+@media (min-width: 1440px) {
+  .pm-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* D.8 Metric digits. dl.pm-digits > div.pm-digit > dt, dd.pm-digit-value (numeral shown first), dd.pm-digit-sentence */
+.pm-digits { display: flex; flex-direction: column; margin: 0; }
+
+.pm-digit {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: center;
+  align-items: center;
+  column-gap: var(--pm-space-4);
+  height: 72px;
+  border-bottom: var(--pm-hairline);
+}
+
+.pm-digit > dt {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  color: var(--pm-sys-text-muted);
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+  letter-spacing: var(--pm-type-meta-tracking);
+}
+
+.pm-digit-sentence { grid-column: 2; grid-row: 2; align-self: start; margin: 0; color: var(--pm-sys-text-muted); }
+
+.pm-digit-value {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--pm-space-2);
+  min-width: 4ch;
+  height: 52px;
+  margin: 0;
+  padding: 0 var(--pm-space-3);
+  border-radius: var(--pm-radius-chip);
+  background: var(--pm-sys-surface-sunken);
+  box-shadow: inset -1px -1px 0 var(--pm-sys-hairline);
+  color: var(--pm-sys-text);
+  font-size: var(--pm-type-digits-size);
+  line-height: 52px;
+  font-weight: var(--pm-type-digits-weight);
+  letter-spacing: var(--pm-type-digits-tracking);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pm-digit-sep { color: var(--pm-sys-text-muted); font-size: var(--pm-type-body-size); font-weight: 400; letter-spacing: 0; }
+.pm-digit--none .pm-digit-value { align-items: center; }
+.pm-digit--none .pm-digit-value::before { content: ""; width: 12px; height: 1px; background: var(--pm-sys-control-border); }
+
+/* D.9 Table. Sticky header sits under the top bar in main; add .pm-table--in-scroller inside a scroller. */
+.pm-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+
+.pm-table th {
+  position: sticky;
+  top: var(--pm-topbar-h);
+  z-index: 2;
+  padding: var(--pm-space-2) var(--pm-cell-pad-x);
+  background: var(--pm-sys-ground);
+  border-bottom: var(--pm-hairline);
+  color: var(--pm-sys-text-muted);
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.pm-table--in-scroller th { top: 0; }
+.pm-table td { height: var(--pm-cmp-row-h); padding: var(--pm-cell-pad-y) var(--pm-cell-pad-x) calc(var(--pm-cell-pad-y) - 1px); border-bottom: var(--pm-hairline); vertical-align: middle; }
+.pm-table td.pm-tnum { white-space: nowrap; }
+.pm-table tbody tr { position: relative; }
+.pm-table tbody tr:is(:hover, .is-hover) { background: var(--pm-sys-surface-sunken); }
+
+.pm-table tbody tr:has(.pm-rowlink:focus-visible),
+.pm-table tbody tr.is-focus { outline: 2px solid var(--pm-sys-focus); outline-offset: -2px; box-shadow: none; }
+.pm-rowlink { color: inherit; font-weight: 500; text-decoration: none; }
+.pm-rowlink::after { content: ""; position: absolute; inset: 0; }
+.pm-rowlink:focus-visible { outline: none; box-shadow: none; }
+.pm-cell-status { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-1) var(--pm-space-2); }
+.pm-col-status { min-width: 220px; }
+.pm-col-version { width: 96px; }
+.pm-col-updated { width: 120px; }
+.pm-table-skeleton td .pm-skeleton { height: 12px; }
+.pm-table-empty td { height: auto; padding: var(--pm-space-7) var(--pm-space-4); text-align: center; }
+.pm-table-empty td > * + * { margin-top: var(--pm-space-3); }
+
+/* Wide tables inside documents: horizontal scroll only, never smaller text. */
+.pm-table-scroll { overflow-x: auto; border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+.pm-table-scroll .pm-table { min-width: 640px; }
+.pm-table-scroll .pm-table th { position: static; top: auto; background: var(--pm-sys-surface-raised); }
+.pm-table-scroll .pm-table :is(th, td):first-child { position: sticky; left: 0; z-index: 1; background: var(--pm-sys-surface-raised); }
+.pm-table-scroll .pm-table tbody tr:hover td:first-child { background: var(--pm-sys-surface-sunken); }
+.pm-table-scroll .pm-table tbody tr:last-child td { border-bottom: 0; }
+/* RV4 addition (ruling 2026-09-30): a scroll cue. A soft ink shadow sits on the right edge while columns are hidden to the
+   right; a raised cover that travels with the content (attachment: local) hides it once the reader reaches the last column.
+   Header cells go transparent so the cue runs the full height; the sticky first column stays opaque. */
+.pm-table-scroll {
+  background:
+    linear-gradient(to left, var(--pm-sys-surface-raised) 20px, transparent) right center / 40px 100% no-repeat local,
+    linear-gradient(to left, color-mix(in oklch, var(--pm-sys-text) 16%, transparent), transparent) right center / 20px 100% no-repeat scroll,
+    var(--pm-sys-surface-raised);
+}
+.pm-table-scroll .pm-table th:not(:first-child) { background: transparent; }
+.pm-cell-id { font-family: var(--pm-font-mono); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); white-space: nowrap; }
+
+/* D.17 Form controls */
+.pm-field { display: grid; gap: var(--pm-space-1); }
+.pm-label { font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); }
+
+.pm-input,
+.pm-textarea,
+.pm-select {
+  width: 100%;
+  height: var(--pm-control-h);
+  padding: 0 var(--pm-space-3);
+  border: 1px solid var(--pm-sys-control-border);
+  border-radius: var(--pm-radius-control);
+  background-color: var(--pm-sys-surface-raised);
+  color: var(--pm-sys-text);
+  font-size: var(--pm-type-body-size);
+  line-height: var(--pm-type-body-line);
+  transition: border-color var(--pm-motion-state) var(--pm-ease-out);
+}
+
+.pm-textarea {
+  height: auto;
+  min-height: calc(3 * var(--pm-type-body-line) + 2 * var(--pm-space-2) + 2px);
+  padding: var(--pm-space-2) var(--pm-space-3);
+  resize: vertical;
+}
+
+.pm-select {
+  appearance: none;
+  padding-right: var(--pm-space-8);
+  cursor: pointer;
+  background-image:
+    linear-gradient(to top right, transparent calc(50% - 0.75px), var(--pm-sys-text) calc(50% - 0.75px), var(--pm-sys-text) calc(50% + 0.75px), transparent calc(50% + 0.75px)),
+    linear-gradient(to bottom right, transparent calc(50% - 0.75px), var(--pm-sys-text) calc(50% - 0.75px), var(--pm-sys-text) calc(50% + 0.75px), transparent calc(50% + 0.75px));
+  background-repeat: no-repeat;
+  background-size: 6px 6px;
+  background-position:
+    right 19px center,
+    right 13px center;
+}
+
+.pm-input::placeholder,
+.pm-textarea::placeholder { color: var(--pm-sys-text-meta); }
+
+.pm-input:is(:hover, .is-hover),
+.pm-textarea:is(:hover, .is-hover),
+.pm-select:is(:hover, .is-hover) { border-color: var(--pm-sys-text-muted); }
+
+.pm-input[aria-invalid="true"],
+.pm-textarea[aria-invalid="true"],
+.pm-select[aria-invalid="true"] { border-color: var(--pm-sys-status-blocked); }
+
+.pm-input[aria-disabled="true"],
+.pm-textarea[aria-disabled="true"],
+.pm-select[aria-disabled="true"],
+.pm-input:disabled,
+.pm-textarea:disabled,
+.pm-select:disabled { border-color: var(--pm-sys-hairline); background-color: var(--pm-sys-surface-sunken); color: var(--pm-sys-text-muted); cursor: not-allowed; }
+.pm-help { color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+.pm-help--error { display: flex; align-items: center; gap: var(--pm-space-2); color: var(--pm-sys-status-blocked); }
+/* Checkbox/radio label. Use label.pm-checkbox (label.pm-check still works); li.pm-check is the Try it checklist item in components-b. */
+:is(label.pm-check, .pm-checkbox) { display: flex; align-items: center; gap: var(--pm-space-2); }
+:is(label.pm-check, .pm-checkbox) > input { width: 16px; height: 16px; margin: 0; }
+
+/* Switch: input.pm-switch[role="switch"], 36x20 track, 16px knob */
+.pm-switch {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  border-radius: var(--pm-radius-round);
+  background: var(--pm-sys-control-border);
+  cursor: pointer;
+  transition: background-color var(--pm-motion-state) var(--pm-ease-out);
+}
+
+.pm-switch::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--pm-radius-round);
+  background: var(--pm-sys-surface-raised);
+  transition: transform var(--pm-motion-state) var(--pm-ease-out);
+}
+
+.pm-switch:checked { background: var(--pm-sys-text); }
+.pm-switch:checked::before { transform: translateX(16px); }
+.pm-switch:disabled { cursor: not-allowed; opacity: 0.6; }
+.pm-switch-row { display: flex; align-items: flex-start; gap: var(--pm-space-3); }
+.pm-switch-row .pm-switch { margin-top: 1px; }
+
+/* Save pattern: quiet button disabled with a reason until the value changes, then an inline confirmation */
+.pm-save { display: flex; align-items: center; flex-wrap: wrap; gap: var(--pm-space-3); }
+
+.pm-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pm-space-2);
+  color: var(--pm-sys-text-muted);
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+  letter-spacing: var(--pm-type-meta-tracking);
+}
+
+/* D.18 Search, chips, disclosure, skeleton */
+.pm-search { position: relative; display: block; width: 240px; }
+.pm-search .pm-input { padding: 0 var(--pm-space-8) 0 var(--pm-space-8); }
+.pm-search .pm-input::-webkit-search-cancel-button { display: none; }
+.pm-search-icon { position: absolute; top: 10px; left: var(--pm-space-3); color: var(--pm-sys-text-muted); pointer-events: none; }
+.pm-search-clear { position: absolute; top: 4px; right: 4px; }
+.pm-search .pm-input:placeholder-shown ~ .pm-search-clear { display: none; }
+
+.pm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pm-space-2);
+  height: 28px;
+  padding: 0 var(--pm-space-3);
+  border: 1px solid var(--pm-cmp-button-quiet-border);
+  border-radius: var(--pm-radius-chip);
+  background: transparent;
+  color: var(--pm-sys-text);
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight);
+  cursor: pointer;
+  transition:
+    background-color var(--pm-motion-state) var(--pm-ease-out),
+    color var(--pm-motion-state) var(--pm-ease-out);
+}
+
+.pm-chip:is(:hover, .is-hover) { background: var(--pm-sys-surface-sunken); }
+.pm-chip[aria-checked="true"] { border-color: var(--pm-sys-text); background: var(--pm-sys-text); color: var(--pm-sys-text-on-ink); }
+.pm-chip:is(:active, .is-active) { transform: translateY(1px); }
+/* Disabled chip: same rule as buttons (aria-disabled, a reason beside it with .pm-btn-reason). */
+.pm-chip[aria-disabled="true"] { border-color: var(--pm-sys-hairline); background: var(--pm-sys-surface-sunken); color: var(--pm-sys-text-muted); cursor: not-allowed; transform: none; }
+.pm-details > summary:is(:hover, .is-hover) { color: var(--pm-sys-text); }
+
+.pm-details > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pm-space-2);
+  color: var(--pm-sys-text-muted);
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight);
+  cursor: pointer;
+  list-style: none;
+}
+
+.pm-details > summary::-webkit-details-marker { display: none; }
+
+.pm-details > summary::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin: 0 3px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(-45deg);
+  transition: transform var(--pm-motion-reveal) var(--pm-ease-out);
+}
+
+.pm-details[open] > summary::before { transform: rotate(45deg); }
+
+.pm-details-body {
+  margin-top: var(--pm-space-2);
+  padding: var(--pm-space-3);
+  border-radius: var(--pm-radius-chip);
+  background: var(--pm-sys-surface-sunken);
+  color: var(--pm-sys-text);
+}
+
+.pm-skeleton--60 { width: 60%; }
+.pm-skeleton--40 { width: 40%; }
+.pm-skeleton--30 { width: 30%; }
+.pm-skeleton-lines { display: grid; gap: var(--pm-space-3); }
+
+/* D.16 Empty, locked, error */
+.pm-empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--pm-space-2);
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--pm-space-8) var(--pm-space-4);
+  text-align: center;
+}
+
+.pm-empty-glyph { width: 24px; height: 24px; border-radius: var(--pm-radius-round); box-shadow: inset 0 0 0 2px var(--pm-sys-status-waiting); }
+
+.pm-empty-title,
+.pm-locked-title,
+.pm-error-title { font-size: var(--pm-type-heading-size); line-height: var(--pm-type-heading-line); font-weight: var(--pm-type-heading-weight); }
+.pm-empty-text { color: var(--pm-sys-text-muted); }
+.pm-empty .pm-btn { margin-top: var(--pm-space-2); }
+
+.pm-locked,
+.pm-error {
+  display: grid;
+  gap: var(--pm-space-2);
+  padding: var(--pm-space-5) var(--pm-space-6);
+  border: var(--pm-hairline);
+  border-radius: var(--pm-radius-card);
+  background: var(--pm-sys-surface-raised);
+}
+
+.pm-error { border-color: var(--pm-sys-status-blocked); }
+.pm-error .pm-btn { justify-self: start; margin-top: var(--pm-space-2); }
+.pm-locked-list { display: grid; gap: var(--pm-space-1); margin: var(--pm-space-1) 0 0; padding-left: var(--pm-space-5); color: var(--pm-sys-text-muted); }
+.pm-locked-list a { color: var(--pm-sys-text); }
+
+/* D.16 Popover, dialog, toast */
+.pm-popover {
+  position: fixed;
+  inset: auto;
+  z-index: var(--pm-z-popover);
+  max-width: 360px;
+  margin: 0;
+  padding: var(--pm-space-4);
+  border: var(--pm-hairline);
+  border-radius: var(--pm-radius-card);
+  background: var(--pm-sys-surface-raised);
+  box-shadow: var(--pm-shadow-float);
+  color: var(--pm-sys-text);
+}
+
+.pm-popover--static { position: relative; z-index: auto; display: block; }
+
+dialog.pm-dialog {
+  width: min(440px, calc(100vw - 32px));
+  padding: var(--pm-space-6);
+  border: var(--pm-hairline);
+  border-radius: var(--pm-radius-card);
+  background: var(--pm-sys-surface-raised);
+  box-shadow: var(--pm-shadow-dialog);
+  color: var(--pm-sys-text);
+}
+
+dialog.pm-dialog::backdrop { background: var(--pm-sys-scrim); }
+.pm-dialog-title { font-size: var(--pm-type-heading-size); line-height: var(--pm-type-heading-line); font-weight: var(--pm-type-heading-weight); }
+.pm-dialog-text { margin-top: var(--pm-space-2); color: var(--pm-sys-text-muted); }
+.pm-dialog-actions { display: flex; justify-content: flex-end; gap: var(--pm-space-2); margin-top: var(--pm-space-5); }
+
+/* Toast host sits at the bottom-left of main (clear of the rail); each toast is role="status". */
+.pm-toast-host {
+  position: fixed;
+  left: calc(var(--pm-rail-w) + var(--pm-space-3));
+  bottom: var(--pm-space-3);
+  z-index: var(--pm-z-toast);
+  display: grid;
+  gap: var(--pm-space-2);
+}
+
+.pm-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--pm-space-3);
+  width: fit-content;
+  max-width: 440px;
+  padding: var(--pm-space-3) var(--pm-space-4);
+  border: var(--pm-hairline);
+  border-radius: var(--pm-radius-card);
+  background: var(--pm-sys-surface-raised);
+  box-shadow: var(--pm-shadow-float);
+  color: var(--pm-sys-text);
+}
+
+.pm-toast[data-state="enter"] { animation: pm-toast-in var(--pm-motion-reveal) var(--pm-ease-out) both; }
+.pm-toast[data-state="leave"] { animation: pm-toast-out 90ms var(--pm-ease-in) both; }
+
+@keyframes pm-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes pm-toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.pm-saved[hidden] { display: none; }

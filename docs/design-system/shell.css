@@ -1,0 +1,529 @@
+/* Tape and Thread shell: ink rail, sticky top bar, journey tape, nothing-is-lost strip, page and archetype grids.
+   Requires tokens.css then base.css. Only --pm-sys-* and --pm-cmp-* tokens are used here.
+   Buttons, pins and other components are styled in components-a.css / components-b.css. */
+[hidden] { display: none !important; }
+/* Set by shell.js for two frames on load so nothing animates on first paint. */
+.pm-no-anim, .pm-no-anim *, .pm-no-anim *::before, .pm-no-anim *::after { transition: none !important; }
+.pm-skip {
+  position: absolute; left: var(--pm-space-2); top: var(--pm-space-2); z-index: var(--pm-z-skip);
+  padding: var(--pm-space-2) var(--pm-space-4); border-radius: var(--pm-radius-control);
+  background: var(--pm-sys-surface-raised); color: var(--pm-sys-text); transform: translateY(-200%);
+}
+.pm-skip:focus-visible { transform: none; }
+/* Icons (sprite symbols in the skeleton): 20x20 viewBox, 1.5px stroke, round caps. */
+.pm-i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.pm-i--16 { width: 16px; height: 16px; stroke-width: 1.875; }
+.pm-i--12 { width: 12px; height: 12px; stroke-width: 2.5; }
+/* App grid. The rail is fixed, so it is out of flow; main always takes column 2. */
+.pm-app {
+  display: grid; grid-template-columns: var(--pm-rail-w) minmax(0, 1fr); height: 100vh;
+  transition: grid-template-columns var(--pm-motion-layout) var(--pm-ease-out);
+}
+.pm-app > main { grid-column: 2; min-width: 0; }
+:root[data-rail="collapsed"] { --pm-rail-w: 64px; }
+
+/* ------------------------------------------------------------------ Rail (SPEC C.2, D.2) */
+.pm-rail {
+  position: fixed; inset: 0 auto 0 0; z-index: var(--pm-z-rail); width: var(--pm-rail-w); display: flex;
+  flex-direction: column; padding: 8px; overflow: hidden; background: var(--pm-sys-surface-rail);
+  color: var(--pm-sys-text-on-rail); border-right: 1px solid var(--pm-sys-hairline-on-rail);
+  transition: width var(--pm-motion-layout) var(--pm-ease-out);
+}
+/* Wordmark row: 56 */
+.pm-rail-head { flex: none; display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 4px 0 12px; }
+.pm-wordmark {
+  font-size: 20px; line-height: 24px; font-weight: 700; letter-spacing: -0.01em; color: var(--pm-sys-text-on-rail);
+  text-decoration: none;
+}
+.pm-rail-toggle {
+  display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0;
+  border-radius: var(--pm-radius-control); background: transparent; color: var(--pm-sys-text-on-rail-muted);
+  cursor: pointer; transition: background var(--pm-motion-state), color var(--pm-motion-state);
+}
+.pm-rail-toggle:hover { background: var(--pm-sys-surface-rail-active); color: var(--pm-sys-text-on-rail); }
+.pm-rail-toggle .pm-i-expand { display: none; }
+/* The monogram is plain branding (collapsed rail only); it is not the toggle. */
+.pm-monogram {
+  display: none; place-items: center; width: 28px; height: 28px; border-radius: var(--pm-radius-control);
+  border: 1px solid var(--pm-sys-hairline-on-rail); background: var(--pm-sys-surface-rail-active);
+  color: var(--pm-sys-text-on-rail); font-size: var(--pm-type-label-size); line-height: 1; font-weight: 700;
+}
+/* Nav block */
+.pm-rail-nav { flex: none; }
+.pm-rail-list { list-style: none; margin: 0; padding: 0; }
+/* Rail item: 36 tall (All projects: 40), icon 20, Label, trailing meta */
+.pm-rail-item {
+  position: relative; display: flex; align-items: center; gap: 12px; height: 36px; padding: 0 12px;
+  border-radius: var(--pm-radius-control); font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight);
+  color: var(--pm-sys-text-on-rail-muted); text-decoration: none; white-space: nowrap;
+  transition: background var(--pm-motion-state), color var(--pm-motion-state);
+}
+.pm-rail-all { height: 40px; }
+.pm-rail-item:hover { background: var(--pm-sys-surface-rail-active); color: var(--pm-sys-text-on-rail); }
+.pm-rail-item[aria-current="page"] { background: var(--pm-sys-surface-rail-active); color: var(--pm-sys-text-on-rail); font-weight: 600; }
+.pm-rail-label { position: relative; flex: 0 1 auto; }
+.pm-rail-meta {
+  margin-left: auto; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line);
+  font-weight: var(--pm-type-meta-weight); letter-spacing: var(--pm-type-meta-tracking);
+  color: var(--pm-sys-text-on-rail-muted);
+}
+/* Locked destination (still a link): dimmed icon and a lock glyph. The label keeps the muted rail colour, which is the checked 8.84:1 pair. */
+.pm-rail-item[data-locked] .pm-i:first-child { opacity: 0.6; }
+.pm-rail-lock { margin-left: auto; width: 14px; height: 14px; stroke-width: 2; opacity: 0.8; }
+.pm-rail-item--dev { margin-top: 12px; }
+/* Pen circle: one clean chalk ellipse around the active label (expanded) or icon (collapsed). */
+.pm-pen {
+  position: absolute; left: -11px; right: -11px; top: -9px; bottom: -9px; width: auto; height: auto; max-width: none;
+  overflow: visible; pointer-events: none; transform: rotate(-2deg); fill: none; stroke: var(--pm-sys-chalk-on-rail);
+  stroke-width: 1.5;
+}
+.pm-rail-item:not([aria-current="page"]) .pm-pen { display: none; }
+/* RV4 addition: an absolutely positioned SVG with height:auto takes its height from the viewBox ratio and ignores bottom,
+   so on short labels ("Build", "Try it") the ellipse sat high and flat. Size it explicitly (label + 11px each side, + 9px above and below). */
+.pm-rail-label > .pm-pen { width: calc(100% + 22px); height: calc(100% + 18px); }
+/* Stitch seam: 1 */
+.pm-rail-seam { height: 1px; background-image: repeating-linear-gradient(90deg, var(--pm-sys-hairline-on-rail) 0 6px, transparent 6px 10px); }
+/* Project block: 56 */
+.pm-rail-project { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 12px; }
+.pm-rail-tile {
+  flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--pm-radius-control);
+  border: 1px solid var(--pm-sys-hairline-on-rail); background: var(--pm-sys-surface-rail-active);
+  color: var(--pm-sys-text-on-rail); font-size: var(--pm-type-label-size); line-height: 1; font-weight: 700;
+}
+.pm-rail-project-text { display: flex; flex-direction: column; min-width: 0; }
+.pm-rail-project-name {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight);
+  color: var(--pm-sys-text-on-rail);
+}
+.pm-rail-status {
+  display: flex; align-items: center; gap: 6px; font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking);
+  color: var(--pm-sys-text-on-rail-muted);
+}
+.pm-rail-status::before {
+  content: ""; flex: none; width: 8px; height: 8px; border-radius: var(--pm-radius-round);
+  background: var(--pm-sys-chalk-on-rail);
+}
+/* The dot follows data-status: chalk only for Working, a filled ink-100 head for Needs you, a hollow ring otherwise
+   (the label beside it carries the status; status colours are not verified on the ink rail). */
+.pm-rail-status[data-status="needs-you"]::before { background: var(--pm-sys-text-on-rail); }
+.pm-rail-status:not([data-status="working"], [data-status="needs-you"])::before {
+  background: transparent; box-shadow: inset 0 0 0 1.5px var(--pm-sys-text-on-rail-muted);
+}
+.pm-rail-spacer { flex: 1 1 12px; min-height: 12px; }
+/* Budget row: 44. Never tokens here. */
+.pm-rail-budget { flex: none; display: flex; flex-direction: column; justify-content: center; gap: 6px; height: 44px; padding: 0 12px; }
+.pm-rail-budget-text { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; white-space: nowrap; }
+.pm-rail-budget-label {
+  font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line);
+  letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-on-rail-muted);
+}
+.pm-rail-budget-value {
+  font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight); color: var(--pm-sys-text-on-rail);
+}
+.pm-rail-track { position: relative; height: 4px; background: var(--pm-sys-hairline-on-rail); }
+.pm-rail-fill { position: absolute; inset: 0 auto 0 0; width: var(--pm-fill, 0%); background: var(--pm-sys-text-on-rail); }
+/* User row: 48 */
+.pm-rail-user {
+  flex: none; display: flex; align-items: center; gap: 12px; width: 100%; height: 48px; padding: 0 12px; border: 0;
+  border-radius: var(--pm-radius-control); background: transparent; color: var(--pm-sys-text-on-rail);
+  text-align: left; cursor: pointer; transition: background var(--pm-motion-state);
+}
+.pm-rail-user:hover { background: var(--pm-sys-surface-rail-active); }
+.pm-rail-avatar {
+  flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--pm-radius-round);
+  border: 1px solid var(--pm-sys-hairline-on-rail); background: var(--pm-sys-surface-rail-active);
+  font-size: var(--pm-type-meta-size); line-height: 1; font-weight: 600;
+}
+.pm-rail-user-text { display: flex; flex-direction: column; min-width: 0; }
+.pm-rail-user-name {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight);
+}
+.pm-rail-user-sub {
+  font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line);
+  letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-on-rail-muted);
+}
+/* Popovers owned by the shell: user menu and history list */
+.pm-rail-menu, .pm-history {
+  position: fixed; margin: 0; padding: var(--pm-space-2); border: var(--pm-hairline);
+  border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); color: var(--pm-sys-text);
+  box-shadow: var(--pm-shadow-float); z-index: var(--pm-z-popover);
+}
+.pm-rail-menu { inset: auto auto 64px 8px; width: 232px; }
+.pm-rail-menu-item {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-3); width: 100%;
+  height: 36px; padding: 0 var(--pm-space-3); border: 0; border-radius: var(--pm-radius-control);
+  background: transparent; color: var(--pm-sys-text); font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); text-align: left;
+  text-decoration: none; cursor: pointer;
+}
+.pm-rail-menu-item:hover { background: var(--pm-sys-surface-sunken); }
+.pm-rail-switch {
+  position: relative; flex: none; width: 32px; height: 18px; border-radius: var(--pm-radius-round);
+  border: 1px solid var(--pm-sys-control-border); background: var(--pm-sys-surface-sunken);
+  transition: background var(--pm-motion-state);
+}
+.pm-rail-switch::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px;
+  border-radius: var(--pm-radius-round); background: var(--pm-sys-text);
+  transition: transform var(--pm-motion-state);
+}
+[aria-checked="true"] > .pm-rail-switch { background: var(--pm-sys-text); border-color: var(--pm-sys-text); }
+[aria-checked="true"] > .pm-rail-switch::after { transform: translateX(14px); background: var(--pm-sys-text-on-ink); }
+/* Collapsed rail (64px): icon tiles 36x36 with a tooltip, pen circle around the icon, no text. */
+:root[data-rail="collapsed"] .pm-rail :is(.pm-wordmark, .pm-rail-meta, .pm-rail-lock, .pm-rail-project-text, .pm-rail-budget-text, .pm-rail-user-text) {
+  display: none;
+}
+/* Collapsed head: the monogram in a 56px row, then a PERMANENT 40px expand button (not hover-dependent), so 96px in all. */
+:root[data-rail="collapsed"] .pm-rail .pm-rail-head { flex-direction: column; justify-content: flex-start; height: 96px; padding: 0; }
+:root[data-rail="collapsed"] .pm-rail .pm-monogram { display: grid; flex: none; margin: 14px 0; }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-toggle {
+  flex: none; width: 40px; height: 40px; border: 1px solid var(--pm-sys-hairline-on-rail);
+  background: var(--pm-sys-surface-rail-active); color: var(--pm-sys-text-on-rail);
+}
+:root[data-rail="collapsed"] .pm-rail .pm-rail-toggle:hover { border-color: var(--pm-sys-text-on-rail-muted); }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-toggle .pm-i-collapse { display: none; }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-toggle .pm-i-expand { display: block; }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-item { width: 36px; margin-inline: auto; padding: 0 8px; }
+/* Locked destination keeps its lock when collapsed: a small badge at the tile's bottom-right (not colour alone). */
+:root[data-rail="collapsed"] .pm-rail .pm-rail-item[data-locked] .pm-rail-lock {
+  display: block; position: absolute; right: 1px; bottom: 1px; width: 11px; height: 11px; margin: 0; opacity: 1;
+  border-radius: var(--pm-radius-round); background: var(--pm-sys-surface-rail); color: var(--pm-sys-text-on-rail-muted);
+}
+:root[data-rail="collapsed"] .pm-rail .pm-rail-label { position: absolute; inset: 0; font-size: 0; line-height: 0; }
+:root[data-rail="collapsed"] .pm-rail .pm-pen { left: 50%; right: auto; top: 50%; bottom: auto; width: 34px; height: 30px; margin: -15px 0 0 -17px; }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-project { justify-content: center; padding: 0; }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-budget { align-items: center; padding: 0; }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-track { width: 4px; height: 40px; }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-fill { inset: auto 0 0 0; width: auto; height: var(--pm-fill, 0%); }
+:root[data-rail="collapsed"] .pm-rail .pm-rail-user { justify-content: center; padding: 0; }
+/* Rail tooltip (shell.js): one fixed element beside the hovered or focused rail control, so the rail's overflow never clips it.
+   Inverse colours (text on ink in light, ink on text in dark) keep it above 4.5:1 in both themes. It never animates. */
+.pm-tip {
+  position: fixed; z-index: var(--pm-z-popover); display: flex; align-items: center; gap: var(--pm-space-2);
+  max-width: 280px; padding: 6px 10px; border-radius: var(--pm-radius-control); background: var(--pm-sys-text);
+  color: var(--pm-sys-text-on-ink); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight); white-space: nowrap; pointer-events: none; box-shadow: var(--pm-shadow-float);
+}
+.pm-tip kbd {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border-radius: var(--pm-radius-chip);
+  border: 1px solid var(--pm-sys-control-border); font: inherit; font-size: var(--pm-type-meta-size); line-height: 1;
+}
+
+/* First-visit rail hint (shell.js): shown once, only while nothing is stored in pm.rail and the rail defaulted to collapsed.
+   A callout beside the expand button with a caret toward it; it never takes focus and stays clear of the thread. Inverse colours as .pm-tip. */
+.pm-rail-hint {
+  position: fixed; z-index: var(--pm-z-popover); display: flex; align-items: center; gap: var(--pm-space-3);
+  max-width: 300px; padding: 8px 8px 8px 12px; border-radius: var(--pm-radius-control); background: var(--pm-sys-text);
+  color: var(--pm-sys-text-on-ink); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight); box-shadow: var(--pm-shadow-float);
+}
+.pm-rail-hint::before {
+  content: ""; position: absolute; left: -5px; top: var(--pm-hint-caret, 50%); width: 10px; height: 10px; margin-top: -5px;
+  background: var(--pm-sys-text); transform: rotate(45deg); border-radius: 2px;
+}
+.pm-rail-hint[hidden] { display: none; }
+.pm-rail-hint button {
+  flex: none; min-height: 32px; padding: 0 12px; border: 1px solid var(--pm-sys-text-on-ink); border-radius: var(--pm-radius-control);
+  background: transparent; color: var(--pm-sys-text-on-ink); font: inherit; cursor: pointer;
+}
+.pm-rail-hint button:hover { background: var(--pm-sys-text-on-ink); color: var(--pm-sys-text); }
+.pm-rail-hint button:focus-visible { outline: 2px solid var(--pm-sys-text-on-ink); outline-offset: 2px; }
+
+/* ------------------------------------------------------------------ Page and workbench mains (SPEC C.5) */
+.pm-main { height: 100vh; overflow-y: auto; scroll-padding-top: calc(var(--pm-topbar-h) + 16px); }
+.pm-main--workbench { overflow: hidden; display: grid; grid-template-rows: var(--pm-topbar-h) var(--pm-strip-h) minmax(0, 1fr); }
+/* Live logs and other workbenches with no strip */
+.pm-main--workbench.pm-main--nostrip { grid-template-rows: var(--pm-topbar-h) minmax(0, 1fr); }
+.pm-workbench { min-height: 0; min-width: 0; }
+
+/* ------------------------------------------------------------------ Top bar (SPEC C.3, D.4) */
+.pm-topbar {
+  position: sticky; top: 0; z-index: var(--pm-z-topbar); height: var(--pm-topbar-h); display: grid;
+  /* Breadcrumb takes its natural width first and gives it back when space is short (crumbs ellipsize);
+     the tape column takes the rest, never below 360 (the element caps itself at 440 and centres). */
+  grid-template-columns: auto minmax(0, max-content) minmax(var(--pm-tape-w), 1fr) auto;
+  align-items: center; gap: 16px; padding: 0 var(--pm-content-pad); background: var(--pm-sys-ground);
+}
+/* No tape on this screen (projects list, new project, live logs): the tape column disappears and the slot stays right aligned. */
+.pm-topbar:not(:has(> .pm-tape:not([hidden]))) { grid-template-columns: auto minmax(0, 1fr) auto; }
+.pm-topbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background-image: var(--pm-stitch); }
+.pm-back {
+  grid-column: 1; display: grid; place-items: center; width: 32px; height: 32px;
+  border-radius: var(--pm-radius-control); color: var(--pm-sys-text-secondary); text-decoration: none;
+  transition: background var(--pm-motion-state);
+}
+.pm-back:hover { background: var(--pm-sys-surface-sunken); }
+/* Hidden on the projects list, width kept so the breadcrumb does not shift */
+.pm-back--hidden { visibility: hidden; }
+.pm-crumb {
+  grid-column: 2; min-width: 0; font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line);
+  letter-spacing: var(--pm-type-meta-tracking);
+}
+.pm-crumb ol { display: flex; align-items: center; min-width: 0; margin: 0; padding: 0; list-style: none; }
+.pm-crumb li { display: flex; align-items: center; min-width: 0; }
+.pm-crumb li + li::before { content: "/"; margin: 0 var(--pm-space-2); color: var(--pm-sys-hairline); }
+.pm-crumb a, .pm-crumb [aria-current] { min-width: 0; max-width: 24ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pm-crumb a { color: var(--pm-sys-text-muted); text-decoration: none; }
+.pm-crumb a:hover { text-decoration: underline; }
+.pm-crumb [aria-current] { font-weight: 600; color: var(--pm-sys-text); }
+/* Thread slot: the One Thread element, or a state sentence with a pin. Never empty. */
+.pm-slot {
+  grid-column: -2 / -1; justify-self: end; display: flex; align-items: center; gap: var(--pm-space-3);
+  min-width: min-content; max-width: 380px;
+}
+.pm-slot > .pm-pin { flex: none; }
+.pm-slot-sentence {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+  min-width: 0; color: var(--pm-sys-text-muted);
+}
+/* RV4 additions (ruling 2026-09-30): the breadcrumb keeps a readable width before the slot does.
+   1. The crumb column never drops below 180px (a readable floor); spare space is shared with the slot, whose
+      sentence clamps first (two lines, then an ellipsis). Screens put the full sentence in the sentence's title.
+   2. Tape-less bars (projects list, new project, overview, live logs) let the slot grow to 600px, so no page needs an override.
+   3. C.3 collapse: when the rail is expanded below 1280px, a breadcrumb of four or more crumbs shows
+      "Projects / … / leaf"; the "…" is still the link to the parent crumb (its accessible name is unchanged). */
+.pm-topbar { grid-template-columns: auto minmax(180px, max-content) minmax(var(--pm-tape-w), 1fr) auto; }
+.pm-topbar:not(:has(> .pm-tape:not([hidden]))) { grid-template-columns: auto minmax(180px, 1fr) auto; }
+.pm-topbar:not(:has(> .pm-tape:not([hidden]))) .pm-slot { max-width: 600px; }
+.pm-crumb li:first-child, .pm-crumb li:last-child { flex: none; }
+@media (max-width: 1279.98px) {
+  :root:not([data-rail="collapsed"]) .pm-crumb li:not(:first-child):not(:nth-last-child(-n+2)) { display: none; }
+  :root:not([data-rail="collapsed"]) .pm-crumb ol:has(> li:nth-child(4)) > li:nth-last-child(2) > a { max-width: none; font-size: 0; letter-spacing: 0; }
+  :root:not([data-rail="collapsed"]) .pm-crumb ol:has(> li:nth-child(4)) > li:nth-last-child(2) > a::before {
+    content: "\2026"; font-size: var(--pm-type-meta-size); letter-spacing: var(--pm-type-meta-tracking);
+  }
+}
+
+/* ------------------------------------------------------------------ Journey tape (SPEC D.3, G.1) */
+.pm-tape {
+  --pm-tape-h: 40px; --pm-tape-base: 8px; --pm-tape-tick-h: 8px; position: relative; grid-column: 3;
+  justify-self: center; width: 100%; min-width: var(--pm-tape-w); max-width: var(--pm-tape-w-max); padding: 0;
+}
+/* Step padding (9 + 8) keeps the five labels apart at the 360px minimum; the first pin may overhang the gap. */
+.pm-tape ol {
+  position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: auto; height: var(--pm-tape-h);
+  margin: 0; padding: 0; list-style: none; background-image: var(--pm-stitch); background-repeat: no-repeat;
+  background-size: 100% 1px; background-position: 0 calc(100% - var(--pm-tape-base));
+}
+/* The baseline row is the bottom row of every tick, so ticks rise from the stitch instead of crossing it. */
+/* Closing major tick of the measure */
+.pm-tape ol::after {
+  content: ""; position: absolute; right: 0; bottom: var(--pm-tape-base); width: 2px; height: var(--pm-tape-tick-h);
+  background: var(--pm-sys-hairline);
+}
+.pm-tape li { position: relative; min-width: 0; }
+/* Major tick (2px) at the start of each step */
+.pm-tape li::before {
+  content: ""; position: absolute; left: 0; bottom: var(--pm-tape-base); width: 2px; height: var(--pm-tape-tick-h);
+  background: var(--pm-cmp-tape-tick);
+}
+/* Three minor ticks (1x4) between one step and the next */
+.pm-tape li::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: var(--pm-tape-base); height: 4px;
+  background:
+    linear-gradient(var(--pm-sys-hairline), var(--pm-sys-hairline)) 25% 0 / 1px 4px no-repeat,
+    linear-gradient(var(--pm-sys-hairline), var(--pm-sys-hairline)) 50% 0 / 1px 4px no-repeat,
+    linear-gradient(var(--pm-sys-hairline), var(--pm-sys-hairline)) 75% 0 / 1px 4px no-repeat;
+}
+.pm-tape-step {
+  display: block; height: 100%; padding: 0 8px 0 9px; border-radius: var(--pm-radius-chip);
+  color: var(--pm-sys-text-muted); text-decoration: none;
+}
+.pm-tape-label {
+  display: block; height: 16px; font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight); white-space: nowrap;
+}
+a.pm-tape-step:hover .pm-tape-label { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+/* Number, check or lock glyph: sits on the measure beside its tick */
+.pm-tape-num {
+  position: absolute; left: 9px; bottom: 10px; display: flex; align-items: center; height: 12px;
+  font-size: var(--pm-type-meta-size); line-height: 12px; color: var(--pm-sys-text-meta);
+}
+/* Sub-progress: n of m filled 4px ticks under the label, below the baseline */
+.pm-tape-ticks { position: absolute; left: 9px; bottom: 1px; display: flex; gap: 3px; height: 4px; }
+.pm-tape-ticks i { width: 2px; height: 4px; background: var(--pm-sys-hairline); }
+.pm-tape-ticks i.on { background: var(--pm-cmp-tape-done); }
+.pm-tape li[data-state="done"]::before { background: var(--pm-cmp-tape-done); }
+.pm-tape li[data-state="done"] .pm-tape-num { color: var(--pm-cmp-tape-done); }
+.pm-tape li[data-state="done"] .pm-tape-step { color: var(--pm-sys-text); }
+.pm-tape li[data-state="current"] .pm-tape-step { color: var(--pm-sys-text); }
+.pm-tape li[data-state="current"] .pm-tape-label { font-weight: 600; }
+.pm-tape li[data-state="current"] .pm-tape-num { color: var(--pm-sys-text); }
+.pm-tape li[data-state="locked"]::before { background: var(--pm-sys-status-locked); }
+.pm-tape li[data-state="locked"] .pm-tape-step, .pm-tape li[data-state="locked"] .pm-tape-num { color: var(--pm-sys-status-locked); }
+/* You-are-here pin: 10px head, 2px halo, 1px shank. Positioned by shell.js through --pm-tape-x. */
+.pm-tape-pin {
+  position: absolute; z-index: 1; left: 0; bottom: calc(var(--pm-tape-base) + var(--pm-tape-tick-h)); width: 10px;
+  height: 10px; margin-left: -5px; border-radius: var(--pm-radius-round); background: var(--pm-cmp-tape-pin);
+  box-shadow: 0 0 0 2px var(--pm-sys-ground); transform: translateX(var(--pm-tape-x, 0px)); pointer-events: none;
+}
+.pm-tape-pin::after {
+  content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: var(--pm-tape-tick-h);
+  margin-left: -0.5px; background: var(--pm-cmp-tape-pin);
+}
+.pm-tape[data-ready] .pm-tape-pin { transition: transform var(--pm-motion-layout) var(--pm-ease-out); }
+/* Large tape: project overview only. 640px, numbers at Digits size, shank runs 24px into the banner below. */
+.pm-tape--large { --pm-tape-h: 64px; --pm-tape-tick-h: 12px; grid-column: auto; width: 640px; min-width: 0; max-width: 100%; }
+.pm-tape--large .pm-tape-num {
+  height: 32px; font-size: var(--pm-type-digits-size); line-height: var(--pm-type-digits-line);
+  font-weight: var(--pm-type-digits-weight); letter-spacing: var(--pm-type-digits-tracking);
+}
+.pm-tape--large .pm-i--12 { width: 20px; height: 20px; stroke-width: 1.8; }
+.pm-tape--large .pm-tape-pin::after { height: calc(var(--pm-tape-tick-h) + var(--pm-tape-base) + 24px); }
+
+/* ------------------------------------------------------------------ Nothing-is-lost strip (SPEC G.2) */
+.pm-strip {
+  display: flex; align-items: center; gap: var(--pm-space-2); height: var(--pm-strip-h);
+  padding: 0 var(--pm-content-pad); border-bottom: var(--pm-hairline); background: var(--pm-sys-ground);
+  font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line);
+  letter-spacing: var(--pm-type-meta-tracking); color: var(--pm-sys-text-muted); white-space: nowrap;
+}
+.pm-strip-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.pm-strip-history {
+  flex: none; padding: 0; border: 0; background: transparent; color: var(--pm-sys-text-muted); font: inherit;
+  letter-spacing: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px;
+  cursor: pointer;
+}
+.pm-strip-history:hover { color: var(--pm-sys-text); }
+.pm-history { inset: calc(var(--pm-topbar-h) + var(--pm-strip-h)) auto auto calc(var(--pm-rail-w) + var(--pm-content-pad)); width: 380px; }
+.pm-history ol { margin: 0; padding: 0; list-style: none; }
+.pm-history li {
+  display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: var(--pm-space-3);
+  height: 32px; padding: 0 var(--pm-space-2); font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line); color: var(--pm-sys-text-muted);
+}
+.pm-history li > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pm-sys-text); }
+
+/* ------------------------------------------------------------------ Title row, content, sticky section heads (SPEC C.4) */
+/* One line: h1, its sentence beside it, at most two quiet actions or a search on the right.
+   16 + 28 + 12 = 56, so the main job starts at y = 140 under the strip. */
+.pm-content { max-width: calc(var(--pm-content-max) + 2 * var(--pm-content-pad)); padding: 0 var(--pm-content-pad) var(--pm-space-8); }
+.pm-title {
+  display: flex; align-items: center; gap: var(--pm-space-4); min-height: 28px;
+  padding: var(--pm-space-4) 0 var(--pm-space-3); box-sizing: content-box;
+}
+.pm-title h1 { flex: none; }
+.pm-title-sentence { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pm-sys-text-muted); }
+.pm-title-actions { display: flex; align-items: center; gap: var(--pm-space-2); margin-left: auto; flex: none; }
+/* Overview-style titles: the sentence wraps under the h1 (the main job may start lower, y <= 204). */
+.pm-title--stacked { flex-wrap: wrap; row-gap: 0; }
+.pm-title--stacked .pm-title-sentence { flex-basis: 100%; order: 3; white-space: normal; }
+.pm-section-head {
+  position: sticky; top: 0; z-index: var(--pm-z-sticky-section); background: var(--pm-sys-surface-raised);
+  border-bottom: var(--pm-hairline);
+}
+.pm-section-head--page { top: var(--pm-topbar-h); }
+
+/* ------------------------------------------------------------------ Archetype grids (SPEC C.6) */
+.pm-arch-list { display: block; }
+.pm-arch-overview { display: grid; grid-template-columns: minmax(0, 1fr) var(--pm-panel-w); gap: var(--pm-space-6); }
+.pm-arch-task { width: 560px; max-width: 100%; margin-inline: auto; }
+.pm-arch-chat, .pm-arch-stage {
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--pm-panel-w); grid-template-rows: minmax(0, 1fr);
+  min-height: 0; height: 100%;
+}
+.pm-arch-reading {
+  display: grid; grid-template-columns: var(--pm-toc-w) minmax(0, 68ch) minmax(80px, 1fr);
+  grid-template-rows: minmax(0, 1fr); column-gap: var(--pm-space-6); min-height: 0; height: 100%;
+}
+.pm-arch-plan { max-width: 760px; }
+.pm-arch-board { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--pm-space-6); }
+.pm-arch-settings { max-width: 720px; }
+.pm-arch-log { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; height: 100%; }
+@media (min-width: 1280px) {
+  .pm-arch-board { grid-template-columns: minmax(0, 1fr) 320px; }
+}
+@media (min-width: 1440px) {
+  .pm-arch-task { width: 600px; }
+}
+/* Side panel: sized to the viewport, scrolls only when its own content overflows. */
+.pm-panel {
+  height: calc(100vh - var(--pm-topbar-h) - var(--pm-strip-h)); overflow-y: auto;
+  background: var(--pm-sys-surface-raised); border-left: var(--pm-hairline);
+}
+.pm-main--nostrip .pm-panel { height: calc(100vh - var(--pm-topbar-h)); }
+/* Panel inside a page-scroll screen (overview): natural height, no scroller. */
+.pm-panel--inline { height: auto; overflow: visible; }
+/* Below 1024px: rail is forced collapsed by shell.js, panels stack under the main job. Nothing more. */
+@media (max-width: 1023.98px) {
+  .pm-arch-overview, .pm-arch-chat, .pm-arch-stage, .pm-arch-board, .pm-arch-reading { grid-template-columns: minmax(0, 1fr); }
+  .pm-arch-chat, .pm-arch-stage { grid-template-rows: minmax(0, 1fr) auto; }
+  .pm-panel { height: auto; max-height: 40vh; border-left: 0; border-top: var(--pm-hairline); }
+}
+
+/* PASS 2 (SPEC P.5.1) */
+/* The content box is a size container: archetypes below switch on its width, not the viewport, so the same rule holds with the rail collapsed or expanded. */
+.pm-content { container: pm-content / inline-size; }
+/* Task with aside: form 420 to 560 plus a fitted aside, centred as one block. */
+.pm-arch-task2 {
+  display: grid; grid-template-columns: minmax(420px, 560px) var(--pm-panel-w); column-gap: var(--pm-space-6);
+  justify-content: center; align-items: start;
+}
+/* Settings with aside, and Request: main column 720 plus a fitted aside. */
+.pm-arch-settings2, .pm-arch-request {
+  display: grid; grid-template-columns: minmax(0, 720px) var(--pm-panel-w); column-gap: var(--pm-space-6); align-items: start;
+}
+/* Plan with aside: route column 760 plus a fitted aside. */
+.pm-arch-plan2 {
+  display: grid; grid-template-columns: minmax(0, 760px) var(--pm-panel-w); column-gap: var(--pm-space-6); align-items: start;
+}
+/* Build: one column, two columns (main, side over act) when the content box is at least 1000px wide. */
+.pm-arch-build {
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "side" "act";
+  gap: var(--pm-space-6); align-items: start;
+}
+.pm-build-main { grid-area: main; min-width: 0; }
+.pm-build-side { grid-area: side; min-width: 0; align-content: start; }
+.pm-build-act { grid-area: act; min-width: 0; align-content: start; }
+@container pm-content (min-width: 1000px) {
+  /* Row 1 is the side card's height, so the act card follows it at the 24px gap however tall the main column is. */
+  .pm-arch-build { grid-template-columns: minmax(0, 1fr) 320px; grid-template-rows: auto 1fr; grid-template-areas: "main side" "main act"; }
+}
+/* Single column when the content box is under 900px (rail expanded at 1142). */
+@container pm-content (max-width: 899px) {
+  .pm-arch-task2, .pm-arch-settings2, .pm-arch-request, .pm-arch-plan2 { grid-template-columns: minmax(0, 1fr); }
+  .pm-panel--fit.pm-panel--sticky { position: static; }
+}
+/* Settings keeps its two columns down to 800px (the 832px content box at 1142 with the rail expanded) with a 280px aside,
+   so the aside stays beside the sections instead of dropping to the page bottom (RV8, 16). */
+@container pm-content (min-width: 800px) and (max-width: 899px) {
+  .pm-arch-settings2 { grid-template-columns: minmax(0, 1fr) 280px; }
+  .pm-arch-settings2 > .pm-panel--fit.pm-panel--sticky { position: sticky; }
+}
+/* Fitted panel (Ruling 10): content height, hairline card, never taller than its content. The doubled class beats the older
+   .pm-panel, .pm-decisions and .pm-checklist rules that load after this file and set a viewport height. */
+.pm-panel--fit, .pm-panel--fit.pm-panel--fit {
+  height: auto; max-height: calc(100vh - var(--pm-topbar-h) - var(--pm-strip-h) - 40px); overflow-y: auto;
+  border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised);
+}
+.pm-panel--fit.pm-panel--sticky { position: sticky; top: calc(var(--pm-topbar-h) + 16px); }
+/* On the roadmap the sticky gate bar sits under the top bar too (--pm-gate-h is set by the screen; SPEC P.2 F8). */
+.pm-arch-plan2 .pm-panel--fit.pm-panel--sticky { top: calc(var(--pm-topbar-h) + var(--pm-gate-h, 0px) + 16px); }
+/* Slot parts that follow a form's thread (Ruling 15, SPEC P.5.14): a wrapped pin and sentence lay out like the slot itself. */
+.pm-slot > [data-show-when]:not(.pm-slot-sentence) { display: flex; align-items: center; gap: var(--pm-space-3); min-width: 0; }
+.pm-slot > [data-show-when] > .pm-pin { flex: none; }
+/* The blocked slot sentence is short and one line (components.js writes at most 16 characters and puts the full reason in its title). */
+.pm-slot [data-slot-why] { flex: none; min-width: 0; max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The Try it checklist as a fitted card: the foot follows the items instead of sitting at the panel's bottom (SPEC P.2 F7). */
+.pm-checklist.pm-panel--fit { grid-template-rows: auto auto auto; }
+.pm-checklist.pm-panel--fit .pm-checklist-items { overflow-y: visible; }
+/* Inside the chat and stage workbenches the fitted card sits inset from the edges, at its content height (align-self start:
+   the workbench row is the full column). .pm-wb is the workbench grid the chat screens (05, 05b, 06) use. */
+.pm-arch-chat .pm-panel--fit, .pm-arch-stage .pm-panel--fit, .pm-arch-chat .pm-panel--fit.pm-panel--fit, .pm-arch-stage .pm-panel--fit.pm-panel--fit,
+.pm-wb > .pm-panel--fit, .pm-wb > .pm-panel--fit.pm-panel--fit {
+  align-self: start; margin: var(--pm-space-4) var(--pm-space-4) 0 0; border-left: var(--pm-hairline); max-height: calc(100% - var(--pm-space-4));
+}
+/* A current tape step that is blocked (23b: Review, round 2): its major tick and number wear the Blocked colour (RV10).
+   Markup: <li data-state="current" data-status="blocked">. */
+.pm-tape li[data-status="blocked"]::before { background: var(--pm-sys-status-blocked); }
+.pm-tape li[data-status="blocked"] .pm-tape-num { color: var(--pm-sys-status-blocked); }
+/* C.3 collapse at any rail state: shell.js sets data-collapsed on a breadcrumb of four or more crumbs whose links would be cut,
+   and it then reads "Projects / … / leaf"; the "…" is still the link to the parent crumb (its accessible name is unchanged). */
+.pm-crumb[data-collapsed] li:not(:first-child):not(:nth-last-child(-n+2)) { display: none; }
+.pm-crumb[data-collapsed] ol > li:nth-last-child(2) > a { max-width: none; font-size: 0; letter-spacing: 0; }
+.pm-crumb[data-collapsed] ol > li:nth-last-child(2) > a::before { content: "\2026"; font-size: var(--pm-type-meta-size); letter-spacing: var(--pm-type-meta-tracking); }

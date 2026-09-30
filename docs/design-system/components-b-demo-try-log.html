@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Components B demo: preview stage, checklist and log viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="components-a.css">
+<link rel="stylesheet" href="components-b.css">
+<script>
+  try { var t = localStorage.getItem("pm.theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+  /* Demo-only layout, tokens only. The first frame is exactly the viewport below the head and the section heading (56 + 40). */
+  .demo-head { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-4); height: var(--pm-topbar-h); padding: 0 var(--pm-content-pad); background: var(--pm-sys-ground); border-bottom: var(--pm-hairline); }
+  .demo-sec > .demo-h { position: sticky; top: var(--pm-topbar-h); z-index: 25; display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-4); height: 40px; padding: 0 var(--pm-content-pad); background: var(--pm-sys-ground); border-bottom: var(--pm-hairline); }
+  .demo-sec + .demo-sec { margin-top: var(--pm-space-7); }
+  .demo-frame { --pm-cmp-work-h: 100%; position: relative; overflow: hidden; width: min(100%, calc(100vw - 64px)); border-block: var(--pm-hairline); }
+  @media (min-width: 1280px) { .demo-frame { width: min(100%, calc(100vw - 248px)); } }
+  .demo-frame--try { height: min(calc(100vh - 96px), 648px); }
+  .demo-frame--state { width: 320px; height: 260px; border: var(--pm-hairline); }
+  .demo-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--pm-space-6); padding: var(--pm-space-4) var(--pm-content-pad); }
+  .demo-cap { padding: var(--pm-space-3) var(--pm-content-pad) 0; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); }
+  .demo-box { width: var(--pm-panel-w); background: var(--pm-sys-surface-raised); border: var(--pm-hairline); border-radius: var(--pm-radius-card); }
+  .demo-page { width: min(100%, calc(100vw - 248px), calc(var(--pm-content-max) + 2 * var(--pm-content-pad))); padding: var(--pm-space-4) var(--pm-content-pad) var(--pm-space-8); }
+  .demo-switch { display: inline-flex; align-items: center; gap: var(--pm-space-2); cursor: pointer; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-external" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></symbol>
+  <symbol id="pm-i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/></symbol>
+</defs></svg>
+
+<main class="pm-main">
+  <header class="demo-head">
+    <h1>Components B: try it and logs</h1>
+    <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" id="theme-toggle">Dark theme</button>
+  </header>
+
+  <section class="demo-sec" aria-labelledby="h-try">
+    <div class="demo-h"><h2 id="h-try">Preview stage and verdict checklist: 3 of 5 answered</h2><label class="demo-switch"><input class="pm-switch" type="checkbox" role="switch" data-words-toggle> <span class="pm-t-label">Show my words</span></label></div>
+    <div class="demo-frame demo-frame--try">
+      <div class="pm-wb">
+        <section class="pm-stage" aria-label="Private preview">
+          <div class="pm-stage-bar">
+            <span>Private preview · Sprint 1: Calculator on every device · Only people in your organisation can open it</span>
+            <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button">Open in a new tab <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-external"/></svg></button>
+          </div>
+          <div class="pm-stage-body">
+            <iframe title="Calculator preview, sprint 1" srcdoc="&lt;!doctype html&gt;&lt;meta charset='utf-8'&gt;&lt;body style='font-family:system-ui,sans-serif;margin:24px;max-width:420px'&gt;&lt;h2 style='font-size:20px;margin:0 0 16px'&gt;Calculator&lt;/h2&gt;&lt;label for='c'&gt;Current calculation&lt;/label&gt;&lt;br&gt;&lt;input id='c' style='width:100%;padding:8px;margin:8px 0;font-size:16px;box-sizing:border-box'&gt;&lt;br&gt;&lt;button style='padding:8px 16px;font-size:16px'&gt;Calculate&lt;/button&gt;&lt;p&gt;Result: &lt;/p&gt;"></iframe>
+          </div>
+        </section>
+        <aside class="pm-checklist" aria-label="Try these">
+          <div class="pm-checklist-head"><h2>Try these</h2><span class="pm-checklist-count pm-tnum">3 of 5 answered</span><span class="pm-progress pm-progress--line"><span class="pm-progress-track"><span class="pm-progress-fill" style="--pm-progress: 60%"></span></span></span></div>
+          <ol class="pm-checklist-items">
+            <li class="pm-check" data-verdict="yes">
+              <p class="pm-check-task">Open the calculator in your browser.</p>
+              <p class="pm-check-expected">You see an empty calculation box.</p>
+              <span class="pm-said">You said: 'a simple calculator' <a class="pm-said-edit" href="#">Edit that decision</a></span>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Open the calculator in your browser.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="true" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note" hidden><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?"></textarea></div>
+            </li>
+            <li class="pm-check" data-verdict="yes">
+              <p class="pm-check-task">Enter 1 + 2 and press Calculate.</p>
+              <p class="pm-check-expected">You see 3.</p>
+              <span class="pm-said">You said: 'just simple mathematical functions' <a class="pm-said-edit" href="#">Edit that decision</a></span>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Enter 1 + 2 and press Calculate.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="true" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note" hidden><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?"></textarea></div>
+            </li>
+            <li class="pm-check" data-verdict="not-quite">
+              <p class="pm-check-task">Enter 2 + 3 × 4 and press Calculate.</p>
+              <p class="pm-check-expected">You see 14.</p>
+              <span class="pm-said">You said: 'just simple mathematical functions' <a class="pm-said-edit" href="#">Edit that decision</a></span>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Enter 2 + 3 × 4 and press Calculate.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="true" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note"><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?">I saw 20</textarea></div>
+            </li>
+            <li class="pm-check" data-verdict="">
+              <p class="pm-check-task">Enter 1 ÷ 0 and press Calculate.</p>
+              <p class="pm-check-expected">You see the exact message you asked for.</p>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Enter 1 ÷ 0 and press Calculate.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="0" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note" hidden><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?"></textarea></div>
+            </li>
+            <li class="pm-check" data-verdict="">
+              <p class="pm-check-task">Add the calculator to your phone's home screen and open it.</p>
+              <p class="pm-check-expected">It opens with no login.</p>
+              <div class="pm-verdicts" role="radiogroup" aria-label="Did it work? Add the calculator to your phone's home screen and open it.">
+                <button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="0" data-value="yes">Yes</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="not-quite">Not quite</button><button class="pm-verdict" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="confusing">Confusing</button>
+              </div>
+              <div class="pm-verdict-note" hidden><textarea class="pm-textarea" rows="1" aria-label="What happened?" placeholder="What happened?"></textarea></div>
+            </li>
+          </ol>
+          <div class="pm-checklist-foot">
+            <p data-check-sentence>Your notes go to Pramaan as the next fix.</p>
+            <div class="pm-checklist-foot-row">
+              <button class="pm-btn pm-btn--thread" type="button" data-thread data-check-thread aria-describedby="chk-reason">Ask for changes (1)</button>
+              <button class="pm-btn pm-btn--quiet" type="button" data-check-anyway>Accept anyway</button>
+              <span class="pm-btn-reason" id="chk-reason" data-check-reason hidden></span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-sec" aria-labelledby="h-states">
+    <div class="demo-h"><h2 id="h-states">Stage states and checklist footers</h2></div>
+    <div class="demo-row">
+      <div class="demo-frame demo-frame--state"><section class="pm-stage" aria-label="Preview loading"><div class="pm-stage-bar"><span>Private preview · Sprint 1</span></div><div class="pm-stage-body"><div class="pm-stage-state"><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span><span class="pm-pin-sentence">Loading your preview…</span></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span></div></div></section></div>
+      <div class="demo-frame demo-frame--state"><section class="pm-stage" aria-label="Preview error"><div class="pm-stage-bar"><span>Private preview · Sprint 1</span></div><div class="pm-stage-body"><div class="pm-stage-state"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span><h3 class="pm-t-heading">The preview did not load.</h3><p>Try again, or open it in a new tab.</p><button class="pm-btn pm-btn--quiet" type="button">Try again</button></div></div></section></div>
+      <div class="demo-frame demo-frame--state"><section class="pm-stage" aria-label="Preview waiting"><div class="pm-stage-bar"><span>Private preview · Sprint 1</span></div><div class="pm-stage-body"><div class="pm-stage-state"><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span><p>Your preview appears here when sprint 1 is ready. Pramaan is building it now (1 of 3 features ready).</p><button class="pm-btn pm-btn--quiet" type="button">Open Build</button></div></div></section></div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-box"><div class="pm-checklist-foot"><div class="pm-checklist-foot-row"><button class="pm-btn pm-btn--thread-demo" type="button" aria-disabled="true" aria-describedby="foot-why">Accept sprint 1</button><span class="pm-btn-reason" id="foot-why">Answer all 5 to accept.</span></div></div></div>
+      <div class="demo-box"><div class="pm-checklist-foot"><div class="pm-checklist-foot-row"><button class="pm-btn pm-btn--thread-demo" type="button">Accept sprint 1</button></div></div></div>
+    </div>
+  </section>
+
+  <section class="demo-sec" aria-labelledby="h-log">
+    <div class="demo-h"><h2 id="h-log">Log viewer: live, 10 entries</h2></div>
+    <div class="demo-page">
+      <div class="pm-log" data-density="compact" style="--pm-cmp-log-h: 650px">
+        <div class="pm-log-filters">
+          <label class="pm-log-filter">Level <select class="pm-select"><option>All levels</option><option>Info</option><option>Warn</option><option>Error</option></select></label>
+          <label class="pm-log-filter">Project <select class="pm-select"><option>All projects</option><option>todo</option><option>test first</option></select></label>
+          <label class="demo-switch"><input class="pm-switch" type="checkbox" role="switch"> <span class="pm-t-label">Show requests</span></label>
+          <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-log-pause aria-pressed="false">Pause</button>
+          <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-log-add>Demo: add a line</button>
+        </div>
+        <p class="pm-log-count">Live · 69 lines · times are UTC</p>
+        <div class="pm-log-paused"><span class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span><span class="pm-pin-sentence"><span data-log-new>0</span> new lines</span></span><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-log-resume>Resume</button></div>
+        <ul class="pm-log-list" tabindex="0" aria-label="Log lines">
+          <li class="pm-log-hour">21:00 UTC</li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:00</span><div class="pm-log-main"><span class="pm-log-level" data-level="info">INFO</span><span>Job finished: plan sprint</span><span class="pm-log-wire">builder.job.finished</span><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-toggle-target="raw-1" aria-expanded="false" aria-controls="raw-1">Details</button></div><div class="pm-log-facts"><span class="pm-fact">job ddde3283 <button class="pm-copy" type="button" data-copy="ddde3283" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">todo</span><span class="pm-fact">95 s</span></div><pre class="pm-log-raw" id="raw-1" hidden>builder.job.finished job=ddde3283 project=todo kind=plan_sprint duration_s=95</pre></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:01</span><div class="pm-log-main"><span class="pm-log-level" data-level="info">INFO</span><span>Code received from GitHub</span><span class="pm-log-wire">webhook.write.received</span></div><div class="pm-log-facts"><span class="pm-fact">push</span></div></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:25</span><div class="pm-log-main"><span class="pm-log-level" data-level="info">INFO</span><span>Preview opened</span><span class="pm-log-wire">builder.preview.access_issued</span></div><div class="pm-log-facts"><span class="pm-fact">test first</span><span class="pm-fact">sprint 1</span></div></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:43:18</span><div class="pm-log-main"><span class="pm-log-level" data-level="info">INFO</span><span>Job finished: build feature</span><span class="pm-log-wire">builder.job.finished</span></div><div class="pm-log-facts"><span class="pm-fact">implement_feature</span><span class="pm-fact">24 min</span></div></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:43:37</span><div class="pm-log-main"><span class="pm-log-level" data-level="info">INFO</span><span>Job finished: check feature</span><span class="pm-log-wire">builder.job.finished</span></div><div class="pm-log-facts"><span class="pm-fact">check_feature</span></div></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:44:02</span><div class="pm-log-main"><span class="pm-log-level" data-level="info">INFO</span><span>Job finished: review feature</span><span class="pm-log-wire">builder.job.finished</span></div><div class="pm-log-facts"><span class="pm-fact">review_feature</span></div></li>
+          <li class="pm-log-hour">22:00 UTC</li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:05:12</span><div class="pm-log-main"><span class="pm-log-level" data-level="warn">WARN</span><span>Job retried: build feature</span><span class="pm-log-wire">builder.job.retried</span></div><div class="pm-log-facts"><span class="pm-fact">implement_feature</span></div></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:05:40</span><div class="pm-log-main"><span class="pm-log-level" data-level="error">ERROR</span><span>Job failed: check feature</span><span class="pm-log-wire">builder.job.failed</span><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-toggle-target="raw-2" aria-expanded="false" aria-controls="raw-2">Details</button></div><div class="pm-log-facts"><span class="pm-fact">check_feature</span></div><pre class="pm-log-raw" id="raw-2" hidden>builder.job.failed kind=check_feature</pre></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:06:03</span><div class="pm-log-main"><span class="pm-log-level" data-level="info">INFO</span><span>Job finished: build feature</span><span class="pm-log-wire">builder.job.finished</span></div><div class="pm-log-facts"><span class="pm-fact">implement_feature</span><span class="pm-fact">21 min</span></div></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:06:30</span><div class="pm-log-main"><span class="pm-log-level" data-level="info">INFO</span><span>Preview opened</span><span class="pm-log-wire">builder.preview.access_issued</span></div><div class="pm-log-facts"><span class="pm-fact">test first</span><span class="pm-fact">sprint 1</span></div></li>
+        </ul>
+      </div>
+      <p class="demo-cap" style="padding-left:0">Paused banner, as shown after Pause with new lines arriving</p>
+      <div class="pm-log" data-paused="true" style="margin-top: var(--pm-space-2)"><div class="pm-log-paused"><span class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span><span class="pm-pin-sentence">12 new lines</span></span><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button">Resume</button></div></div>
+    </div>
+  </section>
+</main>
+<script>
+  (function () { var b = document.getElementById("theme-toggle"); if (document.documentElement.dataset.theme === "dark") b.textContent = "Light theme"; })();
+  document.getElementById("theme-toggle").addEventListener("click", function () {
+    var d = document.documentElement, next = d.dataset.theme === "dark" ? "light" : "dark";
+    d.dataset.theme = next; this.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    try { localStorage.setItem("pm.theme", next); } catch (e) {}
+  });
+</script>
+<script defer src="components.js"></script>
+</body>
+</html>

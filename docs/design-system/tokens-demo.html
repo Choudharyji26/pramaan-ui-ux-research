@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tokens demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<script>
+  try {
+    var t = localStorage.getItem("pm.theme");
+    if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
+  } catch (e) {}
+</script>
+<style>
+  /* Demo-only layout. Uses tokens only; no colour literals. */
+  main { height: 100vh; overflow-y: auto; scroll-padding-top: var(--pm-scroll-pad); }
+  .page { max-width: var(--pm-content-max); margin: 0 auto; padding: var(--pm-space-6) var(--pm-content-pad) var(--pm-space-10); }
+  .bar { display: flex; align-items: center; gap: var(--pm-space-3); flex-wrap: wrap; }
+  .bar h1 { margin-right: auto; }
+  .btn { display: inline-flex; align-items: center; height: var(--pm-cmp-button-h); padding: 0 var(--pm-space-4); border-radius: var(--pm-cmp-button-radius); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); cursor: pointer; }
+  .btn--quiet { background: transparent; color: var(--pm-sys-text); border: 1px solid var(--pm-cmp-button-quiet-border); }
+  .btn--quiet:hover { background: var(--pm-sys-surface-sunken); }
+  .lede { margin-top: var(--pm-space-2); color: var(--pm-sys-text-muted); }
+  section { margin-top: var(--pm-space-7); }
+  section > h2 { margin-bottom: var(--pm-space-4); }
+  .seam { margin-top: var(--pm-space-6); }
+  .swatch-family + .swatch-family { margin-top: var(--pm-space-5); }
+  .swatch-family h3 { margin-bottom: var(--pm-space-2); color: var(--pm-sys-text-muted); }
+  .swatches { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: var(--pm-space-3); }
+  .swatch { display: flex; gap: var(--pm-space-3); align-items: center; padding: var(--pm-space-2); background: var(--pm-sys-surface-raised); border: var(--pm-hairline); border-radius: var(--pm-radius-card); }
+  .chip { flex: none; width: 44px; height: 44px; border-radius: var(--pm-radius-control); border: var(--pm-hairline); }
+  .sw-text { display: flex; flex-direction: column; min-width: 0; }
+  .sw-text .pm-mono { overflow-wrap: anywhere; }
+  .steps { background: var(--pm-sys-surface-raised); border: var(--pm-hairline); border-radius: var(--pm-radius-card); padding: var(--pm-cmp-card-pad); }
+  .step + .step { margin-top: var(--pm-space-4); padding-top: var(--pm-space-4); border-top: var(--pm-hairline); }
+  .step-name { margin-bottom: var(--pm-space-1); }
+  .tnum-col { display: flex; flex-direction: column; align-items: flex-start; }
+  .row-sample { display: flex; align-items: center; min-height: var(--pm-cmp-row-h); padding: var(--pm-cell-pad-y) var(--pm-cell-pad-x); background: var(--pm-sys-surface-raised); border: var(--pm-hairline); border-radius: var(--pm-radius-chip); gap: var(--pm-space-4); }
+  .row-sample + .row-sample { margin-top: -1px; }
+  .status-row { display: flex; flex-wrap: wrap; gap: var(--pm-space-2); }
+  .status { display: inline-flex; align-items: center; gap: var(--pm-space-2); padding: var(--pm-space-1) var(--pm-space-3); border-radius: var(--pm-radius-chip); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: 500; }
+  .status i { width: var(--pm-cmp-pin-size); height: var(--pm-cmp-pin-size); border-radius: var(--pm-radius-round); background: currentColor; }
+  .status[data-s="needs-you"] { color: var(--pm-sys-status-needs-you); background: var(--pm-sys-status-needs-you-tint); }
+  .status[data-s="working"] { color: var(--pm-sys-status-working); background: var(--pm-sys-status-working-tint); }
+  .status[data-s="waiting"] { color: var(--pm-sys-status-waiting); background: var(--pm-sys-status-waiting-tint); }
+  .status[data-s="done"] { color: var(--pm-sys-status-done); background: var(--pm-sys-status-done-tint); }
+  .status[data-s="paused"] { color: var(--pm-sys-status-paused); background: var(--pm-sys-status-paused-tint); }
+  .status[data-s="blocked"] { color: var(--pm-sys-status-blocked); background: var(--pm-sys-status-blocked-tint); }
+  .status[data-s="locked"] { color: var(--pm-sys-status-locked); background: var(--pm-sys-status-locked-tint); }
+  .skels { display: grid; gap: var(--pm-space-2); max-width: 320px; }
+</style>
+</head>
+<body>
+<main data-thread-none="done">
+  <div class="page">
+    <div class="bar">
+      <h1>Tokens demo</h1>
+      <button class="btn btn--quiet" type="button" id="density">Density: comfortable</button>
+      <button class="btn btn--quiet" type="button" id="theme">Toggle theme</button>
+    </div>
+    <p class="lede pm-measure">Every reference colour, the seven type steps and the two themes, rendered from tokens.css and base.css.</p>
+    <div class="pm-stitch seam" role="presentation"></div>
+
+    <section aria-labelledby="h-type">
+      <h2 id="h-type">Type</h2>
+      <div class="steps">
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Digits <span class="pm-mono">28 / 32, weight 600</span></p>
+          <p class="pm-row" style="gap: var(--pm-space-7)"><span class="pm-t-digits">3<span class="pm-t-body pm-muted"> / </span>3</span><span class="pm-t-digits">1<span class="pm-t-body pm-muted"> / </span>4</span><span class="pm-t-digits">18<span class="pm-t-body pm-muted"> %</span></span></p>
+          <p class="pm-t-meta pm-meta">Separated numbers live under Details at Meta size: 5,415,812 of 20,000,000 tokens this month, reset 1 October at 14:10</p>
+        </div>
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Title <span class="pm-mono">22 / 28, weight 600</span></p>
+          <p class="pm-t-title">Your private checklist</p>
+        </div>
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Heading <span class="pm-mono">17 / 24, weight 600</span></p>
+          <p class="pm-t-heading">Fresh checks every day</p>
+        </div>
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Reading <span class="pm-mono">17 / 28, weight 400, measure 68ch</span></p>
+          <p class="pm-t-reading pm-measure">Sign up, log in, land on your own empty checklist, and add your own tasks to it, each one going to the bottom of the list.</p>
+        </div>
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Body <span class="pm-mono">15 / 22, weight 400 (14 / 20 compact)</span></p>
+          <p class="pm-t-body">Pramaan is building sprint 1 of 4 (building). Nothing needed from you.</p>
+        </div>
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Label <span class="pm-mono">14 / 16, weight 500</span></p>
+          <p class="pm-t-label">Approve the plan and start building</p>
+        </div>
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Meta <span class="pm-mono">12 / 16, weight 400, tracking 0.01em</span></p>
+          <p class="pm-t-meta">3 of 3 documents accepted · Updated 22 minutes ago</p>
+        </div>
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Tabular <span class="pm-mono">.pm-tnum, column contexts only</span></p>
+          <div class="tnum-col pm-t-meta"><span class="pm-tnum">14:10:02</span><span class="pm-tnum">14:10:11</span><span class="pm-tnum">14:12:48</span></div>
+        </div>
+        <div class="step">
+          <p class="pm-t-meta pm-meta step-name">Mono <span class="pm-mono">12 / 16, weight 400</span></p>
+          <p><span class="pm-mono">builder.job.finished</span> <span class="pm-t-meta pm-meta">1,456,888 ms</span> <a class="pm-link" href="#h-type">A link</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-status">
+      <h2 id="h-status">Status roles</h2>
+      <div class="status-row">
+        <span class="status" data-s="needs-you"><i></i>Needs you</span>
+        <span class="status" data-s="working"><i></i>Working</span>
+        <span class="status" data-s="waiting"><i></i>Waiting</span>
+        <span class="status" data-s="done"><i></i>Done</span>
+        <span class="status" data-s="paused"><i></i>Paused</span>
+        <span class="status" data-s="blocked"><i></i>Blocked</span>
+        <span class="status" data-s="locked"><i></i>Locked</span>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-density">
+      <h2 id="h-density">Density</h2>
+      <div class="row-sample"><span class="pm-t-body">Sign-up and log-in</span><span class="pm-t-meta pm-meta">Building Done</span></div>
+      <div class="row-sample"><span class="pm-t-body">Your own checklist</span><span class="pm-t-meta pm-meta">Waiting</span></div>
+      <div class="row-sample"><span class="pm-t-body">Add tasks to your list</span><span class="pm-t-meta pm-meta">Waiting</span></div>
+      <div class="skels" style="margin-top: var(--pm-space-4)"><span class="pm-skeleton"></span><span class="pm-skeleton" style="width: 70%"></span></div>
+    </section>
+
+    <section aria-labelledby="h-ref">
+      <h2 id="h-ref">Reference colour</h2>
+      <div class="swatch-family">
+        <h3>ink</h3>
+        <ul class="swatches">
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-950)"></span><span class="sw-text"><span class="pm-t-label">ink-950</span><span class="pm-mono pm-meta">#080b10</span><span class="pm-mono pm-meta">oklch(15% 0.012 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-900)"></span><span class="sw-text"><span class="pm-t-label">ink-900</span><span class="pm-mono pm-meta">#15181f</span><span class="pm-mono pm-meta">oklch(21% 0.014 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-800)"></span><span class="sw-text"><span class="pm-t-label">ink-800</span><span class="pm-mono pm-meta">#272c32</span><span class="pm-mono pm-meta">oklch(29% 0.014 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-700)"></span><span class="sw-text"><span class="pm-t-label">ink-700</span><span class="pm-mono pm-meta">#3f4349</span><span class="pm-mono pm-meta">oklch(38% 0.012 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-600)"></span><span class="sw-text"><span class="pm-t-label">ink-600</span><span class="pm-mono pm-meta">#55585e</span><span class="pm-mono pm-meta">oklch(46% 0.01 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-500)"></span><span class="sw-text"><span class="pm-t-label">ink-500</span><span class="pm-mono pm-meta">#606369</span><span class="pm-mono pm-meta">oklch(50% 0.01 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-400)"></span><span class="sw-text"><span class="pm-t-label">ink-400</span><span class="pm-mono pm-meta">#898c92</span><span class="pm-mono pm-meta">oklch(64% 0.01 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-300)"></span><span class="sw-text"><span class="pm-t-label">ink-300</span><span class="pm-mono pm-meta">#b4b7bd</span><span class="pm-mono pm-meta">oklch(78% 0.008 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-200)"></span><span class="sw-text"><span class="pm-t-label">ink-200</span><span class="pm-mono pm-meta">#d2d4d8</span><span class="pm-mono pm-meta">oklch(87% 0.006 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-100)"></span><span class="sw-text"><span class="pm-t-label">ink-100</span><span class="pm-mono pm-meta">#e6e8eb</span><span class="pm-mono pm-meta">oklch(93% 0.005 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-50)"></span><span class="sw-text"><span class="pm-t-label">ink-50</span><span class="pm-mono pm-meta">#f5f6f8</span><span class="pm-mono pm-meta">oklch(97.3% 0.003 260)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-ink-0)"></span><span class="sw-text"><span class="pm-t-label">ink-0</span><span class="pm-mono pm-meta">#ffffff</span><span class="pm-mono pm-meta">oklch(100% 0 0)</span></span></li>
+        </ul>
+      </div>
+      <div class="swatch-family">
+        <h3>thread</h3>
+        <ul class="swatches">
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-thread-500)"></span><span class="sw-text"><span class="pm-t-label">thread-500</span><span class="pm-mono pm-meta">#fad622</span><span class="pm-mono pm-meta">oklch(88% 0.175 96)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-thread-600)"></span><span class="sw-text"><span class="pm-t-label">thread-600</span><span class="pm-mono pm-meta">#e2b40a</span><span class="pm-mono pm-meta">oklch(79% 0.16 90)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-thread-700)"></span><span class="sw-text"><span class="pm-t-label">thread-700</span><span class="pm-mono pm-meta">#855a00</span><span class="pm-mono pm-meta">oklch(50% 0.115 80)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-thread-800)"></span><span class="sw-text"><span class="pm-t-label">thread-800</span><span class="pm-mono pm-meta">#633f00</span><span class="pm-mono pm-meta">oklch(40% 0.095 78)</span></span></li>
+        </ul>
+      </div>
+      <div class="swatch-family">
+        <h3>chalk</h3>
+        <ul class="swatches">
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-chalk-700)"></span><span class="sw-text"><span class="pm-t-label">chalk-700</span><span class="pm-mono pm-meta">#1d5178</span><span class="pm-mono pm-meta">oklch(42% 0.085 245)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-chalk-600)"></span><span class="sw-text"><span class="pm-t-label">chalk-600</span><span class="pm-mono pm-meta">#326893</span><span class="pm-mono pm-meta">oklch(50% 0.09 245)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-chalk-400)"></span><span class="sw-text"><span class="pm-t-label">chalk-400</span><span class="pm-mono pm-meta">#80aace</span><span class="pm-mono pm-meta">oklch(72% 0.07 245)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-chalk-300)"></span><span class="sw-text"><span class="pm-t-label">chalk-300</span><span class="pm-mono pm-meta">#aac8e3</span><span class="pm-mono pm-meta">oklch(82% 0.05 245)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-chalk-100)"></span><span class="sw-text"><span class="pm-t-label">chalk-100</span><span class="pm-mono pm-meta">#e1edf8</span><span class="pm-mono pm-meta">oklch(94% 0.02 245)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-chalk-50)"></span><span class="sw-text"><span class="pm-t-label">chalk-50</span><span class="pm-mono pm-meta">#f0f6fc</span><span class="pm-mono pm-meta">oklch(97% 0.01 245)</span></span></li>
+        </ul>
+      </div>
+      <div class="swatch-family">
+        <h3>moss</h3>
+        <ul class="swatches">
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-moss-600)"></span><span class="sw-text"><span class="pm-t-label">moss-600</span><span class="pm-mono pm-meta">#146d34</span><span class="pm-mono pm-meta">oklch(47% 0.12 150)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-moss-400)"></span><span class="sw-text"><span class="pm-t-label">moss-400</span><span class="pm-mono pm-meta">#69c27e</span><span class="pm-mono pm-meta">oklch(74% 0.13 150)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-moss-100)"></span><span class="sw-text"><span class="pm-t-label">moss-100</span><span class="pm-mono pm-meta">#d7f4dc</span><span class="pm-mono pm-meta">oklch(94% 0.045 150)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-moss-900)"></span><span class="sw-text"><span class="pm-t-label">moss-900</span><span class="pm-mono pm-meta">#122d19</span><span class="pm-mono pm-meta">oklch(27% 0.05 150)</span></span></li>
+        </ul>
+      </div>
+      <div class="swatch-family">
+        <h3>clay</h3>
+        <ul class="swatches">
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-clay-600)"></span><span class="sw-text"><span class="pm-t-label">clay-600</span><span class="pm-mono pm-meta">#a64a18</span><span class="pm-mono pm-meta">oklch(52% 0.135 45)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-clay-400)"></span><span class="sw-text"><span class="pm-t-label">clay-400</span><span class="pm-mono pm-meta">#e79363</span><span class="pm-mono pm-meta">oklch(74% 0.12 50)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-clay-100)"></span><span class="sw-text"><span class="pm-t-label">clay-100</span><span class="pm-mono pm-meta">#ffe5d8</span><span class="pm-mono pm-meta">oklch(94% 0.035 45)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-clay-900)"></span><span class="sw-text"><span class="pm-t-label">clay-900</span><span class="pm-mono pm-meta">#3d2013</span><span class="pm-mono pm-meta">oklch(28% 0.05 45)</span></span></li>
+        </ul>
+      </div>
+      <div class="swatch-family">
+        <h3>red</h3>
+        <ul class="swatches">
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-red-600)"></span><span class="sw-text"><span class="pm-t-label">red-600</span><span class="pm-mono pm-meta">#a92321</span><span class="pm-mono pm-meta">oklch(48% 0.17 27)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-red-400)"></span><span class="sw-text"><span class="pm-t-label">red-400</span><span class="pm-mono pm-meta">#f47b74</span><span class="pm-mono pm-meta">oklch(72% 0.15 25)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-red-100)"></span><span class="sw-text"><span class="pm-t-label">red-100</span><span class="pm-mono pm-meta">#ffe3df</span><span class="pm-mono pm-meta">oklch(94% 0.035 27)</span></span></li>
+          <li class="swatch"><span class="chip" style="background: var(--pm-ref-red-900)"></span><span class="sw-text"><span class="pm-t-label">red-900</span><span class="pm-mono pm-meta">#3f1916</span><span class="pm-mono pm-meta">oklch(27% 0.06 27)</span></span></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+  (function () {
+    var root = document.documentElement;
+    var themeBtn = document.getElementById("theme");
+    var densBtn = document.getElementById("density");
+    themeBtn.addEventListener("click", function () {
+      var current = root.dataset.theme;
+      if (!current) current = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      var next = current === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      try { localStorage.setItem("pm.theme", next); } catch (e) {}
+    });
+    densBtn.addEventListener("click", function () {
+      var compact = root.dataset.density === "compact";
+      if (compact) delete root.dataset.density; else root.dataset.density = "compact";
+      densBtn.textContent = "Density: " + (compact ? "comfortable" : "compact");
+    });
+  })();
+</script>
+</body>
+</html>

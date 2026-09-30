@@ -1,0 +1,293 @@
+<!doctype html>
+<!--
+  SHELL DEMO. Same shell as screens/_skeleton.html, plus switchable states (buttons in the content, or the URL hash):
+  #collapsed  #dark  #large  #workbench  #logs  (combine with commas, e.g. #collapsed,dark). Buttons never persist the rail or theme.
+  workbench = 1fr scroller + 320 panel, single scroller; logs = no strip, no tape, thread slot holds a state sentence.
+-->
+<html lang="en" data-rail="expanded">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shell demo</title>
+<script>
+  /* Before first paint: saved rail and theme (see shell.js). */
+  (function () { var d = document.documentElement, r = null, t = null; try { r = localStorage.getItem("pm.rail"); t = localStorage.getItem("pm.theme"); } catch (e) {}
+  if (innerWidth < 1024 || r === "collapsed" || (r !== "expanded" && innerWidth < 1280)) d.setAttribute("data-rail", "collapsed"); if (t === "dark" || t === "light") d.setAttribute("data-theme", t); })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="components-a.css">
+<link rel="stylesheet" href="components-b.css">
+<script defer src="shell.js"></script>
+<script defer src="components.js"></script>
+<style>
+  /* Demo-only styles. Tokens only. */
+  .demo-bar { display: flex; flex-wrap: wrap; gap: var(--pm-space-2); align-items: center; }
+  .demo-btn { height: 32px; padding: 0 var(--pm-space-3); border: 1px solid var(--pm-sys-control-border); border-radius: var(--pm-radius-control); background: transparent; color: var(--pm-sys-text); font-size: var(--pm-type-label-size); line-height: var(--pm-type-label-line); font-weight: var(--pm-type-label-weight); cursor: pointer; }
+  .demo-btn:hover { background: var(--pm-sys-surface-sunken); }
+  .demo-btn[aria-pressed="true"] { background: var(--pm-sys-text); color: var(--pm-sys-text-on-ink); border-color: var(--pm-sys-text); }
+  .demo-note { margin-top: var(--pm-space-4); color: var(--pm-sys-text-muted); max-width: 68ch; }
+  .demo-banner { margin-top: 16px; padding: var(--pm-space-4) var(--pm-space-5); border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+  .demo-large { margin-top: var(--pm-space-5); }
+  .demo-block { min-height: 1400px; margin-top: var(--pm-space-5); padding: var(--pm-space-4); border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); color: var(--pm-sys-text-muted); }
+  .demo-col { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
+  .demo-head { display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-4); min-height: 48px; padding: 0 var(--pm-content-pad); border-bottom: var(--pm-hairline); }
+  .demo-scroll { overflow-y: auto; padding: var(--pm-space-5) var(--pm-content-pad); }
+  .demo-scroll p { max-width: 68ch; margin-top: var(--pm-space-4); }
+  .demo-panel-row { display: flex; align-items: center; height: var(--pm-row-h); padding: 0 var(--pm-space-4); border-bottom: var(--pm-hairline); }
+  .demo-log { padding: 0 var(--pm-content-pad); }
+  .demo-log-line { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: var(--pm-space-3); height: 28px; align-items: center; border-bottom: var(--pm-hairline); }
+</style>
+</head>
+<body>
+<a class="pm-skip" href="#pm-job">Skip to the main job</a>
+
+<!-- CANONICAL SPRITE (copy it whole into every screen). Shell icons: i-*, 20x20 viewBox, used with .pm-i (20px),
+     .pm-i--16 or .pm-i--12. Component glyphs: pm-*, 16x16 viewBox, used with .pm-icon or .pm-pin-glyph. All strokes render at
+     1.5px with round caps; stroke and fill come from the CSS class, never from the symbol. -->
+<svg width="0" height="0" style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="i-overview" viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></symbol>
+  <symbol id="i-interview" viewBox="0 0 20 20"><path d="M4 4.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9.5L6 17v-3.5H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M6.5 8h7M6.5 10.5h4"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 20 20"><path d="M6 2.5h5.5l4 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1z"/><path d="M11.5 2.5v4h4M7.5 10.5h5M7.5 13.5h5"/></symbol>
+  <symbol id="i-roadmap" viewBox="0 0 20 20"><circle cx="4.5" cy="14.5" r="1.75"/><circle cx="10" cy="5.5" r="1.75"/><circle cx="15.5" cy="14.5" r="1.75"/><path d="M5.4 13l3.7-6M10.9 7l3.7 6"/></symbol>
+  <symbol id="i-build" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5"/><path d="M3 8h14M3 12h14M10 4v4M7 8v4M13 8v4M10 12v4"/></symbol>
+  <symbol id="i-try-it" viewBox="0 0 20 20"><path d="M5.5 3.5l10 4.2-4.3 1.6-1.7 4.4z"/><path d="M12.5 12.5l3.5 3.5"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 20 20"><path d="M3 6h2M9 6h8M3 14h8M15 14h2"/><circle cx="7" cy="6" r="2"/><circle cx="13" cy="14" r="2"/></symbol>
+  <symbol id="i-live-logs" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><path d="M6 8l3 2-3 2M11 12.5h3.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 20 20"><path d="M3 6.5a1 1 0 0 1 1-1h4l1.8 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 20 20"><path d="M16 10H4M9 5l-5 5 5 5"/></symbol>
+  <symbol id="i-collapse" viewBox="0 0 20 20"><path d="M10 5l-5 5 5 5M16 5l-5 5 5 5"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 20 20"><path d="M4 5l5 5-5 5M10 5l5 5-5 5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5"/><path d="M13 13l4 4"/></symbol>
+  <symbol id="i-attach" viewBox="0 0 20 20"><path d="M15.5 9.5l-5.8 5.8a3.2 3.2 0 0 1-4.5-4.5l6-6a2.1 2.1 0 0 1 3 3l-6 6a1 1 0 0 1-1.5-1.5l5.3-5.3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 20 20"><path d="M10 16V4M5 9l5-5 5 5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 20 20"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 20 20"><path d="M7 5v10M13 5v10"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 20 20"><path d="M5 10h10"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="9" rx="1.5"/><path d="M13 7V5.5A1.5 1.5 0 0 0 11.5 4h-6A1.5 1.5 0 0 0 4 5.5v6A1.5 1.5 0 0 0 5.5 13H7"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></symbol>
+  <symbol id="i-external" viewBox="0 0 20 20"><path d="M8 4.5H5.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12M11 4.5h4.5V9M15.5 4.5L9 11"/></symbol>
+  <!-- Component glyphs, 16x16 viewBox (components-a/-b): <svg class="pm-icon"><use href="#pm-i-..."/></svg> for 16px icons,
+       <svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-..."/></svg> inside .pm-pin-head (Done check, Blocked x, Paused bar, Locked lock). -->
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+  <symbol id="pm-i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></symbol>
+  <symbol id="pm-i-attach" viewBox="0 0 16 16"><path d="M13 7.5l-5 5a3 3 0 01-4.2-4.2l5.5-5.5a2 2 0 012.8 2.8L6.6 11a1 1 0 01-1.4-1.4l4.6-4.6"/></symbol>
+  <symbol id="pm-i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/></symbol>
+  <symbol id="pm-i-external" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></symbol>
+</svg>
+
+<div class="pm-app">
+
+  <!-- RAIL. Fixed, ink, never scrolls. Heights (SPEC C.2): 56 + 40 + 1 + 56 + 8x36 + 12 + spacer + 44 + 48. -->
+  <aside class="pm-rail" id="pm-rail" aria-label="Sidebar">
+    <div class="pm-rail-head">
+      <a class="pm-wordmark" href="#" aria-label="pramaan, all projects">pramaan</a>
+      <span class="pm-monogram" aria-hidden="true">p</span>
+      <button class="pm-rail-toggle" type="button" aria-expanded="true" aria-controls="pm-rail" aria-label="Collapse navigation">
+        <svg class="pm-i pm-i-collapse"><use href="#i-collapse"/></svg>
+        <svg class="pm-i pm-i-expand"><use href="#i-expand"/></svg>
+      </button>
+    </div>
+
+    <nav class="pm-rail-nav" aria-label="Projects and destinations">
+      <a class="pm-rail-item pm-rail-all" href="#"><svg class="pm-i"><use href="#i-folder"/></svg><span class="pm-rail-label">All projects</span><span class="pm-rail-meta">Test</span></a>
+      <div class="pm-rail-seam" role="separator"></div>
+      <div class="pm-rail-project" title="todo, Working">
+        <span class="pm-rail-tile" aria-hidden="true">T</span>
+        <span class="pm-rail-project-text"><span class="pm-rail-project-name">todo</span><span class="pm-rail-status" data-status="working">Working</span></span>
+      </div>
+      <ul class="pm-rail-list">
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-overview"/></svg><span class="pm-rail-label">Overview</span></a></li>
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-interview"/></svg><span class="pm-rail-label">Interview</span></a></li>
+        <li><a class="pm-rail-item" href="#" aria-current="page"><svg class="pm-i"><use href="#i-documents"/></svg><span class="pm-rail-label">Documents<svg class="pm-pen" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false"><ellipse cx="50" cy="16" rx="49" ry="15" vector-effect="non-scaling-stroke"/></svg></span><span class="pm-rail-meta pm-tnum">3/3</span></a></li>
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-roadmap"/></svg><span class="pm-rail-label">Roadmap</span></a></li>
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-build"/></svg><span class="pm-rail-label">Build</span></a></li>
+        <li><a class="pm-rail-item" href="#" data-locked><svg class="pm-i"><use href="#i-try-it"/></svg><span class="pm-rail-label">Try it</span><svg class="pm-i pm-rail-lock" aria-hidden="true"><use href="#i-lock"/></svg></a></li>
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-settings"/></svg><span class="pm-rail-label">Settings</span></a></li>
+        <li class="pm-rail-item--dev"><span class="pm-sr">Development</span><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-live-logs"/></svg><span class="pm-rail-label">Live logs</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="pm-rail-spacer"></div>
+
+    <div class="pm-rail-budget" role="group" aria-label="Monthly budget 18% used" title="Monthly budget 18% used">
+      <div class="pm-rail-budget-text"><span class="pm-rail-budget-label">Monthly budget</span><span class="pm-rail-budget-value">18% used</span></div>
+      <div class="pm-rail-track" aria-hidden="true"><div class="pm-rail-fill" style="--pm-fill: 18%"></div></div>
+    </div>
+
+    <button class="pm-rail-user" type="button" popovertarget="pm-user-menu" aria-label="Account menu, Aditya Choudhary" title="Aditya Choudhary">
+      <span class="pm-rail-avatar" aria-hidden="true">AC</span>
+      <span class="pm-rail-user-text"><span class="pm-rail-user-name">Aditya Choudhary</span><span class="pm-rail-user-sub">Signed in</span></span>
+    </button>
+    <div class="pm-rail-menu" id="pm-user-menu" popover aria-label="Account">
+      <button class="pm-rail-menu-item" type="button" role="switch" aria-checked="false" data-theme-switch><span>Dark theme</span><span class="pm-rail-switch" aria-hidden="true"></span></button>
+      <a class="pm-rail-menu-item" href="#">Switch organisation</a>
+      <a class="pm-rail-menu-item" href="#">Sign out</a>
+    </div>
+  </aside>
+
+  <!-- PAGE MAIN. The one scroller on page screens. -->
+  <main class="pm-main" id="pm-main">
+
+    <!-- TOP BAR. Sticky, 56px, stitch bottom edge. -->
+    <header class="pm-topbar">
+      <a class="pm-back" href="#" aria-label="Back to todo"><svg class="pm-i"><use href="#i-back"/></svg></a>
+
+      <nav class="pm-crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="#">Projects</a></li>
+          <li><a href="#">todo</a></li>
+          <li><span aria-current="page">Documents</span></li>
+        </ol>
+      </nav>
+
+      <nav class="pm-tape" aria-label="Your journey">
+        <ol>
+          <li data-state="done"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 1, </span>Interview<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+          <li data-state="current" data-progress="3/3"><a class="pm-tape-step" href="#" aria-current="step" title="Documents: 3 of 3 accepted"><span class="pm-tape-label"><span class="pm-sr">Step 2, </span>Documents<span class="pm-sr">, 3 of 3 accepted. You are here</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">2</span><span class="pm-tape-ticks" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span></a></li>
+          <li data-state="upcoming"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 3, </span>Roadmap<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">3</span></a></li>
+          <li data-state="upcoming"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 4, </span>Build<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">4</span></a></li>
+          <li data-state="locked"><span class="pm-tape-step" aria-disabled="true" title="Opens after the plan is approved"><span class="pm-tape-label"><span class="pm-sr">Step 5, </span>Try it<span class="pm-sr">, locked. Opens after the plan is approved</span></span><span class="pm-tape-num" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-lock"/></svg></span></span></li>
+        </ol>
+        <span class="pm-tape-pin" aria-hidden="true"></span>
+      </nav>
+
+      <div class="pm-slot">
+        <button class="pm-btn pm-btn--thread" type="button" data-thread>Accept this draft</button>
+        <span class="pm-pin" data-status="working" data-live="true" data-alt hidden><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span>
+        <span class="pm-pin-sentence pm-slot-sentence" data-alt hidden>Pramaan is following the build. Nothing needed from you.</span>
+      </div>
+    </header>
+
+    <!-- STRIP: Nothing-is-lost (28px). Two <time> values and a History popover with 8 rows. -->
+    <div class="pm-strip">
+      <span class="pm-strip-text">Last saved: your decision "First turn", <time datetime="2026-09-30T14:10">14:10</time> &middot; Last accepted: Product brief draft 1, <time datetime="2026-09-29">Tuesday</time></span>
+      <button class="pm-strip-history" type="button" popovertarget="pm-history">History</button>
+    </div>
+    <div class="pm-history" id="pm-history" popover aria-label="Recently saved or accepted">
+      <ol>
+        <li><time datetime="2026-09-30T14:10">14:10</time><span>Saved decision "First turn"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-30T14:08">14:08</time><span>Saved decision "End of game"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-30T14:05">14:05</time><span>Saved decision "Who plays"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-29">Tuesday</time><span>Accepted Product brief, draft 1</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-29">Tuesday</time><span>Accepted Requirements, draft 1</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-29">Tuesday</time><span>Accepted User journey, draft 1</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-29">Tuesday</time><span>Saved decision "Start over early"</span><a href="#">Open</a></li>
+        <li><time datetime="2026-09-29">Tuesday</time><span>Saved decision "Product idea"</span><a href="#">Open</a></li>
+      </ol>
+    </div>
+
+    <!-- PAGE VIEW: title row + demo controls + placeholder job. -->
+    <div class="pm-content" data-view="page">
+      <div class="pm-title">
+        <span data-h1-slot="page"><h1 id="demo-h1">Documents</h1></span>
+        <p class="pm-title-sentence">Every state of the shell, switchable below.</p>
+      </div>
+      <div class="demo-bar" data-demo-bar></div>
+      <div class="demo-large" id="demo-large" hidden>
+        <nav class="pm-tape pm-tape--large" aria-label="Your journey (large)">
+          <ol>
+            <li data-state="done"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 1, </span>Interview<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+            <li data-state="current" data-progress="2/3"><a class="pm-tape-step" href="#" aria-current="step" title="Documents: 2 of 3 accepted"><span class="pm-tape-label"><span class="pm-sr">Step 2, </span>Documents<span class="pm-sr">, 2 of 3 accepted. You are here</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">2</span><span class="pm-tape-ticks" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span></a></li>
+            <li data-state="upcoming"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 3, </span>Roadmap<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">3</span></a></li>
+            <li data-state="upcoming"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 4, </span>Build<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">4</span></a></li>
+            <li data-state="locked"><span class="pm-tape-step" aria-disabled="true" title="Opens after the plan is approved"><span class="pm-tape-label"><span class="pm-sr">Step 5, </span>Try it<span class="pm-sr">, locked. Opens after the plan is approved</span></span><span class="pm-tape-num" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-lock"/></svg></span></span></li>
+          </ol>
+          <span class="pm-tape-pin" aria-hidden="true"></span>
+        </nav>
+        <div class="demo-banner"><strong>Your next decision.</strong> The large tape sits under the title row on the overview only; its pin shank runs 24px down into this block.</div>
+      </div>
+      <p class="demo-note">Scroll this page: the top bar stays put and the History popover still opens under the strip. The rail toggle, the [ key, and the arrow keys on the rail destinations all work here.</p>
+      <div class="demo-block" id="pm-job">Main job placeholder (1400px tall so scrolling can be tested).</div>
+    </div>
+
+    <!-- WORKBENCH VIEW: one 1fr scroller and a 320px panel. -->
+    <div class="pm-workbench pm-arch-stage" data-view="workbench" hidden>
+      <div class="demo-col">
+        <div class="demo-head"><span data-h1-slot="workbench"></span></div>
+        <div class="demo-scroll" id="demo-wb-scroll"><div class="demo-bar" data-demo-bar></div></div>
+      </div>
+      <aside class="pm-panel" aria-label="Side panel">
+        <div class="demo-panel-row">Your decisions</div>
+        <div class="demo-panel-row">Product idea</div>
+        <div class="demo-panel-row">Who plays</div>
+        <div class="demo-panel-row">End of game</div>
+      </aside>
+    </div>
+
+    <!-- LOGS VIEW: no strip, no tape; the log list is the scroller. -->
+    <div class="pm-workbench pm-arch-log" data-view="logs" hidden>
+      <div class="demo-head"><span data-h1-slot="logs"></span><div class="demo-bar" data-demo-bar></div></div>
+      <div class="demo-scroll demo-log" id="demo-log"></div>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  var main = document.getElementById("pm-main"), root = document.documentElement;
+  var flags = new Set((location.hash || "").slice(1).split(",").filter(Boolean));
+  var touched = { rail: false, theme: false };
+  var defs = [["collapsed", "Rail collapsed"], ["dark", "Dark theme"], ["workbench", "Workbench layout"], ["large", "Large tape"], ["logs", "Live logs variant"]];
+  document.querySelectorAll("[data-demo-bar]").forEach(function (bar) {
+    defs.forEach(function (d) { var b = document.createElement("button"); b.type = "button"; b.className = "demo-btn"; b.dataset.flag = d[0]; b.textContent = d[1]; bar.appendChild(b); });
+  });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-flag]"); if (!b) return;
+    var f = b.dataset.flag;
+    if (f === "collapsed") touched.rail = true;
+    if (f === "dark") touched.theme = true;
+    if (flags.has(f)) flags.delete(f); else { flags.add(f); if (f === "workbench") flags.delete("logs"); if (f === "logs") flags.delete("workbench"); }
+    apply();
+  });
+  var lines = [["Job finished: plan sprint", "builder.job.finished"], ["Code received from GitHub", "webhook.write.received"], ["Preview opened", "builder.preview.access_issued"], ["Job finished: build feature", "builder.job.finished"], ["Job finished: check feature", "builder.job.finished"], ["Job finished: review feature", "builder.job.finished"]];
+  var log = document.getElementById("demo-log");
+  for (var i = 0; i < 40; i++) {
+    var l = lines[i % lines.length], s = 19 * 60 + i * 37, d = document.createElement("div");
+    d.className = "demo-log-line";
+    d.innerHTML = '<span class="pm-mono pm-tnum pm-meta">21:' + String(Math.floor(s / 60) % 60).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0") + "</span><span>" + l[0] + ' <span class="pm-mono pm-meta">' + l[1] + "</span></span>";
+    log.appendChild(d);
+  }
+  var wb = document.getElementById("demo-wb-scroll");
+  for (var j = 0; j < 14; j++) { var p = document.createElement("p"); p.textContent = "This region is the one scroller of the workbench. The top bar, the strip and the side panel stay where they are while this column scrolls. Paragraph " + (j + 1) + " of 14."; wb.appendChild(p); }
+
+  function q(s) { return document.querySelector(s); }
+  function apply() {
+    var wbOn = flags.has("workbench"), logs = flags.has("logs"), view = logs ? "logs" : wbOn ? "workbench" : "page";
+    main.className = "pm-main" + (wbOn || logs ? " pm-main--workbench" : "") + (logs ? " pm-main--nostrip" : "");
+    if (logs) main.setAttribute("data-thread-none", "working"); else main.removeAttribute("data-thread-none");
+    document.querySelectorAll("[data-view]").forEach(function (v) { v.hidden = v.dataset.view !== view; });
+    q(".pm-strip").hidden = logs; q(".pm-tape").hidden = logs; q("[data-thread]").hidden = logs;
+    document.querySelectorAll(".pm-slot [data-alt]").forEach(function (el) { el.hidden = !logs; });
+    var name = logs ? "Live logs" : wbOn ? "Interview" : "Documents", h1 = document.getElementById("demo-h1");
+    h1.textContent = name;
+    q('[data-h1-slot="' + view + '"]').appendChild(h1);
+    q(".pm-crumb [aria-current]").textContent = name;
+    document.querySelectorAll(".pm-rail-item").forEach(function (a) { var on = a.querySelector(".pm-rail-label").textContent.trim() === name; if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    window.pmShell.ensurePen();
+    document.title = "Shell demo: " + name;
+    q("#demo-large").hidden = !flags.has("large") || wbOn || logs;
+    if (flags.has("dark") || touched.theme) window.pmTheme(flags.has("dark") ? "dark" : "light", { persist: false });
+    window.pmShell.setRail(flags.has("collapsed") ? "collapsed" : window.pmShell.desiredRail());
+    window.pmShell.positionTapes();
+    sync();
+    try { history.replaceState(null, "", flags.size ? "#" + Array.from(flags).join(",") : location.pathname); } catch (e) {}
+  }
+  function sync() {
+    var actual = { collapsed: root.getAttribute("data-rail") === "collapsed", dark: window.pmTheme() === "dark" };
+    document.querySelectorAll("[data-flag]").forEach(function (b) { var f = b.dataset.flag; b.setAttribute("aria-pressed", String(f in actual ? actual[f] : flags.has(f))); });
+  }
+  root.addEventListener("pm:rail", sync);
+  root.addEventListener("pm:theme", sync);
+  window.addEventListener("load", apply);
+})();
+</script>
+</body>
+</html>

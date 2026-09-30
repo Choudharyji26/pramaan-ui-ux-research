@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Components B demo: reading and chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="components-a.css">
+<link rel="stylesheet" href="components-b.css">
+<script>
+  try { var t = localStorage.getItem("pm.theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+  /* Demo-only layout, tokens only. Each workbench component sits in a fixed-height frame (its --pm-cmp-work-h becomes 100% of the frame). */
+  .demo-head { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-4); height: 56px; padding: 0 var(--pm-content-pad); background: var(--pm-sys-ground); border-bottom: var(--pm-hairline); }
+  .demo-sec { margin-top: var(--pm-space-7); }
+  .demo-sec > h2 { position: sticky; top: 56px; z-index: 25; padding: var(--pm-space-2) var(--pm-content-pad); background: var(--pm-sys-ground); border-bottom: var(--pm-hairline); }
+  .demo-cap { display: flex; align-items: center; gap: var(--pm-space-3); padding: var(--pm-space-3) var(--pm-content-pad) var(--pm-space-2); color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); }
+  .demo-frame { --pm-cmp-work-h: 100%; position: relative; height: 640px; overflow: hidden; width: min(100%, calc(100vw - 64px)); border-block: var(--pm-hairline); }
+  @media (min-width: 1280px) { .demo-frame { width: min(100%, calc(100vw - 248px)); } }
+  .demo-frame--reader { height: 1660px; }
+  .demo-frame--chat { height: 720px; }
+  .demo-frame--small { height: 340px; }
+  .demo-frame--panel { width: var(--pm-panel-w); height: 420px; }
+  .demo-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--pm-space-6); padding: var(--pm-space-4) var(--pm-content-pad); }
+  .demo-wide td { vertical-align: top; }
+  .demo-head .pm-slot { max-width: none; }
+  /* The static popover sample sits in the flow; without this its popover z-index paints it over the sticky demo headings. */
+  .demo-row .pm-popover--static { z-index: auto; }
+  .demo-spec { padding: var(--pm-space-4); background: var(--pm-sys-surface-raised); border: var(--pm-hairline); border-radius: var(--pm-radius-card); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+  <symbol id="pm-i-attach" viewBox="0 0 16 16"><path d="M13 7.5l-5 5a3 3 0 01-4.2-4.2l5.5-5.5a2 2 0 012.8 2.8L6.6 11a1 1 0 01-1.4-1.4l4.6-4.6"/></symbol>
+</defs></svg>
+
+<main class="pm-main">
+  <header class="demo-head">
+    <h1>Components B: reading and chat</h1>
+    <div class="pm-row">
+      <!-- Stands in for the top-bar slot so the page's one [data-thread] never scrolls away; the samples below use .pm-btn--thread-demo. -->
+      <div class="pm-slot"><button class="pm-btn pm-btn--thread" type="button" data-thread>Accept this draft</button></div>
+      <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" id="theme-toggle">Dark theme</button>
+    </div>
+  </header>
+
+  <section class="demo-sec" aria-labelledby="h-reading">
+    <h2 id="h-reading">Reading document: draft, with a passage comment</h2>
+    <p class="demo-cap">Product brief, project ui test. The reading column is the one scroller; the action bar and section headings stick inside it.</p>
+    <div class="demo-frame demo-frame--reader">
+      <div class="pm-reader" data-state="draft">
+        <nav class="pm-toc" aria-label="In this document">
+          <p class="pm-toc-title">In this document</p>
+          <ol>
+            <li><a href="#s-outcome" title="The one thing this product should do." aria-current="location">One-sentence outcome</a></li>
+            <li><a href="#s-contract" title="How we will know the product works.">Success contract</a></li>
+            <li><a href="#s-guardrails" title="Things that must not get worse while we build.">Guardrails</a></li>
+            <li><a href="#s-constraints" title="What the product must stay within, and what it will not do.">Constraints and non-goals</a></li>
+            <li><a href="#s-advanced" title="Pramaan&#39;s working rules. Most people never need to open these.">Advanced sections</a>
+              <ol><li><a href="#s-exec" title="What Pramaan promises to do, and what it will not touch.">Execution contract</a></li></ol>
+            </li>
+          </ol>
+          <div class="pm-toc-links"><a href="#s-constraints">Passage comments (1)</a><a href="#s-details">Details</a></div>
+        </nav>
+        <div class="pm-reader-body" tabindex="0" aria-label="Product brief, draft 1">
+          <div class="pm-actionbar" role="region" aria-label="Your decision">
+            <div class="pm-actionbar-main"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-pin-sentence">Draft 1. Nobody has accepted it yet.</span></div>
+            <div class="pm-actionbar-actions">
+              <button class="pm-btn pm-btn--quiet" type="button">Ask for changes (1)</button>
+              <button class="pm-btn pm-btn--thread-demo" type="button">Accept this draft <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></button>
+            </div>
+          </div>
+          <div class="pm-reader-doc">
+            <div class="pm-byline">
+              <span>Pramaan wrote draft 1 on Tuesday at 20:59.</span>
+              <div class="pm-versions" role="radiogroup" aria-label="Version"><button class="pm-chip" type="button" role="radio" aria-checked="true">Draft 1 · newest</button></div>
+            </div>
+            <details class="pm-details pm-byline-details" id="s-details">
+              <summary>Details</summary>
+              <div class="pm-details-body pm-mono">Repository: pramaan-build/ui-test-52da6713<br>File: product/brief.md<br>Version: draft 1</div>
+            </details>
+            <article class="pm-article">
+              <section class="pm-reader-sec">
+                <h2 id="s-outcome">One-sentence outcome</h2>
+                <p class="pm-gloss">The one thing this product should do.</p>
+                <p>For two people sharing a screen, change a tic-tac-toe screen idea to a playable game where X starts, players take turns, the result is shown, and they can start a new game each time they play.</p>
+              </section>
+              <section class="pm-reader-sec">
+                <h2 id="s-contract">Success contract</h2>
+                <p class="pm-gloss">How we will know the product works.</p>
+                <div class="pm-table-scroll">
+                  <table class="pm-table demo-wide">
+                    <thead><tr><th scope="col" title="Measure or binary condition">How we will know</th><th scope="col" title="Baseline">Starting point</th><th scope="col" title="Target">Goal</th><th scope="col" title="Window">By when</th><th scope="col" title="Data source">Where we look</th><th scope="col" title="Owner">Who decides</th></tr></thead>
+                    <tbody><tr><td>Two people can complete a game on the same screen and see the correct winner or draw.<details class="pm-details" style="margin-top:var(--pm-space-2)"><summary>Details</summary><div class="pm-details-body pm-mono">The file&#39;s own label: KPI-1</div></details></td><td title="Phase 0 is the step before building where Pramaan measures the starting point.">Unknown, measure in Phase 0</td><td>True for every completed game checked</td><td>At product acceptance</td><td>Reproducible game walkthrough on the preview</td><td>Founder</td></tr></tbody>
+                  </table>
+                </div>
+              </section>
+              <section class="pm-reader-sec">
+                <h2 id="s-guardrails">Guardrails</h2>
+                <p class="pm-gloss">Things that must not get worse while we build.</p>
+                <div class="pm-table-scroll">
+                  <table class="pm-table demo-wide">
+                    <thead><tr><th scope="col" title="Must not regress">What must not get worse</th><th scope="col" title="Threshold">Most allowed</th><th scope="col" title="How it is checked">How we check</th></tr></thead>
+                    <tbody>
+                      <tr><td>Moves accepted after a winner or draw is shown<details class="pm-details" style="margin-top:var(--pm-space-2)"><summary>Details</summary><div class="pm-details-body pm-mono">The file&#39;s own label: G-1</div></details></td><td class="pm-tnum">0</td><td>Attempt a move after each end-game result on the preview.</td></tr>
+                      <tr><td>New games that begin with O instead of X<details class="pm-details" style="margin-top:var(--pm-space-2)"><summary>Details</summary><div class="pm-details-body pm-mono">The file&#39;s own label: G-2</div></details></td><td class="pm-tnum">0</td><td>Start a new game both during and after play; inspect the first turn on the preview.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+              <section class="pm-reader-sec">
+                <h2 id="s-constraints">Constraints and non-goals</h2>
+                <p class="pm-gloss">What the product must stay within, and what it will not do.</p>
+                <ul>
+                  <li class="pm-has-mark">Constraint: <span class="pm-marked">This is a browser-based web app that works on phones, tablets, and computers</span> and can be added to a phone's home screen; it is not a native or app-store app.
+                    <button class="pm-chalk-mark" type="button" popovertarget="pm-c1" aria-label="Comment 1 on 'Constraint: This is a browser-based web app'">1</button>
+                  </li>
+                  <li>Non-goal: playing against the computer, or playing between two different devices.</li>
+                </ul>
+              </section>
+              <details class="pm-details pm-reader-adv" id="s-advanced">
+                <summary>Advanced sections (how Pramaan will work)</summary>
+                <section class="pm-reader-sub">
+                  <h2 id="s-exec">Execution contract</h2>
+                  <p class="pm-gloss">What Pramaan promises to do, and what it will not touch.</p>
+                  <ul><li>Mode: <code>supervised</code></li><li>Target environments in order: verification cell, sprint preview</li><li>Required credential references: none; the product needs no outside service</li></ul>
+                </section>
+              </details>
+            </article>
+          </div>
+        </div>
+      </div>
+      <button class="pm-btn pm-btn--quiet pm-btn--sm pm-comment-cta" type="button" hidden popovertarget="pm-newc">Comment on this passage</button>
+      <div class="pm-popover" id="pm-newc" popover data-anchor="invoker" aria-label="New comment">
+        <div class="pm-comment">
+          <blockquote class="pm-quote" data-comment-quote></blockquote>
+          <label class="pm-label" for="newc-text">Your comment</label>
+          <textarea class="pm-textarea" id="newc-text"></textarea>
+          <span class="pm-comment-by">Your comments are sent together when you ask for changes.</span>
+          <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" popovertarget="pm-newc" popovertargetaction="hide">Add comment</button>
+        </div>
+      </div>
+      <div class="pm-popover" id="pm-c1" popover data-anchor="invoker" aria-label="Comment 1">
+        <div class="pm-comment">
+          <blockquote class="pm-quote">This is a browser-based web app that works on phones, tablets, and computers</blockquote>
+          <span class="pm-comment-by">You, draft 1</span>
+          <p class="pm-comment-text">I don't think this is a constraint</p>
+          <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" popovertarget="pm-c1" popovertargetaction="hide">Remove comment</button>
+        </div>
+      </div>
+    </div>
+    <div class="demo-row">
+      <div>
+        <p class="demo-cap" style="padding:0 0 var(--pm-space-2)">Selection button (appears at the end of selected text)</p>
+        <button class="pm-btn pm-btn--quiet pm-btn--sm pm-comment-cta pm-comment-cta--static" type="button">Comment on this passage</button>
+      </div>
+      <div>
+        <p class="demo-cap" style="padding:0 0 var(--pm-space-2)">Comment popover content</p>
+        <div class="pm-popover pm-popover--static">
+          <div class="pm-comment">
+            <blockquote class="pm-quote">This is a browser-based web app that works on phones, tablets, and computers</blockquote>
+            <span class="pm-comment-by">You, draft 1</span>
+            <p class="pm-comment-text">I don't think this is a constraint</p>
+            <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button">Remove comment</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="demo-cap" style="padding:0 0 var(--pm-space-2)">Comment mark on its own</p>
+        <div class="demo-spec" style="position:relative;width:220px;height:56px"><span class="pm-has-mark" style="display:block;width:150px"><span class="pm-marked">A commented passage</span><span class="pm-chalk-mark" role="img" aria-label="Comment 1" style="left:calc(100% + 16px)">1</span></span></div>
+      </div>
+    </div>
+
+    <p class="demo-cap">Locked (accepted, sprint 1 is building): the bar says why, and comments are off with a reason.</p>
+    <div class="demo-frame demo-frame--reader demo-frame--small">
+      <div class="pm-reader" data-state="locked">
+        <nav class="pm-toc" aria-label="In this document"><p class="pm-toc-title">In this document</p><ol><li><a href="#l-outcome" aria-current="location">One-sentence outcome</a></li></ol></nav>
+        <div class="pm-reader-body" tabindex="0" aria-label="Product brief, locked">
+          <div class="pm-actionbar" role="region" aria-label="Your decision">
+            <div class="pm-actionbar-main"><span class="pm-pin" data-status="locked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-lock"/></svg></span><span class="pm-pin-label">Locked</span></span><span class="pm-pin-sentence">Read only while sprint 1 is being built.</span></div>
+            <div class="pm-actionbar-actions"><button class="pm-btn pm-btn--quiet" type="button">Request a revision</button></div>
+          </div>
+          <div class="pm-reader-doc">
+            <div class="pm-byline"><span>Accepted by you Tuesday 14:10.</span><div class="pm-versions" role="radiogroup" aria-label="Version"><button class="pm-chip" type="button" role="radio" aria-checked="true">Draft 1</button></div></div>
+            <p class="pm-reader-note">Comments reopen after the sprint.</p>
+            <article class="pm-article"><section class="pm-reader-sec"><h2 id="l-outcome">One-sentence outcome</h2><p class="pm-gloss">The one thing this product should do.</p><p>Sign up, log in and keep a private checklist of your own tasks.</p></section></article>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="demo-cap">Empty (no draft yet)</p>
+    <div class="demo-frame demo-frame--reader demo-frame--small">
+      <div class="pm-reader" data-state="empty">
+        <nav class="pm-toc" aria-label="In this document"><p class="pm-toc-title">In this document</p></nav>
+        <div class="pm-reader-body" tabindex="0" aria-label="Product brief, being written">
+          <div class="pm-reader-doc">
+            <div class="pm-reader-empty">
+              <div class="pm-row"><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span><span class="pm-pin-sentence">Pramaan is writing draft 1. This page fills in when it is ready.</span></div>
+              <div class="pm-skel-p" aria-hidden="true"><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-sec" aria-labelledby="h-chat">
+    <h2 id="h-chat">Chat workbench: running, with a question card</h2>
+    <p class="demo-cap">Project test, 1 of about 6 saved. The thread is the one scroller; the composer is the last row. <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-append-reply="chat-run">Demo: add a Pramaan reply</button></p>
+    <div class="demo-frame demo-frame--chat">
+      <div class="pm-wb">
+        <section class="pm-chat" id="chat-run" aria-label="Interview">
+          <div class="pm-chat-head">
+            <div>
+              <h2>Your product partner</h2>
+              <div class="pm-chat-topics" title="Topics adjust as your scope changes."><span><span class="pm-tnum">2</span> of about <span class="pm-tnum">6</span> topics covered</span><span class="pm-progress"><span class="pm-progress-track"><span class="pm-progress-fill" style="--pm-progress: 33%"></span></span></span></div>
+            </div>
+            <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button">Have a document already? Add it</button>
+          </div>
+          <div class="pm-chat-thread" role="log" aria-live="polite" tabindex="0" aria-label="Conversation">
+            <div class="pm-chat-flow">
+              <div class="pm-msg pm-msg--you"><div class="pm-msg-head"><span class="pm-msg-who">You</span><span class="pm-msg-time">14:02</span></div><div class="pm-msg-body"><p>a tic tac toe game</p></div></div>
+              <div class="pm-msg"><div class="pm-msg-head"><span class="pm-msg-who">Pramaan</span><span class="pm-msg-time">14:03</span></div><div class="pm-msg-body"><p>Thanks. I have saved the product idea. Who plays, and where? For example, two people on one phone, or two players on different devices.</p></div></div>
+              <form class="pm-qcard" aria-labelledby="qc-title" onsubmit="return false">
+                <div class="pm-qcard-body">
+                  <h3 class="pm-qcard-title pm-t-heading" id="qc-title">Two quick questions</h3>
+                  <fieldset class="pm-qfield"><legend>Who plays?</legend>
+                    <label class="pm-qopt"><input type="radio" name="q1" checked> Two people on the same screen</label>
+                    <label class="pm-qopt"><input type="radio" name="q1"> Two people on different devices</label>
+                    <label class="pm-qopt"><input type="radio" name="q1"> One person against the computer</label>
+                  </fieldset>
+                  <fieldset class="pm-qfield"><legend>What happens when someone wins?</legend><input class="pm-input" type="text" aria-label="What happens when someone wins?"></fieldset>
+                </div>
+                <div class="pm-qcard-foot"><span>Your answers are saved as decisions.</span><button class="pm-btn pm-btn--thread pm-btn--thread-demo" type="submit">Submit answers</button></div>
+              </form>
+            </div>
+            <button class="pm-newreply" type="button" hidden>New reply below</button>
+          </div>
+          <form class="pm-composer" aria-label="Reply">
+            <div class="pm-composer-row">
+              <button class="pm-btn pm-btn--ghost pm-btn--icon pm-btn--lg" type="button" aria-label="Attach files or images"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-attach"/></svg></button>
+              <textarea class="pm-composer-input" rows="1" placeholder="Tell us in your own words" aria-label="Your reply"></textarea>
+              <button class="pm-btn pm-btn--quiet pm-btn--lg" type="submit">Send reply</button>
+            </div>
+            <div class="pm-composer-hint"><span>Ctrl+Enter sends. Your decisions save as you go.</span></div>
+          </form>
+        </section>
+        <aside class="pm-decisions" aria-label="Your decisions">
+          <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count"><span class="pm-tnum">1</span> of about <span class="pm-tnum">6</span> saved</span><span class="pm-progress pm-progress--line"><span class="pm-progress-track"><span class="pm-progress-fill" style="--pm-progress: 16%"></span></span></span></div>
+          <ul class="pm-decisions-list">
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Product idea</span><span class="pm-decision-value">a tic tac toe game</span><span class="pm-decision-editcue">Edit</span></button>
+              <div class="pm-decision-editor" hidden><textarea class="pm-textarea" aria-label="Product idea"></textarea><div class="pm-decision-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-decision-save>Save</button><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-decision-cancel>Cancel</button></div></div></li>
+          </ul>
+          <div class="pm-decisions-foot">Saved automatically. Edit any decision any time.</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-sec" aria-labelledby="h-fin">
+    <h2 id="h-fin">Chat workbench: interview finished</h2>
+    <p class="demo-cap">Project ui test, 6 of 6. The send button drops to quiet; the next decision lives in the top bar ("Create my product brief").</p>
+    <div class="demo-frame demo-frame--chat">
+      <div class="pm-wb">
+        <section class="pm-chat" aria-label="Interview">
+          <div class="pm-chat-head">
+            <div>
+              <h2>Your product partner</h2>
+              <div class="pm-chat-topics"><span><span class="pm-tnum">6</span> of <span class="pm-tnum">6</span> topics covered</span><span class="pm-progress"><span class="pm-progress-track"><span class="pm-progress-fill" style="--pm-progress: 100%"></span></span></span></div>
+            </div>
+            <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button">Have a document already? Add it</button>
+          </div>
+          <div class="pm-chat-thread" role="log" aria-live="polite" tabindex="0" aria-label="Conversation">
+            <div class="pm-chat-flow">
+              <div class="pm-msg pm-msg--you"><div class="pm-msg-head"><span class="pm-msg-who">You</span><span class="pm-msg-time">20:57</span></div><div class="pm-msg-body"><p>First turn: X takes the first turn in every new game.</p></div></div>
+              <div class="pm-msg"><div class="pm-msg-head"><span class="pm-msg-who">Pramaan</span><span class="pm-msg-time">20:58</span></div><div class="pm-msg-body"><p>I've saved that X takes the first turn in every new game. The brief is ready: a playable tic-tac-toe screen where two people take turns on the same screen. X starts every game. When someone wins or the game is a draw, the screen shows the result and stops further moves. Players can start a new game at any time.</p></div></div>
+              <div class="pm-chat-done"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-pin-sentence">We have a direction. Your brief uses your latest saved decisions.</span></div>
+            </div>
+          </div>
+          <form class="pm-composer" aria-label="Reply">
+            <div class="pm-composer-row">
+              <button class="pm-btn pm-btn--ghost pm-btn--icon pm-btn--lg" type="button" aria-label="Attach files or images"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-attach"/></svg></button>
+              <textarea class="pm-composer-input" rows="1" placeholder="Add anything else before the brief is written" aria-label="Your reply"></textarea>
+              <button class="pm-btn pm-btn--quiet pm-btn--lg" type="submit">Send reply</button>
+            </div>
+            <div class="pm-composer-hint"><span>Ctrl+Enter sends. Your decisions save as you go.</span></div>
+          </form>
+        </section>
+        <aside class="pm-decisions" aria-label="Your decisions">
+          <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count"><span class="pm-tnum">6</span> of <span class="pm-tnum">6</span> saved</span><span class="pm-progress pm-progress--line"><span class="pm-progress-track"><span class="pm-progress-fill" style="--pm-progress: 100%"></span></span></span></div>
+          <ul class="pm-decisions-list">
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Product idea</span><span class="pm-decision-value">a tc tac toe screen</span><span class="pm-decision-editcue">Edit</span></button><div class="pm-decision-editor" hidden><textarea class="pm-textarea" aria-label="Product idea"></textarea><div class="pm-decision-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-decision-save>Save</button><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-decision-cancel>Cancel</button></div></div></li>
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Screen purpose</span><span class="pm-decision-value">Make it a playable tic-tac-toe screen.</span><span class="pm-decision-editcue">Edit</span></button><div class="pm-decision-editor" hidden><textarea class="pm-textarea" aria-label="Screen purpose"></textarea><div class="pm-decision-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-decision-save>Save</button><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-decision-cancel>Cancel</button></div></div></li>
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">End of game</span><span class="pm-decision-value">Show the winner or a draw, stop further moves, and offer a button to start a new game.</span><span class="pm-decision-editcue">Edit</span></button><div class="pm-decision-editor" hidden><textarea class="pm-textarea" aria-label="End of game"></textarea><div class="pm-decision-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-decision-save>Save</button><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-decision-cancel>Cancel</button></div></div></li>
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Who plays</span><span class="pm-decision-value">Two people take turns on the same screen.</span><span class="pm-decision-editcue">Edit</span></button><div class="pm-decision-editor" hidden><textarea class="pm-textarea" aria-label="Who plays"></textarea><div class="pm-decision-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-decision-save>Save</button><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-decision-cancel>Cancel</button></div></div></li>
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Start over early</span><span class="pm-decision-value">Let players start a new game at any time.</span><span class="pm-decision-editcue">Edit</span></button><div class="pm-decision-editor" hidden><textarea class="pm-textarea" aria-label="Start over early"></textarea><div class="pm-decision-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-decision-save>Save</button><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-decision-cancel>Cancel</button></div></div></li>
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">First turn</span><span class="pm-decision-value">X takes the first turn in every new game.</span><span class="pm-decision-editcue">Edit</span></button><div class="pm-decision-editor" hidden><textarea class="pm-textarea" aria-label="First turn"></textarea><div class="pm-decision-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-decision-save>Save</button><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-decision-cancel>Cancel</button></div></div></li>
+          </ul>
+          <details class="pm-details pm-decisions-details"><summary>Details</summary><div class="pm-details-body pm-mono">Workspace sized automatically: small project, estimated from this conversation.<br>Private repository: pramaan-build/ui-test-52da6713</div></details>
+          <div class="pm-decisions-foot">Saved automatically. Edit any decision any time.</div>
+        </aside>
+      </div>
+    </div>
+
+    <p class="demo-cap">Streaming reply, send disabled with its reason, and the "New reply below" pill</p>
+    <div class="demo-row">
+      <div class="demo-spec" style="width:520px">
+        <div class="pm-msg"><div class="pm-msg-head"><span class="pm-msg-who">Pramaan</span><span class="pm-msg-time">14:05</span></div><div class="pm-msg-body"><p>Thanks. Who plays, and where?</p></div>
+          <div class="pm-msg-stream" aria-live="polite"><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span><span class="pm-pin-sentence">Pramaan is replying…</span></span></div></div>
+        <div class="pm-row" style="margin-top:var(--pm-space-4)"><button class="pm-btn pm-btn--thread-demo pm-btn--lg" type="button" aria-disabled="true" aria-busy="true" aria-describedby="send-why">Sending…</button><span class="pm-btn-reason" id="send-why">Pramaan is replying…</span></div>
+        <button class="pm-newreply" type="button" style="position:static;margin-top:var(--pm-space-4)">New reply below</button>
+      </div>
+    </div>
+
+    <p class="demo-cap">Decisions panel, locked (read only while a sprint runs)</p>
+    <div class="demo-row">
+      <div class="demo-frame demo-frame--panel">
+        <aside class="pm-decisions" data-state="locked" aria-label="Your decisions, read only">
+          <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count"><span class="pm-tnum">6</span> of <span class="pm-tnum">6</span> saved</span><span class="pm-progress pm-progress--line"><span class="pm-progress-track"><span class="pm-progress-fill" style="--pm-progress: 100%"></span></span></span></div>
+          <ul class="pm-decisions-list">
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Who plays</span><span class="pm-decision-value">Two people take turns on the same screen.</span></button></li>
+            <li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">First turn</span><span class="pm-decision-value">X takes the first turn in every new game.</span></button></li>
+          </ul>
+          <div class="pm-decisions-foot"><span class="pm-pin" data-status="locked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-lock"/></svg></span><span class="pm-pin-label">Locked</span></span>&nbsp;Read only while sprint 1 is built.</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+  (function () { var b = document.getElementById("theme-toggle"); if (document.documentElement.dataset.theme === "dark") b.textContent = "Light theme"; })();
+  document.getElementById("theme-toggle").addEventListener("click", function () {
+    var d = document.documentElement, next = d.dataset.theme === "dark" ? "light" : "dark";
+    d.dataset.theme = next; this.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    try { localStorage.setItem("pm.theme", next); } catch (e) {}
+  });
+</script>
+<script defer src="components.js"></script>
+</body>
+</html>

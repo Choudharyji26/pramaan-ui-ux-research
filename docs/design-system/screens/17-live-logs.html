@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en" data-rail="expanded">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  /* Before first paint: saved rail and theme (see shell.js). */
+  (function () { var d = document.documentElement, r = null, t = null; try { r = localStorage.getItem("pm.rail"); t = localStorage.getItem("pm.theme"); } catch (e) {}
+  if (innerWidth < 1024 || r === "collapsed" || (r !== "expanded" && innerWidth < 1280)) d.setAttribute("data-rail", "collapsed"); if (t === "dark" || t === "light") d.setAttribute("data-theme", t); })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../base.css">
+<link rel="stylesheet" href="../shell.css">
+<link rel="stylesheet" href="../components-a.css">
+<link rel="stylesheet" href="../components-b.css">
+<link rel="stylesheet" href="../components-c.css">
+<script defer src="../shell.js"></script>
+<script defer src="../components.js"></script>
+<title>Pramaan · Live logs</title>
+<style>
+  /* Page-specific: the log list is the one scroller; the header block keeps its height and the list takes the rest. */
+  .lg-page { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; padding-bottom: var(--pm-space-5); }
+  .lg-page .pm-log { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  .lg-page .pm-log-list { flex: 1; height: auto; min-height: 0; }
+  /* The title row lives inside the log so Pause, the count and the paused banner share one scope (components.js section 8). */
+  .lg-page .pm-log > .pm-title { padding-bottom: 0; }
+  .lg-page .pm-title .pm-log-count { font-size: var(--pm-type-body-size); line-height: var(--pm-type-body-line); letter-spacing: 0; }
+  /* D.17: the row shows time, plain sentence and project. Event code, ids and level word sit under Details. */
+  .lg-project { margin-left: auto; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+  .lg-page .pm-log-entry > .pm-details { grid-column: 2; margin-top: 2px; }
+  .lg-page .pm-log-entry .pm-details-body { display: grid; gap: var(--pm-space-2); }
+  .lg-page .pm-log-entry .pm-log-facts { margin-top: 0; }
+  .lg-page .pm-log-entry .pm-log-raw { margin: 0; padding: 0; background: none; }
+</style>
+</head>
+<body>
+<a class="pm-skip" href="#pm-job">Skip to the main job</a>
+
+<svg width="0" height="0" style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="i-overview" viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></symbol>
+  <symbol id="i-interview" viewBox="0 0 20 20"><path d="M4 4.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9.5L6 17v-3.5H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M6.5 8h7M6.5 10.5h4"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 20 20"><path d="M6 2.5h5.5l4 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1z"/><path d="M11.5 2.5v4h4M7.5 10.5h5M7.5 13.5h5"/></symbol>
+  <symbol id="i-roadmap" viewBox="0 0 20 20"><circle cx="4.5" cy="14.5" r="1.75"/><circle cx="10" cy="5.5" r="1.75"/><circle cx="15.5" cy="14.5" r="1.75"/><path d="M5.4 13l3.7-6M10.9 7l3.7 6"/></symbol>
+  <symbol id="i-build" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5"/><path d="M3 8h14M3 12h14M10 4v4M7 8v4M13 8v4M10 12v4"/></symbol>
+  <symbol id="i-try-it" viewBox="0 0 20 20"><path d="M5.5 3.5l10 4.2-4.3 1.6-1.7 4.4z"/><path d="M12.5 12.5l3.5 3.5"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 20 20"><path d="M3 6h2M9 6h8M3 14h8M15 14h2"/><circle cx="7" cy="6" r="2"/><circle cx="13" cy="14" r="2"/></symbol>
+  <symbol id="i-live-logs" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><path d="M6 8l3 2-3 2M11 12.5h3.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 20 20"><path d="M3 6.5a1 1 0 0 1 1-1h4l1.8 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 20 20"><path d="M16 10H4M9 5l-5 5 5 5"/></symbol>
+  <symbol id="i-collapse" viewBox="0 0 20 20"><path d="M10 5l-5 5 5 5M16 5l-5 5 5 5"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 20 20"><path d="M4 5l5 5-5 5M10 5l5 5-5 5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5"/><path d="M13 13l4 4"/></symbol>
+  <symbol id="i-attach" viewBox="0 0 20 20"><path d="M15.5 9.5l-5.8 5.8a3.2 3.2 0 0 1-4.5-4.5l6-6a2.1 2.1 0 0 1 3 3l-6 6a1 1 0 0 1-1.5-1.5l5.3-5.3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 20 20"><path d="M10 16V4M5 9l5-5 5 5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 20 20"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 20 20"><path d="M7 5v10M13 5v10"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 20 20"><path d="M5 10h10"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="9" rx="1.5"/><path d="M13 7V5.5A1.5 1.5 0 0 0 11.5 4h-6A1.5 1.5 0 0 0 4 5.5v6A1.5 1.5 0 0 0 5.5 13H7"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></symbol>
+  <symbol id="i-external" viewBox="0 0 20 20"><path d="M8 4.5H5.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12M11 4.5h4.5V9M15.5 4.5L9 11"/></symbol>
+  <!-- Component glyphs, 16x16 viewBox (components-a/-b): <svg class="pm-icon"><use href="#pm-i-..."/></svg> for 16px icons,
+       <svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-..."/></svg> inside .pm-pin-head (Done check, Blocked x, Paused bar, Locked lock). -->
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+  <symbol id="pm-i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></symbol>
+  <symbol id="pm-i-attach" viewBox="0 0 16 16"><path d="M13 7.5l-5 5a3 3 0 01-4.2-4.2l5.5-5.5a2 2 0 012.8 2.8L6.6 11a1 1 0 01-1.4-1.4l4.6-4.6"/></symbol>
+  <symbol id="pm-i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/></symbol>
+  <symbol id="pm-i-external" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></symbol>
+</svg>
+
+<div class="pm-app">
+
+  <aside class="pm-rail" id="pm-rail" aria-label="Sidebar">
+    <div class="pm-rail-head">
+      <a class="pm-wordmark" href="01-projects.html" aria-label="pramaan, all projects">pramaan</a>
+      <span class="pm-monogram" aria-hidden="true">p</span>
+      <button class="pm-rail-toggle" type="button" aria-expanded="true" aria-controls="pm-rail" aria-label="Collapse navigation">
+        <svg class="pm-i pm-i-collapse"><use href="#i-collapse"/></svg>
+        <svg class="pm-i pm-i-expand"><use href="#i-expand"/></svg>
+      </button>
+    </div>
+
+    <nav class="pm-rail-nav" aria-label="Projects and destinations">
+      <a class="pm-rail-item pm-rail-all" href="01-projects.html"><svg class="pm-i"><use href="#i-folder"/></svg><span class="pm-rail-label">All projects</span><span class="pm-rail-meta">Test</span></a>
+      <div class="pm-rail-seam" role="separator"></div>
+      <ul class="pm-rail-list">
+        <li class="pm-rail-item--dev"><span class="pm-sr">Development</span><a class="pm-rail-item" href="17-live-logs.html" aria-current="page"><svg class="pm-i"><use href="#i-live-logs"/></svg><span class="pm-rail-label">Live logs<svg class="pm-pen" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false"><ellipse cx="50" cy="16" rx="49" ry="15" vector-effect="non-scaling-stroke"/></svg></span></a></li>
+      </ul>
+    </nav>
+
+    <div class="pm-rail-spacer"></div>
+
+    <div class="pm-rail-budget" role="group" aria-label="Monthly budget 18% used" title="Monthly budget 18% used">
+      <div class="pm-rail-budget-text"><span class="pm-rail-budget-label">Monthly budget</span><span class="pm-rail-budget-value">18% used</span></div>
+      <div class="pm-rail-track" aria-hidden="true"><div class="pm-rail-fill" style="--pm-fill: 18%"></div></div>
+    </div>
+
+    <button class="pm-rail-user" type="button" popovertarget="pm-user-menu" aria-label="Account menu, Aditya Choudhary" title="Aditya Choudhary">
+      <span class="pm-rail-avatar" aria-hidden="true">AC</span>
+      <span class="pm-rail-user-text"><span class="pm-rail-user-name">Aditya Choudhary</span><span class="pm-rail-user-sub">Signed in</span></span>
+    </button>
+    <div class="pm-rail-menu" id="pm-user-menu" popover aria-label="Account">
+      <button class="pm-rail-menu-item" type="button" role="switch" aria-checked="false" data-theme-switch><span>Dark theme</span><span class="pm-rail-switch" aria-hidden="true"></span></button>
+      <a class="pm-rail-menu-item" href="#">Switch organisation</a>
+      <a class="pm-rail-menu-item" href="#">Sign out</a>
+    </div>
+  </aside>
+
+  <main class="pm-main pm-main--workbench pm-main--nostrip" id="pm-main" data-thread-none="working">
+    <header class="pm-topbar">
+      <a class="pm-back" href="01-projects.html" aria-label="Back to Projects"><svg class="pm-i"><use href="#i-back"/></svg></a>
+
+      <nav class="pm-crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="01-projects.html">Projects</a></li>
+          <li><span aria-current="page">Live logs</span></li>
+        </ol>
+      </nav>
+
+      
+
+      <div class="pm-slot">
+        <span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span>
+        <span class="pm-pin-sentence pm-slot-sentence" title="Live. 69 lines so far, times are UTC.">Live. 69 lines so far.</span>
+      </div>
+    </header>
+
+    <div class="pm-workbench">
+      <div class="pm-content lg-page">
+        <div class="pm-log" data-density="compact" id="pm-job" data-job>
+          <div class="pm-title">
+            <h1>Live logs</h1>
+            <p class="pm-title-sentence pm-log-count">Live &middot; 69 lines &middot; times are UTC</p>
+            <div class="pm-title-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-log-pause aria-pressed="false">Pause</button></div>
+          </div>
+          <div class="pm-log-filters">
+            <label class="pm-log-filter">Level <select class="pm-select"><option>All levels</option><option>Info</option><option>Warn</option><option>Error</option></select></label>
+            <label class="pm-log-filter">Project <select class="pm-select"><option>All projects</option><option>todo</option><option>test first</option></select></label>
+            <label class="pm-log-filter"><input class="pm-switch" type="checkbox" role="switch"> Show requests</label>
+          </div>
+          <div class="pm-log-paused"><span class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span><span class="pm-pin-sentence"><span data-log-new>0</span> new lines</span></span><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-log-resume>Resume</button></div>
+          <ul class="pm-log-list" tabindex="0" aria-label="Log lines, newest at the bottom">
+          <li class="pm-log-hour">21:00 UTC</li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:00</span><div class="pm-log-main"><span>Job finished: plan sprint</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job ddde3283 <button class="pm-copy" type="button" data-copy="ddde3283-f397-4ede-a676-853f4c5f8841" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">plan_sprint</span><span class="pm-fact">95 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-1">builder.job.finished jobId=ddde3283-f397-4ede-a676-853f4c5f8841 kind=plan_sprint projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=95123</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:01</span><div class="pm-log-main"><span>Code received from GitHub</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event webhook.write.received</span><span class="pm-fact">delivery 63948f0a <button class="pm-copy" type="button" data-copy="63948f0a-bc4b-11f1-9d2e-b57c68f68cb0" aria-label="Copy delivery id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">push</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-2">webhook.write.received deliveryId=63948f0a-bc4b-11f1-9d2e-b57c68f68cb0 event=push</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:25</span><div class="pm-log-main"><span>Preview opened</span><span class="lg-project">test first</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.preview.access_issued</span><span class="pm-fact">sprint 1</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-3">builder.preview.access_issued sprintIndex=1 attempt=1</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:25</span><div class="pm-log-main"><span>Preview access granted</span><span class="lg-project">test first</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.preview.access_granted</span><span class="pm-fact">sprint 1</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-4">builder.preview.access_granted sprintIndex=1 attempt=1</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:53</span><div class="pm-log-main"><span>Preview opened</span><span class="lg-project">test first</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.preview.access_issued</span><span class="pm-fact">sprint 1</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-5">builder.preview.access_issued sprintIndex=1 attempt=1</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:19:53</span><div class="pm-log-main"><span>Preview access granted</span><span class="lg-project">test first</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.preview.access_granted</span><span class="pm-fact">sprint 1</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-6">builder.preview.access_granted sprintIndex=1 attempt=1</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:26:03</span><div class="pm-log-main"><span>Preview opened</span><span class="lg-project">test first</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.preview.access_issued</span><span class="pm-fact">sprint 1</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-7">builder.preview.access_issued sprintIndex=1 attempt=1</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:26:04</span><div class="pm-log-main"><span>Preview access granted</span><span class="lg-project">test first</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.preview.access_granted</span><span class="pm-fact">sprint 1</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-8">builder.preview.access_granted sprintIndex=1 attempt=1</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:43:18</span><div class="pm-log-main"><span>Job finished: build feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job d899c361 <button class="pm-copy" type="button" data-copy="d899c361-16e8-4832-af5b-ea9dc91b0656" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">implement_feature</span><span class="pm-fact">24 min</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-9">builder.job.finished jobId=d899c361-16e8-4832-af5b-ea9dc91b0656 kind=implement_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=1456888</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:43:19</span><div class="pm-log-main"><span>Code received from GitHub</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event webhook.write.received</span><span class="pm-fact">delivery c85845e6 <button class="pm-copy" type="button" data-copy="c85845e6-bc4e-11f1-9ab2-86e9dc5890eb" aria-label="Copy delivery id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">push</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-10">webhook.write.received deliveryId=c85845e6-bc4e-11f1-9ab2-86e9dc5890eb event=push</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:43:19</span><div class="pm-log-main"><span>Code check reported by GitHub</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event webhook.write.received</span><span class="pm-fact">delivery c8bc2340 <button class="pm-copy" type="button" data-copy="c8bc2340-bc4e-11f1-96c9-4abac303782f" aria-label="Copy delivery id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">check_suite</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-11">webhook.write.received deliveryId=c8bc2340-bc4e-11f1-96c9-4abac303782f event=check_suite action=requested</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:43:37</span><div class="pm-log-main"><span>Job finished: check feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job 5635a78f <button class="pm-copy" type="button" data-copy="5635a78f-46c1-4b21-a159-fd72deebae98" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">verify_feature</span><span class="pm-fact">18 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-12">builder.job.finished jobId=5635a78f-46c1-4b21-a159-fd72deebae98 kind=verify_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=17850</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">21:44:02</span><div class="pm-log-main"><span>Job finished: review feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job 4d4ebcb4 <button class="pm-copy" type="button" data-copy="4d4ebcb4-e3cf-46e0-938f-f765b81494fa" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">review_feature</span><span class="pm-fact">25 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-13">builder.job.finished jobId=4d4ebcb4-e3cf-46e0-938f-f765b81494fa kind=review_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=24909</pre></div></details></li>
+          <li class="pm-log-hour">22:00 UTC</li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:01:12</span><div class="pm-log-main"><span>Job finished: plan sprint</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job 7813781e <button class="pm-copy" type="button" data-copy="7813781e-964c-4a17-a3a2-8720ff17f368" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">plan_sprint</span><span class="pm-fact">88 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-14">builder.job.finished jobId=7813781e-964c-4a17-a3a2-8720ff17f368 kind=plan_sprint projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=88214</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:01:13</span><div class="pm-log-main"><span>Code received from GitHub</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event webhook.write.received</span><span class="pm-fact">delivery a42f7385 <button class="pm-copy" type="button" data-copy="a42f7385-2c55-41e3-ae73-96ca237106aa" aria-label="Copy delivery id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">push</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-15">webhook.write.received deliveryId=a42f7385-2c55-41e3-ae73-96ca237106aa event=push</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:09:40</span><div class="pm-log-main"><span>Job finished: build feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job f5777d77 <button class="pm-copy" type="button" data-copy="f5777d77-43b2-44cd-afed-ba805536ab4f" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">implement_feature</span><span class="pm-fact">8 min</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-16">builder.job.finished jobId=f5777d77-43b2-44cd-afed-ba805536ab4f kind=implement_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=481902</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:09:41</span><div class="pm-log-main"><span>Code received from GitHub</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event webhook.write.received</span><span class="pm-fact">delivery 05971f7d <button class="pm-copy" type="button" data-copy="05971f7d-972c-4e40-a2bb-ad3d20108dd2" aria-label="Copy delivery id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">push</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-17">webhook.write.received deliveryId=05971f7d-972c-4e40-a2bb-ad3d20108dd2 event=push</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:10:02</span><div class="pm-log-main"><span>Job finished: check feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job 70471534 <button class="pm-copy" type="button" data-copy="70471534-c220-4916-a176-0c7b5eba451e" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">verify_feature</span><span class="pm-fact">16 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-18">builder.job.finished jobId=70471534-c220-4916-a176-0c7b5eba451e kind=verify_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=16120</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:10:31</span><div class="pm-log-main"><span>Job finished: review feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job 11240976 <button class="pm-copy" type="button" data-copy="11240976-8e86-41ea-a7ea-7fe67bce8fad" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">review_feature</span><span class="pm-fact">22 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-19">builder.job.finished jobId=11240976-8e86-41ea-a7ea-7fe67bce8fad kind=review_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=22467</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:14:05</span><div class="pm-log-main"><span>Preview opened</span><span class="lg-project">test first</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.preview.access_issued</span><span class="pm-fact">sprint 1</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-20">builder.preview.access_issued sprintIndex=1 attempt=1</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:14:06</span><div class="pm-log-main"><span>Preview access granted</span><span class="lg-project">test first</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.preview.access_granted</span><span class="pm-fact">sprint 1</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-21">builder.preview.access_granted sprintIndex=1 attempt=1</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:31:48</span><div class="pm-log-main"><span>Job finished: build feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job 71f8a6cc <button class="pm-copy" type="button" data-copy="71f8a6cc-87eb-4057-afa2-a23850f8062a" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">implement_feature</span><span class="pm-fact">19 min</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-22">builder.job.finished jobId=71f8a6cc-87eb-4057-afa2-a23850f8062a kind=implement_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=1140233</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:31:49</span><div class="pm-log-main"><span>Code received from GitHub</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event webhook.write.received</span><span class="pm-fact">delivery 3b4e96d2 <button class="pm-copy" type="button" data-copy="3b4e96d2-56e9-4127-a468-500b78e16360" aria-label="Copy delivery id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">push</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-23">webhook.write.received deliveryId=3b4e96d2-56e9-4127-a468-500b78e16360 event=push</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:32:10</span><div class="pm-log-main"><span>Job finished: check feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job 2bd08453 <button class="pm-copy" type="button" data-copy="2bd08453-b73a-4ef6-afc6-132b9f4552e9" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">verify_feature</span><span class="pm-fact">19 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-24">builder.job.finished jobId=2bd08453-b73a-4ef6-afc6-132b9f4552e9 kind=verify_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=19003</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:32:44</span><div class="pm-log-main"><span>Job finished: review feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job cb492bf9 <button class="pm-copy" type="button" data-copy="cb492bf9-5589-416d-ab88-96126ece7d71" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">review_feature</span><span class="pm-fact">27 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-25">builder.job.finished jobId=cb492bf9-5589-416d-ab88-96126ece7d71 kind=review_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=26981</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:47:03</span><div class="pm-log-main"><span>Job finished: build feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job e533055f <button class="pm-copy" type="button" data-copy="e533055f-d980-4727-a438-939a71077091" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">implement_feature</span><span class="pm-fact">14 min</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-26">builder.job.finished jobId=e533055f-d980-4727-a438-939a71077091 kind=implement_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=842771</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:47:04</span><div class="pm-log-main"><span>Code received from GitHub</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event webhook.write.received</span><span class="pm-fact">delivery 146afd20 <button class="pm-copy" type="button" data-copy="146afd20-dfdc-49e0-a491-a54f92ab0315" aria-label="Copy delivery id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">push</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-27">webhook.write.received deliveryId=146afd20-dfdc-49e0-a491-a54f92ab0315 event=push</pre></div></details></li>
+          <li class="pm-log-entry"><span class="pm-log-time">22:47:25</span><div class="pm-log-main"><span>Job finished: check feature</span><span class="lg-project">todo</span></div><details class="pm-details"><summary>Details</summary><div class="pm-details-body"><div class="pm-log-facts"><span class="pm-fact">event builder.job.finished</span><span class="pm-fact">job 04788f15 <button class="pm-copy" type="button" data-copy="04788f15-1225-4151-a64d-78ea5b74c496" aria-label="Copy job id"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-copy"/></svg></button></span><span class="pm-fact">verify_feature</span><span class="pm-fact">17 s</span><span class="pm-fact">level INFO</span></div><pre class="pm-log-raw" id="raw-28">builder.job.finished jobId=04788f15-1225-4151-a64d-78ea5b74c496 kind=verify_feature projectId=d509a2e9-cf4f-431d-939b-00fb5360e825 attempts=1 ms=17342</pre></div></details></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  var log = document.querySelector(".pm-log"), n = log.querySelector("[data-log-new]");
+  setInterval(function () { if (log.getAttribute("data-paused") !== "true") return; n.textContent = +n.textContent + 1; n.nextSibling.textContent = +n.textContent === 1 ? " new line" : " new lines"; }, 2500);
+  log.querySelector("[data-log-resume]").addEventListener("click", function () { n.nextSibling.textContent = " new lines"; });
+})();
+</script>
+</body>
+</html>

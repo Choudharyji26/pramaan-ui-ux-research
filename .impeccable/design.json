@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-30T00:00:00Z",
+  "title": "Design System: Pramaan Builder, Tape and Thread",
+  "extensions": {
+    "colorMeta": {
+      "ground": { "role": "neutral", "displayName": "Paper Ground", "canonical": "oklch(97.3% 0.003 260)", "tonalRamp": ["#15181f", "#272c32", "#3f4349", "#606369", "#898c92", "#b4b7bd", "#e6e8eb", "#f5f6f8"] },
+      "ink": { "role": "neutral", "displayName": "Jersey Ink", "canonical": "oklch(21% 0.014 260)", "tonalRamp": ["#080b10", "#15181f", "#272c32", "#3f4349", "#55585e", "#606369", "#898c92", "#b4b7bd"] },
+      "thread-canary": { "role": "primary", "displayName": "Tape Canary", "canonical": "oklch(88% 0.175 96)", "tonalRamp": ["#633f00", "#855a00", "#e2b40a", "#fad622"] },
+      "chalk-slate": { "role": "secondary", "displayName": "Chalk Slate", "canonical": "oklch(50% 0.090 245)", "tonalRamp": ["#1d5178", "#326893", "#80aace", "#aac8e3", "#e1edf8", "#f0f6fc"] },
+      "status-done": { "role": "status", "displayName": "Moss", "canonical": "oklch(47% 0.120 150)", "tonalRamp": ["#122d19", "#146d34", "#69c27e", "#d7f4dc"] },
+      "status-paused": { "role": "status", "displayName": "Clay", "canonical": "oklch(52% 0.135 45)", "tonalRamp": ["#3d2013", "#a64a18", "#e79363", "#ffe5d8"] },
+      "status-blocked": { "role": "status", "displayName": "Signal Red", "canonical": "oklch(48% 0.170 27)", "tonalRamp": ["#3f1916", "#a92321", "#f47b74", "#ffe3df"] }
+    },
+    "typographyMeta": {
+      "digits": { "displayName": "Digits", "purpose": "Engraved metric numerals; pure digits and a unit only." },
+      "title": { "displayName": "Title", "purpose": "The one h1 per screen." },
+      "heading": { "displayName": "Heading", "purpose": "Section, card, panel and document h2." },
+      "reading": { "displayName": "Reading", "purpose": "Document body and chat, max 68ch." },
+      "body": { "displayName": "Body", "purpose": "UI text, table cells, status sentences." },
+      "label": { "displayName": "Label", "purpose": "Buttons, rail items, tape labels, pin labels." },
+      "meta": { "displayName": "Meta", "purpose": "Timestamps, counts, breadcrumb, table headers (uppercase)." }
+    },
+    "shadows": [
+      { "name": "float", "value": "0 8px 24px -8px oklch(21% 0.014 260 / 0.28), 0 2px 6px -2px oklch(21% 0.014 260 / 0.16)", "purpose": "Menus, popovers, toasts, rail tooltip." },
+      { "name": "dialog", "value": "0 24px 48px -16px oklch(21% 0.014 260 / 0.4)", "purpose": "Dialogs over the scrim." }
+    ],
+    "motion": [
+      { "name": "state", "value": "120ms", "purpose": "Hover, focus, pressed, pin fill." },
+      { "name": "reveal", "value": "180ms", "purpose": "Disclosure, toast enter, message append." },
+      { "name": "layout", "value": "240ms", "purpose": "Rail collapse, tape pin slide, panel dock." },
+      { "name": "ease-out", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "Everything that enters or settles." },
+      { "name": "ease-in", "value": "cubic-bezier(0.3, 0, 1, 1)", "purpose": "Exits." }
+    ],
+    "breakpoints": [
+      { "name": "rail-default-expanded", "value": "1280px" },
+      { "name": "wide", "value": "1440px" },
+      { "name": "stack", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Thread Button",
+      "kind": "custom",
+      "refersTo": "button-thread",
+      "description": "The one canary element per screen: the next decision.",
+      "html": "<button class=\"ds-btn-thread\">Approve the brief</button>",
+      "css": ".ds-btn-thread { height: 36px; padding: 0 16px; border: 1px solid var(--pm-sys-text); border-radius: 6px; background: var(--pm-sys-thread); color: var(--pm-sys-on-thread); font: 600 14px/16px 'Schibsted Grotesk', 'Segoe UI', system-ui, sans-serif; cursor: pointer; transition: background-color 120ms cubic-bezier(0.2, 0, 0, 1); } .ds-btn-thread:hover { background: var(--pm-sys-thread-hover); } .ds-btn-thread:focus-visible { outline: 2px solid var(--pm-sys-focus); outline-offset: 2px; box-shadow: 0 0 0 4px var(--pm-sys-focus-halo); }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Secondary action with a control-border stroke.",
+      "html": "<button class=\"ds-btn-quiet\">Ask for changes</button>",
+      "css": ".ds-btn-quiet { height: 36px; padding: 0 16px; border: 1px solid var(--pm-sys-control-border); border-radius: 6px; background: transparent; color: var(--pm-sys-text); font: 500 14px/16px 'Schibsted Grotesk', 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-btn-quiet:hover { background: var(--pm-sys-surface-sunken); } .ds-btn-quiet:focus-visible { outline: 2px solid var(--pm-sys-focus); outline-offset: 2px; box-shadow: 0 0 0 4px var(--pm-sys-focus-halo); }"
+    },
+    {
+      "name": "Status Pin",
+      "kind": "chip",
+      "refersTo": "status-pin",
+      "description": "Pin head, fixed label, one plain sentence. Shown: Done.",
+      "html": "<span class=\"ds-pin\"><span class=\"ds-pin-head\"></span><span class=\"ds-pin-label\">Done</span><span class=\"ds-pin-sentence\">This is finished and saved.</span></span>",
+      "css": ".ds-pin { display: inline-flex; align-items: center; gap: 8px; color: var(--pm-sys-status-done); font: 500 14px/16px 'Schibsted Grotesk', system-ui, sans-serif; } .ds-pin-head { width: 10px; height: 10px; border-radius: 999px; background: var(--pm-sys-status-done); } .ds-pin-label { white-space: nowrap; } .ds-pin-sentence { color: var(--pm-sys-text-muted); font-weight: 400; font-size: 15px; line-height: 22px; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat raised surface with a hairline; hover darkens the border.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-name\">Todo app</div><div class=\"ds-card-meta\">Updated Tue</div></div>",
+      "css": ".ds-card { padding: 16px; border: 1px solid var(--pm-sys-hairline); border-radius: 10px; background: var(--pm-sys-surface-raised); color: var(--pm-sys-text); transition: border-color 120ms cubic-bezier(0.2, 0, 0, 1); } .ds-card:hover { border-color: var(--pm-sys-control-border); } .ds-card-name { font: 600 17px/24px 'Schibsted Grotesk', system-ui, sans-serif; } .ds-card-meta { color: var(--pm-sys-text-muted); font-size: 12px; line-height: 16px; letter-spacing: 0.01em; }"
+    },
+    {
+      "name": "Engraved Digit",
+      "kind": "custom",
+      "refersTo": "digit-block",
+      "description": "Sunken tabular numeral block with label and plain sentence.",
+      "html": "<div class=\"ds-digit\"><span class=\"ds-digit-value\">3 / 4</span><span class=\"ds-digit-text\">Sprints accepted</span></div>",
+      "css": ".ds-digit { display: grid; grid-template-columns: 104px 1fr; align-items: center; column-gap: 16px; height: 72px; border-bottom: 1px solid var(--pm-sys-hairline); } .ds-digit-value { display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 4px; background: var(--pm-sys-surface-sunken); box-shadow: inset -1px -1px 0 var(--pm-sys-hairline); font: 600 28px/52px 'Schibsted Grotesk', system-ui, sans-serif; letter-spacing: -0.01em; font-variant-numeric: tabular-nums lining-nums; } .ds-digit-text { color: var(--pm-sys-text-muted); font-size: 15px; line-height: 22px; }"
+    },
+    {
+      "name": "Tape Journey Rail",
+      "kind": "nav",
+      "refersTo": "top-bar",
+      "description": "Stitched baseline with ticks, step labels and a you-are-here pin.",
+      "html": "<ol class=\"ds-tape\"><li class=\"ds-done\">Interview</li><li class=\"ds-cur\">Documents</li><li class=\"ds-lock\">Roadmap</li></ol>",
+      "css": ".ds-tape { display: grid; grid-auto-flow: column; grid-auto-columns: auto; height: 40px; min-width: 360px; margin: 0; padding: 0; list-style: none; background-image: repeating-linear-gradient(90deg, var(--pm-sys-hairline) 0 6px, transparent 6px 10px); background-repeat: no-repeat; background-size: 100% 1px; background-position: 0 calc(100% - 8px); font: 500 14px/16px 'Schibsted Grotesk', system-ui, sans-serif; } .ds-tape li { position: relative; padding: 0 8px 0 9px; color: var(--pm-sys-text-muted); } .ds-tape li::before { content: ''; position: absolute; left: 0; bottom: 8px; width: 2px; height: 8px; background: var(--pm-sys-text); } .ds-tape .ds-done { color: var(--pm-sys-text); } .ds-tape .ds-done::before { background: var(--pm-sys-status-done); } .ds-tape .ds-cur { color: var(--pm-sys-text); font-weight: 600; } .ds-tape .ds-lock { color: var(--pm-sys-status-locked); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Fitting Room",
+    "overview": "A made-to-measure fitting, not a dashboard. The founder walks into a room where the work is pinned up in order, one measuring tape shows where the garment stands, and one thread is held out: the next thing only they can decide. The tailoring lives in the visuals and never in the words. Operate mode, non-technical founder, desktop only. The replaced look (cream and sage with a serif display) is the anti-reference.",
+    "keyCharacteristics": [
+      "Restrained neutral ink ground, one committed canary, one cool chalk slate for annotation.",
+      "Flat surfaces separated by 1px hairlines and a stitched dashed seam; shadows only on floating layers.",
+      "One family for text (Schibsted Grotesk), mono only for ids and log lines.",
+      "Status is a pin head plus a fixed word plus one plain sentence, never colour alone.",
+      "One scroll per screen; the top bar and rail never scroll."
+    ],
+    "rules": [
+      { "name": "The One Thread Rule", "body": "Exactly one element per screen is filled canary, and it is the next decision. If nothing needs the founder there is no thread; the slot shows a pin and a status sentence and main declares data-thread-none.", "section": "colors" },
+      { "name": "The Paper Not Cream Rule", "body": "Neutrals stay cool and near-achromatic. Tinting the ground warm returns the anti-reference.", "section": "colors" },
+      { "name": "The Status Is Never Only Colour Rule", "body": "A status is always pin shape, fixed word and colour together.", "section": "colors" },
+      { "name": "The Proportional Prose Rule", "body": "Meta, Body and Label are proportional. Tabular figures are opt-in for column contexts only.", "section": "typography" },
+      { "name": "The Seven Steps Rule", "body": "No new size or weight. Table-header uppercase is a column-header device only.", "section": "typography" },
+      { "name": "The Flat At Rest Rule", "body": "Cards, panels and bars carry no shadow at rest. A hover changes border colour, never lifts.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do fill exactly one element canary per screen: the next decision.",
+      "Do show a pin and a plain sentence in the slot when nothing needs the founder, and declare data-thread-none on main.",
+      "Do keep every screen to one h1, one scroll, and a main job that starts near the top.",
+      "Do use only the seven status pins with fixed labels, each followed by one plain sentence.",
+      "Do name actions by their consequence and give any disabled control a visible reason.",
+      "Do put engineering facts under Details and add a one-line gloss under working-term headings.",
+      "Do use only --pm-sys-* and --pm-cmp-* in components; colour literals live only in tokens.css."
+    ],
+    "donts": [
+      "Don't use cream, warm tints or a serif display.",
+      "Don't dress navigation or housekeeping as the thread.",
+      "Don't add heroes, eyebrows or kickers, marketing bands, or explainer panels wider than 320px.",
+      "Don't signal status by colour alone or invent an eighth status.",
+      "Don't use tabular figures in prose or an eighth type size.",
+      "Don't put a shadow on cards or bars at rest, or add a coloured side stripe.",
+      "Don't use em-dashes in UI copy, or the word Reject.",
+      "Don't nest scrollers, or let the rail or top bar scroll."
+    ]
+  }
+}

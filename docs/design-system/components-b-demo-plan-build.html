@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Components B demo: approval gate, sprint route and feature board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="components-a.css">
+<link rel="stylesheet" href="components-b.css">
+<script>
+  try { var t = localStorage.getItem("pm.theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+  /* Demo-only layout, tokens only. The head stands in for the shell top bar (56px) and holds the top-bar slot copy of the thread. */
+  .demo-head { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-4); height: var(--pm-topbar-h); padding: 0 var(--pm-content-pad); background: var(--pm-sys-ground); border-bottom: var(--pm-hairline); }
+  .demo-head .pm-slot { max-width: none; }
+  .demo-page { width: min(100%, calc(100vw - 248px), calc(var(--pm-content-max) + 2 * var(--pm-content-pad))); padding: 0 var(--pm-content-pad) var(--pm-space-8); }
+  .demo-sec { margin-top: var(--pm-space-7); }
+  .demo-sec > .demo-h { position: sticky; top: var(--pm-topbar-h); z-index: 25; display: flex; align-items: center; justify-content: space-between; gap: var(--pm-space-4); height: 40px; background: var(--pm-sys-ground); border-bottom: var(--pm-hairline); }
+  .demo-body { display: grid; gap: var(--pm-space-5); padding-top: var(--pm-space-4); }
+  .demo-cap { color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); }
+  .demo-static .pm-actionbar { position: static; border: var(--pm-hairline); border-radius: var(--pm-radius-card); }
+  .demo-static .pm-actionbar:has(+ .pm-gate-changes) { border-radius: var(--pm-radius-card) var(--pm-radius-card) 0 0; }
+  .demo-static .pm-gate-changes { border-radius: 0 0 var(--pm-radius-card) var(--pm-radius-card); }
+  .demo-switch { display: inline-flex; align-items: center; gap: var(--pm-space-2); cursor: pointer; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+</defs></svg>
+
+<main class="pm-main" data-words="on">
+  <header class="demo-head">
+    <h1>Components B: plan and build</h1>
+    <div class="pm-row">
+      <div class="pm-slot"><button class="pm-btn pm-btn--thread" type="button" data-thread hidden>Approve the plan and start building</button></div>
+      <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" id="theme-toggle">Dark theme</button>
+    </div>
+  </header>
+
+  <div class="demo-page">
+    <section class="demo-sec" aria-labelledby="h-gate">
+      <div class="demo-h"><h2 id="h-gate">Approval gate</h2></div>
+      <div class="demo-body demo-static">
+        <p class="demo-cap">Default. While this bar is on screen it holds the thread and the top-bar copy is hidden; scroll it away and the top-bar copy returns.</p>
+        <div>
+          <div class="pm-actionbar pm-actionbar--gate pm-gate" role="region" aria-label="Your decision" data-gate>
+            <div class="pm-actionbar-main"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><p class="pm-actionbar-question">Approve this plan?</p></div>
+            <div class="pm-actionbar-actions">
+              <button class="pm-btn pm-btn--quiet" type="button" data-toggle-target="gate-changes" aria-expanded="false" aria-controls="gate-changes">Ask for changes to the plan</button>
+              <button class="pm-btn pm-btn--thread pm-btn--lg" type="button" data-thread>Approve the plan and start building <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></button>
+            </div>
+            <p class="pm-actionbar-consequence pm-gate-sentence">4 sprints. Sprint 1 builds your private checklist. Nothing is built until you approve, and you can ask for changes first.</p>
+          </div>
+        </div>
+        <p class="demo-cap">The "Ask for changes" region opens under the bar, not in a dialog.</p>
+        <div>
+          <div class="pm-actionbar pm-actionbar--gate pm-gate" role="region" aria-label="Your decision, asking for changes">
+            <div class="pm-actionbar-main"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><p class="pm-actionbar-question">Approve this plan?</p></div>
+            <div class="pm-actionbar-actions">
+              <button class="pm-btn pm-btn--quiet" type="button" aria-expanded="true">Ask for changes to the plan</button>
+              <button class="pm-btn pm-btn--thread-demo pm-btn--lg" type="button">Approve the plan and start building <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-arrow-right"/></svg></button>
+            </div>
+            <p class="pm-actionbar-consequence pm-gate-sentence">4 sprints. Sprint 1 builds your private checklist. Nothing is built until you approve, and you can ask for changes first.</p>
+          </div>
+          <div class="pm-gate-changes" id="gate-changes">
+            <label class="pm-label" for="gate-text">What should change in the plan?</label>
+            <textarea class="pm-textarea" id="gate-text"></textarea>
+            <div class="pm-gate-changes-actions"><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button">Send changes</button><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-toggle-target="gate-changes">Cancel</button></div>
+          </div>
+        </div>
+        <p class="demo-cap">Approved.</p>
+        <div class="pm-actionbar pm-actionbar--gate pm-gate" role="region" aria-label="Your decision, approved">
+          <div class="pm-actionbar-main"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><p class="pm-actionbar-question">Plan approved Tuesday 14:10.</p></div>
+          <div class="pm-actionbar-actions"><button class="pm-btn pm-btn--quiet" type="button">Ask for a change to the plan</button></div>
+          <p class="pm-actionbar-consequence pm-gate-sentence">Sprint 1 is being built. A change creates a revision after the current sprint.</p>
+        </div>
+        <p class="demo-cap">Disabled, with the reason and the way out.</p>
+        <div class="pm-actionbar pm-actionbar--gate pm-gate" role="region" aria-label="Your decision, disabled">
+          <div class="pm-actionbar-main"><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><p class="pm-actionbar-question">Approve this plan?</p></div>
+          <div class="pm-actionbar-actions">
+            <button class="pm-btn pm-btn--quiet" type="button">Ask for changes to the plan</button>
+            <button class="pm-btn pm-btn--thread-demo pm-btn--lg" type="button" aria-disabled="true" aria-describedby="gate-why">Approve the plan and start building</button>
+          </div>
+          <p class="pm-gate-reason" id="gate-why">Raise the monthly budget in Settings to approve. <button class="pm-btn pm-btn--quiet pm-btn--sm" type="button">Open Settings</button></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-sec" aria-labelledby="h-route">
+      <div class="demo-h"><h2 id="h-route">Sprint route: awaiting approval</h2><label class="demo-switch"><input class="pm-switch" type="checkbox" role="switch" data-words-toggle> <span class="pm-t-label">Show my words</span></label></div>
+      <div class="demo-body">
+        <ol class="pm-route" aria-label="Your plan, four sprints">
+          <li class="pm-route-node" data-status="waiting"><span class="pm-route-dot" aria-hidden="true"></span>
+            <div class="pm-route-card">
+              <div class="pm-route-title"><h3>Sprint 1 · Your private checklist</h3><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span><span class="pm-pin-sentence">Starts after you approve the plan.</span></span></div>
+              <p class="pm-route-label">You will be able to:</p>
+              <ul class="pm-route-outcomes">
+                <li>Sign up with an email and password<span class="pm-said">You said: 'users can sign up or log in and see only their own tasks' <a class="pm-said-edit" href="#">Edit that decision</a></span></li>
+                <li>Log in with a wrong password and see a clear error</li>
+                <li>Log in with the right password and see your empty checklist</li>
+                <li>Add a first task and a second task to your checklist</li>
+                <li>Add a third task and see it appear at the bottom, below the first two</li>
+                <li>Try adding a task when the service is unavailable and see that it was not added, then try again</li>
+              </ul>
+              <p class="pm-route-try"><strong>You can try:</strong> sign up, log in, land on your own empty checklist, and add your own tasks to it, each one going to the bottom of the list.</p>
+              <p class="pm-route-then">Then: try sprint 1, share what you found, accept it. Sprint 2 starts when you accept.</p>
+            </div>
+          </li>
+          <li class="pm-route-node" data-status="waiting"><span class="pm-route-dot" aria-hidden="true"></span>
+            <div class="pm-route-card">
+              <div class="pm-route-title"><h3>Sprint 2 · Keep your list</h3><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span><span class="pm-pin-sentence">Starts after sprint 1 is accepted.</span></span></div>
+              <p class="pm-route-label">You will be able to:</p>
+              <ul class="pm-route-outcomes">
+                <li>Rename a task and see the new name in the same place<span class="pm-said">You said: 'add, rename, delete, and check off tasks' <a class="pm-said-edit" href="#">Edit that decision</a></span></li>
+                <li>Check a task and see it marked as done</li>
+                <li>Uncheck a done task and see it marked as not done</li>
+                <li>Delete a task, confirming first, and see only that task disappear</li>
+                <li>Cancel a delete and see the task stay</li>
+                <li>Try to open or rename someone else's task and see you are turned away</li>
+                <li>Change a task on one device and see the change on another device that is open</li>
+              </ul>
+              <p class="pm-route-try"><strong>You can try:</strong> rename, check off, uncheck and delete your tasks, and your list stays current while it is open. Nobody else can see or change your tasks.</p>
+              <p class="pm-route-then">Then: try sprint 2, share what you found, accept it. Sprint 3 starts when you accept.</p>
+            </div>
+          </li>
+          <li class="pm-route-node" data-status="waiting"><span class="pm-route-dot" aria-hidden="true"></span>
+            <div class="pm-route-card">
+              <div class="pm-route-title"><h3>Sprint 3 · Fresh checks every day</h3><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span><span class="pm-pin-sentence">Starts after sprint 2 is accepted.</span></span></div>
+              <p class="pm-route-label">You will be able to:</p>
+              <ul class="pm-route-outcomes">
+                <li>Leave a checked list open through your local midnight and see the checks clear without reloading<span class="pm-said">You said: 'checks that clear each day' <a class="pm-said-edit" href="#">Edit that decision</a></span></li>
+                <li>Open your list after a missed midnight and see the checks already cleared</li>
+                <li>Keep a second device open and see it show the reset too</li>
+                <li>Check a task after the reset and see it stay checked when the other device reaches midnight</li>
+                <li>Confirm all your tasks are still there in the same order after a reset</li>
+              </ul>
+              <p class="pm-route-try"><strong>You can try:</strong> start each local day with unchecked tasks: checks clear at midnight on an open list, or when you next open the list, while your tasks and their order stay.</p>
+              <p class="pm-route-then">Then: try sprint 3, share what you found, accept it. Sprint 4 starts when you accept.</p>
+            </div>
+          </li>
+          <li class="pm-route-node" data-status="waiting"><span class="pm-route-dot" aria-hidden="true"></span>
+            <div class="pm-route-card">
+              <div class="pm-route-title"><h3>Sprint 4 · Password recovery and every device</h3><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span><span class="pm-pin-sentence">Starts after sprint 3 is accepted.</span></span></div>
+              <p class="pm-route-label">You will be able to:</p>
+              <ul class="pm-route-outcomes">
+                <li>Ask for a password recovery email and see it arrive</li>
+                <li>Try again after a failed recovery request</li>
+                <li>Follow the email link, set a new password, and log in with it</li>
+                <li>Open your checklist on a phone, a tablet and a computer and use the task controls on each</li>
+                <li>Add the checklist to your phone's home screen and open it from there</li>
+                <li>Judge whether the controls and task states are easy to understand on all three devices</li>
+              </ul>
+              <p class="pm-route-try"><strong>You can try:</strong> get back into your account after forgetting your password, and use and review the finished checklist on a phone, a tablet, a computer and your phone's home screen.</p>
+              <p class="pm-route-then">Then: try sprint 4, share what you found, accept it.</p>
+            </div>
+          </li>
+          <li class="pm-route-end"><p>After sprint 4, all planned sprints are accepted. You can open your product any time and plan more.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="demo-sec" aria-labelledby="h-route2">
+      <div class="demo-h"><h2 id="h-route2">Sprint route: building (one accepted, one running)</h2></div>
+      <div class="demo-body">
+        <ol class="pm-route" aria-label="Your plan while building">
+          <li class="pm-route-node" data-status="done"><span class="pm-route-dot" aria-hidden="true"><svg class="pm-icon pm-route-glyph"><use href="#pm-g-check"/></svg></span>
+            <div class="pm-route-card">
+              <div class="pm-route-title"><h3>Sprint 1 · Your private checklist</h3><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span><span class="pm-pin-sentence">Accepted by you Tuesday.</span></span></div>
+              <p class="pm-route-try"><strong>You can try:</strong> sign up, log in, land on your own empty checklist, and add your own tasks to it.</p>
+              <a class="pm-route-open" href="#">Open what was built</a>
+            </div>
+          </li>
+          <li class="pm-route-node" data-status="working" data-live="true"><span class="pm-route-dot" aria-hidden="true"></span>
+            <div class="pm-route-card">
+              <div class="pm-route-title"><h3>Sprint 2 · Keep your list</h3><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span><span class="pm-pin-sentence">Pramaan is building it. Nothing needed from you.</span></span></div>
+              <p class="pm-route-label">You will be able to:</p>
+              <ul class="pm-route-outcomes">
+                <li>Rename a task and see the new name in the same place</li>
+                <li>Check a task and see it marked as done</li>
+                <li>Delete a task, confirming first, and see only that task disappear</li>
+              </ul>
+              <p class="pm-route-then">Then: try sprint 2, share what you found, accept it. Sprint 3 starts when you accept.</p>
+            </div>
+          </li>
+          <li class="pm-route-node" data-status="waiting"><span class="pm-route-dot" aria-hidden="true"></span>
+            <div class="pm-route-card">
+              <div class="pm-route-title"><h3>Sprint 3 · Fresh checks every day</h3><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span><span class="pm-pin-sentence">Starts after sprint 2 is accepted.</span></span></div>
+            </div>
+          </li>
+          <li class="pm-route-end"><p>After sprint 4, all planned sprints are accepted. You can open your product any time and plan more.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="demo-sec" aria-labelledby="h-draft">
+      <div class="demo-h"><h2 id="h-draft">Sprint route: plan being drafted</h2></div>
+      <div class="demo-body">
+        <div class="pm-row"><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span><span class="pm-pin-sentence">Pramaan is drafting your plan from the three accepted documents.</span></span></div>
+        <ol class="pm-route pm-route--drafting" aria-hidden="true">
+          <li class="pm-route-node" data-status="waiting"><span class="pm-route-dot"></span><div class="pm-route-card"><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span></div></li>
+          <li class="pm-route-node" data-status="waiting"><span class="pm-route-dot"></span><div class="pm-route-card"><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span></div></li>
+          <li class="pm-route-node" data-status="waiting"><span class="pm-route-dot"></span><div class="pm-route-card"><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="demo-sec" aria-labelledby="h-board">
+      <div class="demo-h"><h2 id="h-board">Feature board, activity and this sprint</h2></div>
+      <div class="demo-body">
+        <div class="pm-board-layout">
+          <div>
+            <div class="pm-sprint-head">
+              <div class="pm-sprint-head-top"><h3 class="pm-t-heading">Sprint 1 · Your private checklist</h3><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span><span class="pm-pin-sentence">1 of 3 features ready. Nothing needed from you.</span></span></div>
+              <div class="pm-sprint-progress"><span class="pm-sprint-digits">1 of 3</span><span class="pm-sprint-unit">features ready</span></div>
+              <div class="pm-progress pm-progress--wide"><span class="pm-progress-track"><span class="pm-progress-fill" style="--pm-progress: 33%"></span></span></div>
+            </div>
+            <table class="pm-table pm-board" data-density="compact">
+              <colgroup><col style="width:36%"><col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:12%"></colgroup>
+              <thead><tr><th scope="col">Feature</th><th scope="col">Building</th><th scope="col">Testing</th><th scope="col">Reviewing</th><th scope="col">Ready</th><th scope="col"><span class="pm-sr">Details</span></th></tr></thead>
+              <tbody>
+                <tr><td><span class="pm-board-name">Sign-up and log-in</span><span class="pm-board-sentence">You can create an account with your email and password, log back in later, and see a clear error if the password is wrong.</span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" data-toggle-target="board-d1" aria-expanded="false" aria-controls="board-d1">Details</button></td></tr>
+                <tr class="pm-board-detail" id="board-d1" hidden><td colspan="6"><pre class="pm-board-raw">Fixer: Good. Now let's run the new page tests to check for issues. · 1m ago</pre></td></tr>
+                <tr><td><span class="pm-board-name">Your own checklist</span><span class="pm-board-sentence">Starts when Sign-up and log-in is ready.</span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td></td></tr>
+                <tr><td><span class="pm-board-name">Add tasks to your list</span><span class="pm-board-sentence">Starts when Sign-up and log-in and Your own checklist are ready.</span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td>
+                  <td></td></tr>
+              </tbody>
+            </table>
+            <div class="pm-activity" style="margin-top: var(--pm-space-6)">
+              <h3 class="pm-t-heading">Happening in your sprint</h3>
+              <ol>
+                <li><span>Testing sign-up and log-in</span><span class="pm-activity-time">1 minute ago</span></li>
+                <li><span>Built sign-up and log-in</span><span class="pm-activity-time">4 minutes ago</span></li>
+                <li><span>Sprint 1 started</span><span class="pm-activity-time">12 minutes ago</span></li>
+              </ol>
+            </div>
+            <div class="pm-activity" style="margin-top: var(--pm-space-6)">
+              <h3 class="pm-t-heading">Happening in your sprint (nothing yet)</h3>
+              <p class="pm-activity-empty">Nothing has happened yet. The first entry appears when building starts.</p>
+            </div>
+          </div>
+          <aside class="pm-thissprint" aria-label="This sprint">
+            <p class="pm-route-label" style="margin-top:0">When this sprint is done you can:</p>
+            <ul class="pm-ticks"><li>Sign up with an email and password</li><li>Log in and land on your own empty checklist</li><li>Add your own tasks, each one going to the bottom of the list</li></ul>
+            <p class="pm-route-then">Then: Try sprint 1 appears here and in the top bar.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+  (function () { var b = document.getElementById("theme-toggle"); if (document.documentElement.dataset.theme === "dark") b.textContent = "Light theme"; })();
+  document.getElementById("theme-toggle").addEventListener("click", function () {
+    var d = document.documentElement, next = d.dataset.theme === "dark" ? "light" : "dark";
+    d.dataset.theme = next; this.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    try { localStorage.setItem("pm.theme", next); } catch (e) {}
+  });
+</script>
+<script defer src="components.js"></script>
+</body>
+</html>

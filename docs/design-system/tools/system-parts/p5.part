@@ -1,0 +1,340 @@
+
+<!-- 5c. Two lanes and four trend items (pass 2) -->
+<section class="ss-sec" id="lanes" aria-labelledby="h-lanes">
+  <header class="pm-section-head pm-section-head--page ss-head"><h2 id="h-lanes">Two lanes and four trend items</h2><span class="pm-meta">SPEC P.3 and P.4</span></header>
+  <div class="ss-body">
+    <p class="ss-lede">Pass 2 adds two ways in beside "describe your idea", each a first-class entry on the projects list and each with its own screens. The shell, the pins, the buttons and the tape anatomy are identical on every lane; only the words change (Ruling 14). Open <a href="flow.html">the flow prototype</a> and start from the projects list to walk both.</p>
+    <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Lane</th><th scope="col">Who it is for</th><th scope="col">The sentence, verbatim from the live build</th><th scope="col">Write rule, stated on its screens</th><th scope="col">Screens</th></tr></thead><tbody>
+      <tr><td><strong>Describe your idea</strong><br><span class="pm-meta">Start a new product</span></td><td>The founder.</td><td>Describe your idea. Pramaan builds it, and you try it every sprint.</td><td>None: there is no existing code to write back to.</td><td><a href="screens/02-new-project.html">02</a> then 05b to 17</td></tr>
+      <tr><td><strong>Hand off your code</strong><br><span class="pm-meta">Lane A</span></td><td>A founder who already has code: an agency built it, a co-founder left, a no-code tool exported it. The same persona with one extra fear, that the original gets changed.</td><td>Upload it or import it from GitHub. Pramaan takes it from there, and you can take a copy back any time.</td><td>Pramaan never writes back to where the code came from.</td><td><a href="screens/18-handoff-source.html">18</a>, <a href="screens/18b-handoff-github.html">18b</a>, <a href="screens/18c-handoff-too-big.html">18c</a>, <a href="screens/18d-handoff-not-zip.html">18d</a>, <a href="screens/18e-handoff-github-permission.html">18e</a>, <a href="screens/19-handoff-copying.html">19</a>, <a href="screens/20-handoff-requirements.html">20</a></td></tr>
+      <tr><td><strong>Work in my repository</strong><br><span class="pm-meta">Lane B, "For engineering teams"</span></td><td>An engineering team member who owns a repository, reviews pull requests, merges and deploys. Plain, literal voice; not a founder.</td><td>Request features in a repository you own. Pramaan opens reviewed pull requests; you merge and deploy.</td><td>Pramaan never pushes to your default branch.</td><td><a href="screens/21-repo-connect.html">21</a>, <a href="screens/21b-repo-connect-permission.html">21b</a>, <a href="screens/21c-repo-connect-empty.html">21c</a>, <a href="screens/22-repo-requests.html">22</a>, <a href="screens/22b-repo-requests-empty.html">22b</a>, <a href="screens/23-repo-request.html">23</a>, <a href="screens/23b-repo-request-blocked.html">23b</a></td></tr>
+    </tbody></table></div>
+    <div class="ss-grid2">
+      <div class="ss-card"><h3 class="pm-t-heading">Lane A, step by step</h3>
+        <ol class="ss-list">
+          <li><a href="screens/18-handoff-source.html">18</a> upload a .zip or import from GitHub; the copy-flow diagram follows the form.</li>
+          <li>Failure states with one next action each: <a href="screens/18c-handoff-too-big.html">18c</a> too big, <a href="screens/18d-handoff-not-zip.html">18d</a> not a .zip, <a href="screens/18e-handoff-github-permission.html">18e</a> GitHub needs permission. <a href="screens/18b-handoff-github.html">18b</a> is the GitHub route.</li>
+          <li><a href="screens/19-handoff-copying.html">19</a> the overview while the private copy is made: Working, locked destinations that still link.</li>
+          <li><a href="screens/20-handoff-requirements.html">20</a> bring a requirements document or start the interview. It joins the interview (<a href="screens/05-interview-running.html">05</a>) or the documents (<a href="screens/08-documents.html">08</a>) and the founder journey continues.</li>
+        </ol></div>
+      <div class="ss-card"><h3 class="pm-t-heading">Lane B, step by step</h3>
+        <ol class="ss-list">
+          <li><a href="screens/21-repo-connect.html">21</a> choose a repository and read the GitHub App check. <a href="screens/21b-repo-connect-permission.html">21b</a> the App is not installed; <a href="screens/21c-repo-connect-empty.html">21c</a> no repositories found.</li>
+          <li><a href="screens/22-repo-requests.html">22</a> the request loop: a composer and the requests in rank order with fixed pins. <a href="screens/22b-repo-requests-empty.html">22b</a> no requests yet.</li>
+          <li><a href="screens/23-repo-request.html">23</a> one request, ready to merge, with its four-step tape (Build, Test, Review, Merge). <a href="screens/23b-repo-request-blocked.html">23b</a> a check did not pass.</li>
+          <li>A Lane B project has no interview, documents or roadmap in this proposal (an open question below): its rail is Requests, Settings and Live logs.</li>
+        </ol></div>
+    </div>
+    <p class="ss-lede">Vocabulary (Ruling 14). Founder screens keep the plain words: "repository" appears only inside a live safeguard sentence quoted verbatim, and "clone" and "PRD" never appear ("requirements document" replaces PRD). Lane B screens may say repository, pull request, branch, merge and deploy; branch names and pull request numbers sit in a row's meta line, in mono, never inside a pin sentence. Commit ids, job ids and digests stay under Details on every lane. Thumbnails of all fourteen lane screens are in <a href="#screens">All 34 screens</a>.</p>
+
+    <div>
+      <h3 class="pm-t-heading">Four trend items, adapted</h3>
+      <p class="ss-lede">Each comes from trend research and is adapted to fit the laws: none may add a second thread, hide a fact, or move without a state change.</p>
+    </div>
+    <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Item</th><th scope="col">How it is adapted here</th><th scope="col">Where</th><th scope="col">Component</th></tr></thead><tbody>
+      <tr><td><strong>T-1 Dictation</strong></td><td>Voice in the composer. A ghost mic button writes into the text box; the text is checked and sent by the person, never by voice. It falls back to a stated unavailable state.</td><td><a href="screens/05-interview-running.html">05</a>, <a href="screens/05b-interview-empty.html">05b</a>, <a href="screens/06-interview-finished.html">06</a>, <a href="screens/20-handoff-requirements.html">20</a>, <a href="screens/22-repo-requests.html">22</a>, <a href="screens/22b-repo-requests-empty.html">22b</a></td><td><a href="#n-dictate">Dictation</a></td></tr>
+      <tr><td><strong>T-2 One autonomy setting</strong></td><td>One plain switch, "Check with me before each sprint starts", with its consequence as a sentence. No permission matrix, no "always allow".</td><td><a href="screens/16-settings.html">16</a>, with consequence lines on <a href="screens/11-roadmap-awaiting.html">11</a> and <a href="screens/13-sprints-building.html">13</a></td><td><a href="#n-setting">Setting switch</a></td></tr>
+      <tr><td><strong>T-3 Bento overview</strong></td><td>Importance-sized tiles in reading order. The lead tile is the decision and keeps the one thread; every digit keeps its sentence. Not used on lists or boards.</td><td><a href="screens/03-overview-decision.html">03</a>, <a href="screens/04-overview-paused.html">04</a>, <a href="screens/19-handoff-copying.html">19</a></td><td><a href="#n-bento">Bento tiles</a></td></tr>
+      <tr><td><strong>T-4 Quiet milestone</strong></td><td>The tape's checks stitch shut once when a sprint is ready or all sprints are accepted, with one line. No confetti, no sound, reduced motion respected.</td><td><a href="screens/13-sprints-building.html">13</a> (ready state), <a href="screens/14-sprints-accepted.html">14</a>, <a href="flow.html">flow</a></td><td><a href="#n-milestone">Quiet milestone</a></td></tr>
+    </tbody></table></div>
+  </div>
+</section>
+
+<!-- 6. Status vocabulary -->
+<section class="ss-sec" id="status" aria-labelledby="h-status">
+  <header class="pm-section-head pm-section-head--page ss-head"><h2 id="h-status">Status words</h2><span class="pm-meta">SPEC D.5 and E</span></header>
+  <div class="ss-body">
+    <p class="ss-lede">Seven pins, fixed labels, each followed by one plain sentence. Wire words appear verbatim as facts inside the sentence or under Details. Anything else is a bug.</p>
+    <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Pin</th><th scope="col">Meaning</th><th scope="col">The sentence rule</th><th scope="col">Real sentence</th></tr></thead><tbody>
+      <tr><td><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span></td><td>You must act.</td><td>Starts with the verb.</td><td>Answer the next interview question.</td></tr>
+      <tr><td><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span></td><td>Pramaan is doing something.</td><td>Pramaan is a gerund. Nothing needed from you.</td><td>Pramaan is building sprint 1 (building). Nothing needed from you.</td></tr>
+      <tr><td><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td><td>Queued behind something else.</td><td>Starts after the thing.</td><td>Starts after sprint 1 is accepted.</td></tr>
+      <tr><td><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span></td><td>Finished and, where it applies, accepted.</td><td>Who accepted it and when.</td><td>Accepted by you Tuesday 14:10.</td></tr>
+      <tr><td><span class="pm-pin" data-status="paused"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-bar"/></svg></span><span class="pm-pin-label">Paused</span></span></td><td>Stopped on purpose, can resume.</td><td>The reason, then how to resume.</td><td>Paused because the monthly budget is used up. Raise it in Settings to continue.</td></tr>
+      <tr><td><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span></td><td>Cannot continue without a fix.</td><td>What failed, then what to try.</td><td>A check did not pass. Pramaan is fixing it; nothing needed from you.</td></tr>
+      <tr><td><span class="pm-pin" data-status="locked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-lock"/></svg></span><span class="pm-pin-label">Locked</span></span></td><td>Read only for now.</td><td>Why, then what you can do instead.</td><td>Read only while sprint 1 is being built. Open Build to see progress.</td></tr>
+    </tbody></table></div>
+    <div class="ss-grid2">
+      <div><h3 class="pm-t-heading">From today's phrasings</h3>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Today</th><th scope="col">Pin</th></tr></thead><tbody>
+          <tr><td>Building</td><td>Working</td></tr><tr><td>Drafting documents</td><td>Working</td></tr><tr><td>Paused</td><td>Paused, with the reason</td></tr><tr><td>In the interview</td><td>Needs you</td></tr><tr><td>Plan approved</td><td>Working if a sprint runs, else Waiting</td></tr><tr><td>All planned sprints accepted</td><td>Done</td></tr><tr><td>Waiting for the next draft (footer)</td><td>Working, folded into the sentence</td></tr><tr><td>Dependency monitoring paused (footer)</td><td>No pin: a setting, shown only in Settings</td></tr><tr><td>accepted / draft (documents)</td><td>Done / Needs you</td></tr><tr><td>In progress / Planned / Accepted / Not started</td><td>Working / Waiting / Done / Waiting</td></tr><tr><td>Plan being drafted / awaiting approval / approved</td><td>Working / Needs you / Done</td></tr><tr><td>Ready to try</td><td>Needs you</td></tr>
+        </tbody></table></div>
+      <div><h3 class="pm-t-heading">From wire states</h3>
+        <table class="pm-table ss-plain"><thead><tr><th scope="col">Wire</th><th scope="col">Pin</th></tr></thead><tbody>
+          <tr><td><span class="pm-mono">intake, classifying, provisioning, defining, designing, building, validating</span></td><td>Working</td></tr>
+          <tr><td><span class="pm-mono">awaiting_acceptance</span></td><td>Needs you</td></tr><tr><td><span class="pm-mono">accepted</span></td><td>Done</td></tr><tr><td><span class="pm-mono">blocked</span></td><td>Blocked</td></tr><tr><td><span class="pm-mono">archived</span></td><td>Locked: "Archived. Restore it from Settings."</td></tr>
+          <tr><td>Asset <span class="pm-mono">generating</span></td><td>Working</td></tr><tr><td>Asset <span class="pm-mono">draft, pending</span></td><td>Needs you</td></tr><tr><td>Asset <span class="pm-mono">accepted</span></td><td>Done</td></tr><tr><td>Asset <span class="pm-mono">stale</span></td><td>Waiting for a fresh draft after the brief changed</td></tr><tr><td>Asset <span class="pm-mono">rejected</span></td><td>Waiting: "You asked for changes. A new draft is coming."</td></tr>
+          <tr><td>Job <span class="pm-mono">running / queued / done / failed / cancelled</span></td><td>Working / Waiting / Done / Blocked / Paused</td></tr>
+          <tr><td>Next action <span class="pm-mono">connect_repository, confirm_classification, review_asset, accept_set, start_sprint, resolve_blocker</span></td><td>Needs you, with a verb sentence</td></tr>
+          <tr><td>Anything unknown</td><td>No pin. Never guess.</td></tr>
+        </tbody></table></div>
+    </div>
+    <div>
+      <h3 class="pm-t-heading">Requests (Lane B)</h3>
+      <p class="ss-lede">A request moves through the same seven pins. The mapping from the wire feature states is fixed (D-P2-5). "Waiting for review" is not a label: there are seven, and it is a Working sentence.</p>
+      <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Wire state</th><th scope="col">Pin</th><th scope="col">Sentence</th></tr></thead><tbody>
+        <tr><td><span class="pm-mono">planned</span></td><td><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td><td>Starts after 'Send a summary email every Monday'.</td></tr>
+        <tr><td><span class="pm-mono">implementing, verifying, reviewing, publishing</span></td><td><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span></td><td>The sentence names the stage.</td></tr>
+        <tr><td><span class="pm-mono">pr_open</span>, review pending</td><td><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span></td><td>The review is running, round n.</td></tr>
+        <tr><td><span class="pm-mono">pr_open</span>, ready</td><td><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span></td><td>Reviewed twice and ready. Merge it when you are ready.</td></tr>
+        <tr><td><span class="pm-mono">merged</span></td><td><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span></td><td>Merged by you Tuesday 14:10.</td></tr>
+        <tr><td><span class="pm-mono">blocked, failed</span></td><td><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span></td><td>A check did not pass. Pramaan is fixing it; nothing needed from you.</td></tr>
+      </tbody></table></div>
+    </div>
+    <div>
+      <h3 class="pm-t-heading">Copy rules</h3>
+      <ul class="ss-list ss-copy"><li>Sentences under 14 words. Literal verbs, second person, present tense.</li><li>No jargon: token, digest, repo, PRD, UAT and deploy become budget, details, code, product brief, try it and go live.</li><li>Wire words only verbatim, inside a sentence or under Details. Numbers as digits.</li><li>No em dash (use a full stop or a comma), no exclamation marks, no "Oops", no "AI-powered".</li><li>Pramaan is the actor. "Your product partner" appears only in the interview header.</li><li>Founder screens never say clone or PRD, and say repository only inside a quoted safeguard sentence. Lane B screens may say repository, pull request, branch and merge.</li></ul>
+    </div>
+    <div>
+      <h3 class="pm-t-heading">Microcopy</h3>
+      <div class="pm-table-scroll"><table class="pm-table ss-plain"><thead><tr><th scope="col">Place</th><th scope="col">Copy</th></tr></thead><tbody>
+<!--MICROCOPY-->
+      </tbody></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. Coverage -->
+<section class="ss-sec" id="coverage" aria-labelledby="h-coverage">
+  <header class="pm-section-head pm-section-head--page ss-head"><h2 id="h-coverage">Coverage matrix</h2><span class="pm-meta">SPEC F</span></header>
+  <div class="ss-body">
+    <p class="ss-lede">Every reviewer complaint maps to a rule and to a screen where you can see it fixed. The first table counts the items each screen demonstrates. The full matrix follows.</p>
+    <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Screen</th><th scope="col">Items</th><th scope="col">Reviewer items it demonstrates</th></tr></thead><tbody>
+<!--COVERAGE_SUMMARY-->
+    </tbody></table></div>
+    <details class="pm-details"><summary>Full matrix (<!--COVERAGE_COUNT--> rows)</summary><div class="pm-details-body">
+      <div class="pm-table-scroll" style="background:var(--pm-sys-surface-raised)"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Item</th><th scope="col">Reviewer point</th><th scope="col">System rule or component</th><th scope="col">Demonstrated in</th></tr></thead><tbody>
+<!--COVERAGE_FULL-->
+      </tbody></table></div>
+    </div></details>
+  </div>
+</section>
+
+<!-- 7b. Decisions and open questions (SPEC P.6) -->
+<section class="ss-sec" id="decisions" aria-labelledby="h-decisions">
+  <header class="pm-section-head pm-section-head--page ss-head"><h2 id="h-decisions">Decisions and open questions</h2><span class="pm-meta">SPEC P.6</span></header>
+  <div class="ss-body">
+    <p class="ss-lede">Where the live build speaks, the design follows it. Where the sources conflict, the choice is recorded and flagged. The CPO has ruled on four (decided and closed); the rest are recorded or still open for the CEO.</p>
+    <div>
+      <h3 class="pm-t-heading">CPO rulings, 2026-10-01 (decided, closed)</h3>
+      <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Ruling</th><th scope="col">Question</th><th scope="col">Decision</th><th scope="col">Status</th></tr></thead><tbody>
+        <tr><td class="pm-mono">R1</td><td>D-P2-1: where the private copy lives.</td><td>The private copy follows the live build: "a private repository Pramaan holds".</td><td><span class="ss-ok">Decided</span></td></tr>
+        <tr><td class="pm-mono">R2</td><td>D-P2-2: the write rules of the two lanes.</td><td>They follow the live build's behaviour and wording. Lane A never writes back to the source. Lane B opens pull requests in the user's repository and never pushes to the default branch.</td><td><span class="ss-ok">Decided</span></td></tr>
+        <tr><td class="pm-mono">R3</td><td>Q2: the .zip upload.</td><td>Kept exactly as the live build states it: a 200 MB .zip, 1 GB and 50,000 files unpacked. No further verification needed.</td><td><span class="ss-ok">Decided</span></td></tr>
+        <tr><td class="pm-mono">R4</td><td>Ruling 7: the icon-only collapsed rail as the default below 1280px.</td><td>Accepted as designed, with the permanent expand button and the one-time hint kept.</td><td><span class="ss-ok">Decided</span></td></tr>
+      </tbody></table></div>
+    </div>
+    <div>
+      <h3 class="pm-t-heading">Recorded decisions</h3>
+      <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Id</th><th scope="col">Decision</th><th scope="col">State</th></tr></thead><tbody>
+        <tr><td class="pm-mono">D-P2-1</td><td>The private copy is a private repository Pramaan holds; founder words on screen, the literal fact under Details. (Backend decision D6 says repositories are customer-owned; the design states the live build's version.)</td><td><span class="ss-ok">Decided</span> (R1)</td></tr>
+        <tr><td class="pm-mono">D-P2-2</td><td>Opposite write rules, stated verbatim on their screens and never mixed. The lane is chosen on the projects list and can be switched only before a project exists. Moving a project from A to B is not designed.</td><td><span class="ss-ok">Decided</span> (R2)</td></tr>
+        <tr><td class="pm-mono">D-P2-3</td><td>"Take a copy" downloads a .zip. "Export to GitHub is not available yet." stays the Waiting sentence. The live sentence about exporting a copy to GitHub is not quoted, because its second half contradicts Settings.</td><td>Recorded. <strong>CEO: is the .zip download real today?</strong> If not, the button becomes a Waiting sentence too.</td></tr>
+        <tr><td class="pm-mono">D-P2-4</td><td>Lane B has its own home (Requests), its own rail (Requests, Settings, Live logs) and a per-request measure instead of the five-step tape. Inferred, not observed.</td><td>Open. <strong>CEO: does a Lane B project also get documents and a roadmap, or only requests?</strong></td></tr>
+        <tr><td class="pm-mono">D-P2-5</td><td>The request status vocabulary maps the wire feature states to the seven pins (see Status words).</td><td>Recorded.</td></tr>
+        <tr><td class="pm-mono">D-P2-6</td><td>Merging happens on GitHub. The thread on a ready request is "Open pull request #42". Auto-merge is a Lane B setting, default off.</td><td>Recorded. <strong>CEO: confirm there is no in-app merge button.</strong></td></tr>
+        <tr><td class="pm-mono">D-P2-7</td><td>A requirements document brought on screen 20 becomes "Requirements, Draft 1, imported by you" and is Needs you until the founder accepts it. The interview step then reads done and still opens.</td><td>Recorded.</td></tr>
+        <tr><td class="pm-mono">D-P2-8</td><td>The product idea is the first decision on every idea-lane project.</td><td>Recorded.</td></tr>
+        <tr><td class="pm-mono">D-P2-9</td><td>GitHub permission wording: the screen says what Pramaan does ("reads your code once and never changes it") and that GitHub shows what it asks for. It does not promise a read-only permission.</td><td>Recorded. <strong>CEO: confirm once the GitHub App unification lands.</strong></td></tr>
+      </tbody></table></div>
+    </div>
+    <div>
+      <h3 class="pm-t-heading">Still open, for the CEO</h3>
+      <p class="ss-lede">Questions the design cannot decide.</p>
+      <ul class="ss-list">
+        <li><span class="pm-mono">D-P2-4</span> Does a Lane B project get an interview, documents and a roadmap, or only requests?</li>
+        <li><span class="pm-mono">D-P2-3, D-P2-6, D-P2-9</span> The three confirmations above: the .zip download, no in-app merge button, the GitHub permission wording.</li>
+        <li><span class="pm-mono">Q6</span> Who "reviewed" a pull request: the review agent, the PR bot or both, and is the verdict shown to the user. The design shows "Round 1 asked for ..., Round 2 passed." as plain lines.</li>
+        <li><span class="pm-mono">Q8</span> Deployment: Lane B says "you deploy" and nothing in the app shows it; the design states it under "What stays with you" only.</li>
+        <li><span class="pm-mono">Q9</span> What the copy step reads from the code and how long it takes (screen 19 shows three steps, no durations).</li>
+        <li><span class="pm-mono">Q10</span> Is dependency monitoring on by default for Lane A and B projects (screen 16 shows it off for todo).</li>
+        <li><span class="pm-mono">Q11</span> Errors not designed: install revoked mid-run, branch protection blocking the pull request, a pull request closed unmerged, merge conflicts, a Lane B baseline that already fails.</li>
+        <li><span class="pm-mono">Q13</span> Branch choice, multiple repositories, monorepo subfolders and forks in the pickers (none offered).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 8. Three moves -->
+<section class="ss-sec" id="moves" aria-labelledby="h-moves">
+  <header class="pm-section-head pm-section-head--page ss-head"><h2 id="h-moves">The three out-of-the-box moves</h2><span class="pm-meta">SPEC G</span></header>
+  <div class="ss-body">
+    <article class="ss-comp" id="m-tape" aria-labelledby="h-m-tape">
+      <div class="ss-comp-head"><h3 id="h-m-tape">1. The live tape: where you are, measured</h3><span class="pm-meta">G.1</span></div>
+      <p class="ss-lede">The tape is not a stepper, it is a measure. Sub-progress ticks show how far a step is, the pin sits on the real stage, and the shank reaches down into the decision below. On the overview it is printed large, the only place it grows. Move the project through its stages and watch the pin slide.</p>
+      <div class="ss-stage"><div class="ss-tapebox"><div class="ss-tape" id="m-tape-live" data-large="1"></div></div>
+        <div class="ss-stepper" role="group" aria-label="Move the project to a stage"><span class="ss-cap">Project stage:</span><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-stage="0" aria-pressed="false">Interview</button><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-stage="1" aria-pressed="true">Documents</button><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-stage="2" aria-pressed="false">Roadmap</button><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-stage="3" aria-pressed="false">Build</button><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-stage="4" aria-pressed="false">Try it</button></div></div>
+    </article>
+    <article class="ss-comp" id="m-strip" aria-labelledby="h-m-strip">
+      <div class="ss-comp-head"><h3 id="h-m-strip">2. The Nothing-is-lost strip</h3><span class="pm-meta">G.2</span></div>
+      <p class="ss-lede">A 28px strip under the top bar answers the founder's real fear: did my work disappear when I closed the tab? It only states facts the system already has. Open History for the last eight saves and acceptances.</p>
+      <div class="ss-stage"><div class="ss-strip-demo"><div class="pm-strip"><span class="pm-strip-text" id="m-strip-text">Last saved: your decision "First turn", <time datetime="2026-09-30T14:10">14:10</time> &middot; Last accepted: Product brief draft 1, <time datetime="2026-09-29">Tuesday</time></span><button class="pm-strip-history" type="button" popovertarget="pm-history">History</button></div></div>
+        <div class="ss-row"><button class="pm-btn pm-btn--ghost pm-btn--sm" type="button" id="m-strip-save">Demo: save a decision</button><span class="ss-cap">An empty project reads: "Nothing saved yet. Your first answer is kept the moment you send it."</span></div></div>
+      <div class="pm-history" id="pm-history" popover aria-label="Recently saved or accepted"><ol>
+        <li><time datetime="2026-09-30T14:10">14:10</time><span>Saved decision "First turn"</span><a href="screens/05-interview-running.html">Open</a></li><li><time datetime="2026-09-30T14:08">14:08</time><span>Saved decision "End of game"</span><a href="screens/05-interview-running.html">Open</a></li><li><time datetime="2026-09-30T14:05">14:05</time><span>Saved decision "Who plays"</span><a href="screens/05-interview-running.html">Open</a></li><li><time datetime="2026-09-29">Tuesday</time><span>Accepted Product brief, draft 1</span><a href="screens/10-document-locked.html">Open</a></li>
+        <li><time datetime="2026-09-29">Tuesday</time><span>Accepted Requirements, draft 1</span><a href="screens/08-documents.html">Open</a></li><li><time datetime="2026-09-29">Tuesday</time><span>Accepted User journey, draft 1</span><a href="screens/08-documents.html">Open</a></li><li><time datetime="2026-09-29">Tuesday</time><span>Saved decision "Start over early"</span><a href="screens/05-interview-running.html">Open</a></li><li><time datetime="2026-09-29">Tuesday</time><span>Saved decision "Product idea"</span><a href="screens/05-interview-running.html">Open</a></li></ol></div>
+    </article>
+    <article class="ss-comp" id="m-words" aria-labelledby="h-m-words">
+      <div class="ss-comp-head"><h3 id="h-m-words">3. Your words on the plan</h3><span class="pm-meta">G.3</span></div>
+      <p class="ss-lede">One switch puts your own interview sentences beside every outcome and every check. You judge the plan, and later the product, against what you said. The switch is page wide here, so the route and checklist samples above show their quotes too.</p>
+      <div class="ss-stage">
+        <div class="ss-words"><input class="pm-switch" type="checkbox" role="switch" id="m-words-switch" data-words-toggle aria-describedby="m-words-note"><label class="pm-label" for="m-words-switch">Show my words</label><span class="ss-cap" id="m-words-note">Quotes come only from decisions you saved.</span></div>
+        <ol class="pm-route" aria-label="Sprint 1 with your words"><li class="pm-route-node" data-status="waiting"><span class="pm-route-dot" aria-hidden="true"></span><div class="pm-route-card"><div class="pm-route-title"><h4>Sprint 1 · Your private checklist</h4><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span><span class="pm-pin-sentence">Starts after you approve the plan.</span></span></div><p class="pm-route-label">You will be able to:</p><ul class="pm-route-outcomes"><li>Sign up with an email and password<span class="pm-said">You said: 'users can sign up or log in and see only their own tasks' <a class="pm-said-edit" href="screens/05-interview-running.html">Edit that decision</a></span></li><li>Log in with the right password and see your empty checklist</li><li>Add a third task and see it appear at the bottom, below the first two</li></ul></div></li></ol>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- 9. Non-goals and risks -->
+<section class="ss-sec" id="risks" aria-labelledby="h-risks">
+  <header class="pm-section-head pm-section-head--page ss-head"><h2 id="h-risks">Risks and limits</h2><span class="pm-meta">SPEC H</span></header>
+  <div class="ss-body">
+    <p class="ss-lede"><strong>Not in this system:</strong> mobile and tablet layouts (below 1024px the rail collapses and panels stack, nothing more), the marketing site, the dependency monitoring view beyond its Settings entry, an icon style beyond the 1.5px stroke set, live data (every screen is static), and any change to route structure or the wire vocabulary. Pass 2 also leaves undrawn a Lane B interview, documents and roadmap (open question D-P2-4) and the Lane B settings screen (specified, not drawn).</p>
+    <div class="pm-table-scroll"><table class="pm-table ss-plain ss-wide"><thead><tr><th scope="col">Risk</th><th scope="col">Guard</th></tr></thead><tbody>
+      <tr><td>The canary reads as a warning colour.</td><td>The thread is always a filled button with ink text and an ink border, never a stripe, ring or tint. Paused is clay, never yellow. There is no other amber.</td></tr>
+      <tr><td>The tailor's world tips into costume.</td><td>Each carrier has one job in one place: stitch for seams, pin for status and you-are-here, chalk for annotation and the active marker, tape for journey and progress. No textures, no fabric, no tailoring words in copy.</td></tr>
+      <tr><td>Ink rail plus a light page looks heavy at 1142.</td><td>Below 1280px the default rail is the 64px icon rail on every screen, one state for the whole app (Ruling 7, accepted by the CPO as R4). Wordmark and icons are flat ink-100 on ink-900.</td></tr>
+      <tr><td>One family for everything feels flat.</td><td>Reading 17/28 against Body 15/22 gives documents and chat their own voice. Engraved digits carry the only display moments.</td></tr>
+      <tr><td>The strip and the large tape cost vertical space.</td><td>The strip is 28px on project screens only. The large tape exists only on the overview, where the decision still starts by y = 204.</td></tr>
+      <tr><td>The verdict checklist adds three buttons per item.</td><td>28px quiet toggles, keys 1, 2, 3 inside an item, and a panel wide enough for one row.</td></tr>
+      <tr><td>The auto-collapsed rail feels like lost navigation.</td><td>Collapsed keeps icons, tooltips, the pen circle, the project tile and a permanent expand button, with a one-time hint. Your explicit expand is remembered.</td></tr>
+      <tr><td>Chalk marks lose contrast on grey.</td><td>Chalk text is only ever on chalk tint or raised (7.07:1 and 8.40:1). Chalk on the sunken surface is unchecked and forbidden.</td></tr>
+      <tr><td>Two thread copies at once (top bar and action bar).</td><td>An observer hides one. The check counts visible <span class="pm-mono">[data-thread]</span> and fails on 2.</td></tr>
+      <tr><td>Dark theme is secondary.</td><td>Every pair in the contrast table is verified for dark. Documents default to light. Dark is a toggle, remembered in <span class="pm-mono">pm.theme</span>.</td></tr>
+      <tr><td>Pass 2: a fitted panel makes the column under it look unfinished.</td><td>The panel is sticky on page screens, so it stays in view while the main job scrolls. Its content states facts the founder wants at hand: plan at a glance, this project. The tool exempts only the column under it, never a hole beside the main job.</td></tr>
+      <tr><td>Pass 2: the bento reads as a dashboard.</td><td>One lead tile holds the one thread. The digits keep their sentences. Tiles are sized by importance in DOM order. No sparkline, no percentage besides the budget, no tile without a sentence.</td></tr>
+      <tr><td>Pass 2: two audiences drift into two products.</td><td>The shell, pins, buttons and tape anatomy are identical on Lane B. Only the words change (Ruling 14), and the same seven pins carry request states.</td></tr>
+    </tbody></table></div>
+  </div>
+</section>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="pm-popover" id="c-pop2" popover data-anchor="invoker" aria-label="Comment on this passage"><p class="pm-label">Comment on this passage</p><p class="pm-muted" style="margin-top:4px">Your comments are sent together when you ask for changes.</p></div>
+<dialog class="pm-dialog" id="c-dlg" aria-labelledby="c-dlg-t"><h2 class="pm-dialog-title" id="c-dlg-t">Stop this sprint?</h2><p class="pm-dialog-text">Pramaan stops building now. Work that already passed its checks stays saved.</p><div class="pm-dialog-actions"><button class="pm-btn pm-btn--quiet" type="button" data-close>Keep going</button><button class="pm-btn pm-btn--danger" type="button" data-close>Stop the sprint</button></div></dialog>
+<div class="pm-toast-host" id="c-toast-host"></div>
+
+<script>
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var ICON = function (id, cls) { return '<svg class="pm-i ' + cls + '"><use href="#' + id + '"/></svg>'; };
+
+  /* 1. Tapes: built from data-tape="state[:done/total],..." with the shipped markup, before shell.js positions the pin. */
+  var LABELS = ["Interview", "Documents", "Roadmap", "Build", "Try it"];
+  function tapeStep(i, spec) {
+    var p = spec.split(":"), state = p[0], prog = p[1] ? p[1].split("/") : null, n = i + 1, L = LABELS[i], sr = '<span class="pm-sr">Step ' + n + ', </span>';
+    if (state === "locked") return '<li data-state="locked"><span class="pm-tape-step" aria-disabled="true" title="Opens after the plan is approved"><span class="pm-tape-label">' + sr + L + '<span class="pm-sr">, locked. Opens after the plan is approved</span></span><span class="pm-tape-num" aria-hidden="true">' + ICON("i-lock", "pm-i--12") + '</span></span></li>';
+    var num = state === "done" ? ICON("i-check", "pm-i--12") : n, ticks = "", note = state === "done" ? ", done" : state === "current" ? ". You are here" : ", not started";
+    if (prog) { ticks = '<span class="pm-tape-ticks" aria-hidden="true">'; for (var k = 0; k < +prog[1]; k++) ticks += '<i' + (k < +prog[0] ? ' class="on"' : "") + '></i>'; ticks += "</span>"; note = ", " + prog[0] + " of " + prog[1] + (state === "current" ? ". You are here" : ""); }
+    return '<li data-state="' + state + '"' + (prog ? ' data-progress="' + prog.join("/") + '"' : "") + '><a class="pm-tape-step" href="#c-tape"' + (state === "current" ? ' aria-current="step"' : "") + '><span class="pm-tape-label">' + sr + L + '<span class="pm-sr">' + note + '</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">' + num + "</span>" + ticks + "</a></li>";
+  }
+  function tapeHTML(list, large) { return '<nav class="pm-tape' + (large ? " pm-tape--large" : "") + '" aria-label="Your journey"><ol>' + list.map(function (s, i) { return tapeStep(i, s); }).join("") + '</ol><span class="pm-tape-pin" aria-hidden="true"></span></nav>'; }
+  $$(".ss-tape[data-tape]").forEach(function (el) { el.innerHTML = tapeHTML(el.getAttribute("data-tape").split(","), false); });
+  var live = $("#m-tape-live"), PROG = ["3/6", "2/3", "", "1/3", ""];
+  function stageSpec(i) { return LABELS.map(function (_, k) { var s = k < i ? "done" : k === i ? "current" : (k === 4 && i < 3 ? "locked" : "upcoming"); return k === i && PROG[k] ? s + ":" + PROG[k] : s; }); }
+  live.innerHTML = tapeHTML(stageSpec(1), true);
+  $$("[data-stage]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var i = +b.getAttribute("data-stage"), spec = stageSpec(i), lis = $$("li", live);
+      /* Replace each step's content, then flip data-state: shell.js watches data-state and slides the pin in 240ms. */
+      lis.forEach(function (li, k) { var t = document.createElement("div"); t.innerHTML = tapeStep(k, spec[k]); var n = t.firstChild; li.innerHTML = n.innerHTML; if (n.hasAttribute("data-progress")) li.setAttribute("data-progress", n.getAttribute("data-progress")); else li.removeAttribute("data-progress"); li.setAttribute("data-state", n.getAttribute("data-state")); });
+      $$("[data-stage]").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+    });
+  });
+
+  /* 2. Colour tokens, read live. Hex comes from a canvas so it is the true sRGB twin of the OKLCH value. */
+  var REF = { ink: [950, 900, 800, 700, 600, 500, 400, 300, 200, 100, 50, 0], thread: [500, 600, 700, 800], chalk: [700, 600, 400, 300, 100, 50], moss: [600, 400, 100, 900], clay: [600, 400, 100, 900], red: [600, 400, 100, 900] };
+  var SYS = "ground surface-raised surface-sunken surface-rail surface-rail-active text text-secondary text-muted text-meta text-on-rail text-on-rail-muted text-on-ink hairline hairline-on-rail control-border thread thread-hover thread-text thread-text-hover on-thread chalk chalk-text chalk-tint chalk-on-rail status-needs-you status-needs-you-tint status-working status-working-tint status-waiting status-waiting-tint status-done status-done-tint status-paused status-paused-tint status-blocked status-blocked-tint status-locked status-locked-tint focus focus-halo focus-on-rail selection-bg selection-text scrim".split(" ").map(function (n) { return "--pm-sys-" + n; });
+  var cx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  cx.canvas.width = cx.canvas.height = 1;
+  function hexOf(v) { cx.clearRect(0, 0, 1, 1); cx.fillStyle = "#000000"; cx.fillStyle = v; cx.fillRect(0, 0, 1, 1); var d = cx.getImageData(0, 0, 1, 1).data; return d[3] < 255 ? "alpha " + Math.round(d[3] / 2.55) + "%" : "#" + [d[0], d[1], d[2]].map(function (n) { return n.toString(16).padStart(2, "0"); }).join(""); }
+  var cs0 = getComputedStyle(root), html = "";
+  Object.keys(REF).forEach(function (f) {
+    html += '<div class="ss-family"><h3>' + f + '</h3><ul class="ss-swatches">' + REF[f].map(function (w) {
+      var n = "--pm-ref-" + f + "-" + w, v = cs0.getPropertyValue(n).trim();
+      return '<li class="ss-sw"><i class="ss-chip" style="background:var(' + n + ')"></i><span class="ss-sw-text"><span class="pm-t-label">' + f + "-" + w + '</span><span class="pm-mono">' + hexOf(v) + '</span><span class="pm-mono">' + v + "</span></span></li>";
+    }).join("") + "</ul></div>";
+  });
+  $("#ss-ref").innerHTML = html;
+  function grab(theme) {
+    var prev = root.getAttribute("data-theme"), o = {};
+    root.classList.add("pm-no-anim"); root.setAttribute("data-theme", theme);
+    var cs = getComputedStyle(root); SYS.forEach(function (n) { o[n] = cs.getPropertyValue(n).trim(); });
+    if (prev === null) root.removeAttribute("data-theme"); else root.setAttribute("data-theme", prev);
+    cs.getPropertyValue("--pm-sys-text"); root.classList.remove("pm-no-anim");
+    return o;
+  }
+  var L = grab("light"), D = grab("dark"), rows = "";
+  function cell(v) { return '<span class="ss-role"><i class="ss-chip" style="background:' + v + '"></i><span class="pm-mono">' + hexOf(v) + "</span></span>"; }
+  SYS.forEach(function (n) { rows += '<tr><td class="pm-mono">' + n + "</td><td>" + cell(L[n]) + "</td><td>" + cell(D[n]) + "</td></tr>"; });
+  $("#ss-roles tbody").innerHTML = rows;
+
+  /* 3. Theme and density toggles, contents scroll-spy, live demos. */
+  function boot() {
+    var tb = $("#ss-theme"), db = $("#ss-density"), main = $("#pm-main");
+    function paintTheme() { var d = window.pmTheme() === "dark"; tb.textContent = d ? "Light theme" : "Dark theme"; tb.setAttribute("aria-pressed", String(d)); }
+    tb.addEventListener("click", function () { window.pmTheme("toggle"); });
+    root.addEventListener("pm:theme", paintTheme); paintTheme();
+    db.addEventListener("click", function () {
+      var on = db.getAttribute("aria-pressed") !== "true";
+      $$("[data-density-target]").forEach(function (el) { if (on) el.setAttribute("data-density", "compact"); else el.removeAttribute("data-density"); });
+      db.setAttribute("aria-pressed", String(on)); db.textContent = on ? "Comfortable rows" : "Compact rows";
+    });
+    /* The style guide reads best with the rail collapsed; a saved choice to keep it open wins. */
+    var saved = null; try { saved = localStorage.getItem("pm.rail"); } catch (e) {}
+    if (window.pmShell && saved !== "expanded") window.pmShell.setRail("collapsed");
+    /* The rail item samples are inert: keep the real rail as the keyboard tab stop. */
+    $$(".ss-inkbox .pm-rail-item").forEach(function (a) { a.setAttribute("tabindex", "-1"); });
+    var first = $(".pm-rail .pm-rail-item"); if (first) first.setAttribute("tabindex", "0");
+    /* Contents rail follows the scroll. */
+    var links = $$(".ss-layout > .pm-toc ol a"), secs = links.map(function (a) { return $(a.getAttribute("href")); }), q = false;
+    function spy() { q = false; var line = main.getBoundingClientRect().top + 130, cur = 0; secs.forEach(function (s, i) { if (s.getBoundingClientRect().top <= line) cur = i; }); if (main.scrollTop + main.clientHeight >= main.scrollHeight - 2) cur = secs.length - 1; links.forEach(function (a, i) { if (i === cur) a.setAttribute("aria-current", "location"); else a.removeAttribute("aria-current"); }); }
+    main.addEventListener("scroll", function () { if (!q) { q = true; requestAnimationFrame(spy); } }, { passive: true }); spy();
+    /* Form save demo */
+    var nameEl = $("#c-name"), save = $("#c-save-btn"), reason = $("#c-save-reason"), saved2 = $("#c-saved");
+    nameEl.addEventListener("input", function () { var ch = nameEl.value !== "todo"; saved2.hidden = true; save.setAttribute("aria-disabled", ch ? "false" : "true"); reason.hidden = ch; });
+    save.addEventListener("click", function () { if (save.getAttribute("aria-disabled") === "true") return; save.setAttribute("aria-disabled", "true"); reason.hidden = true; saved2.hidden = false; });
+    $$(".pm-chip").forEach(function (c) { c.addEventListener("click", function () { if (c.getAttribute("aria-disabled") === "true") return; if (c.getAttribute("role") === "radio") return; c.setAttribute("aria-checked", c.getAttribute("aria-checked") === "true" ? "false" : "true"); }); });
+    /* Milestone sample: pmMilestone plays on the first visible tape in the document and this page has many, so the sample's own tape is the only one visible for the synchronous call. */
+    var msBox = $("#n-milestone");
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("#n-milestone [data-milestone-trigger]");
+      if (!b || !window.pmMilestone) return;
+      e.stopPropagation();
+      var others = $$(".pm-tape").filter(function (t) { return !msBox.contains(t); }), was = others.map(function (t) { return t.hidden; });
+      others.forEach(function (t) { t.hidden = true; });
+      window.pmMilestone(b.getAttribute("data-milestone-trigger") || "sprint-ready");
+      others.forEach(function (t, i) { t.hidden = was[i]; });
+    }, true);
+    /* Dialog and toast */
+    var dlg = $("#c-dlg"); $("#c-dlg-btn").addEventListener("click", function () { dlg.showModal(); });
+    dlg.addEventListener("click", function (e) { if (e.target.hasAttribute("data-close")) dlg.close(); });
+    $("#c-toast-btn").addEventListener("click", function () {
+      var host = $("#c-toast-host"), t = document.createElement("div"), timer;
+      t.className = "pm-toast"; t.setAttribute("role", "status"); t.dataset.state = "enter";
+      t.innerHTML = '<span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span>Draft 1 accepted. The plan opens next.</span>';
+      function leave() { t.dataset.state = "leave"; setTimeout(function () { t.remove(); }, 90); }
+      function arm() { timer = setTimeout(leave, 6000); }
+      t.addEventListener("mouseenter", function () { clearTimeout(timer); }); t.addEventListener("mouseleave", arm);
+      host.appendChild(t); arm();
+    });
+    /* Strip demo: a save updates Last saved and the History list */
+    $("#m-strip-save").addEventListener("click", function () {
+      var d = new Date(), hm = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2), t = $("#m-strip-text");
+      var acc = t.innerHTML.split("&middot;")[1] || t.innerHTML.split("·")[1] || "";
+      t.innerHTML = 'Last saved: your decision "Start over early", <time datetime="' + d.toISOString() + '">' + hm + "</time> &middot;" + acc;
+      var ol = $("#pm-history ol"), li = document.createElement("li"); li.innerHTML = '<time datetime="' + d.toISOString() + '">' + hm + '</time><span>Saved decision "Start over early"</span><a href="screens/05-interview-running.html">Open</a>'; ol.insertBefore(li, ol.firstChild); if (ol.children.length > 8) ol.lastChild.remove();
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+})();
+</script>
+</body>
+</html>

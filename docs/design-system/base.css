@@ -1,0 +1,289 @@
+/* Tape and Thread base. Link tokens.css first, then this file. Copy this font snippet into every page head exactly:
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+*/
+
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Page. The body never scrolls; main does. */
+html,
+body {
+  height: 100%;
+}
+
+html {
+  accent-color: var(--pm-sys-text);
+}
+
+body {
+  margin: 0;
+  background: var(--pm-sys-ground);
+  color: var(--pm-sys-text);
+  caret-color: var(--pm-sys-text);
+  font-family: var(--pm-font-text);
+  font-size: var(--pm-type-body-size);
+  line-height: var(--pm-type-body-line);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* Compact density is set on a container (table, board, documents list, log viewer), so that container re-reads the body size tokens it changes. */
+[data-density="compact"] {
+  font-size: var(--pm-type-body-size);
+  line-height: var(--pm-type-body-line);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--pm-sys-control-border) transparent;
+}
+
+::selection {
+  background: var(--pm-sys-selection-bg);
+  color: var(--pm-sys-selection-text);
+}
+
+/* Type steps */
+.pm-t-digits {
+  font-size: var(--pm-type-digits-size);
+  line-height: var(--pm-type-digits-line);
+  font-weight: var(--pm-type-digits-weight);
+  letter-spacing: var(--pm-type-digits-tracking);
+}
+
+.pm-t-title {
+  font-size: var(--pm-type-title-size);
+  line-height: var(--pm-type-title-line);
+  font-weight: var(--pm-type-title-weight);
+  letter-spacing: var(--pm-type-title-tracking);
+}
+
+.pm-t-heading {
+  font-size: var(--pm-type-heading-size);
+  line-height: var(--pm-type-heading-line);
+  font-weight: var(--pm-type-heading-weight);
+  letter-spacing: var(--pm-type-heading-tracking);
+}
+
+.pm-t-reading {
+  font-size: var(--pm-type-reading-size);
+  line-height: var(--pm-type-reading-line);
+  font-weight: var(--pm-type-reading-weight);
+  letter-spacing: var(--pm-type-reading-tracking);
+}
+
+.pm-t-body {
+  font-size: var(--pm-type-body-size);
+  line-height: var(--pm-type-body-line);
+  font-weight: var(--pm-type-body-weight);
+  letter-spacing: var(--pm-type-body-tracking);
+}
+
+.pm-t-label {
+  font-size: var(--pm-type-label-size);
+  line-height: var(--pm-type-label-line);
+  font-weight: var(--pm-type-label-weight);
+  letter-spacing: var(--pm-type-label-tracking);
+}
+
+.pm-t-meta {
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+  font-weight: var(--pm-type-meta-weight);
+  letter-spacing: var(--pm-type-meta-tracking);
+}
+
+/* Numerals: Meta, Body and Label are proportional. Tabular figures widen , . : % into figure-width glyphs, so prose like "5,415,812" or "14:10" would look gappy. Opt in with .pm-tnum only in column contexts: table cells holding numbers, the log time column, the tape, and "n of m" digit blocks. Digits is tabular because it holds pure digits only (3 / 3, 27 %); never put a thousands comma in a Digits value. */
+.pm-t-digits,
+.pm-tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pm-mono {
+  font-family: var(--pm-font-mono);
+  font-size: var(--pm-type-meta-size);
+  line-height: var(--pm-type-meta-line);
+}
+
+h1 {
+  font-size: var(--pm-type-title-size);
+  line-height: var(--pm-type-title-line);
+  font-weight: var(--pm-type-title-weight);
+  letter-spacing: var(--pm-type-title-tracking);
+}
+
+h2 {
+  font-size: var(--pm-type-heading-size);
+  line-height: var(--pm-type-heading-line);
+  font-weight: var(--pm-type-heading-weight);
+  letter-spacing: var(--pm-type-heading-tracking);
+}
+
+h3 {
+  font-size: var(--pm-type-body-size);
+  line-height: var(--pm-type-body-line);
+  font-weight: 600;
+}
+
+.pm-measure {
+  max-width: 68ch;
+}
+
+.pm-th {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: var(--pm-type-meta-size);
+  font-weight: 500;
+  color: var(--pm-sys-text-muted);
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.pm-link {
+  color: var(--pm-sys-thread-text);
+  text-decoration: underline;
+}
+
+.pm-link:hover {
+  color: var(--pm-sys-thread-text-hover);
+}
+
+/* Focus: never removed */
+:focus-visible {
+  outline: 2px solid var(--pm-sys-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--pm-sys-focus-halo);
+}
+
+.pm-rail :focus-visible {
+  outline-color: var(--pm-sys-focus-on-rail);
+  box-shadow: none;
+}
+
+/* Hairline and stitch */
+.pm-hairline {
+  border-top: var(--pm-hairline);
+}
+
+.pm-stitch {
+  height: 1px;
+  background-image: repeating-linear-gradient(90deg, var(--pm-sys-hairline) 0 6px, transparent 6px 10px);
+}
+
+.pm-stitch-v {
+  width: 2px;
+  background-image: repeating-linear-gradient(180deg, var(--pm-sys-hairline) 0 6px, transparent 6px 10px);
+}
+
+/* Utilities */
+.pm-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pm-row {
+  display: flex;
+  align-items: center;
+  gap: var(--pm-space-2);
+}
+
+.pm-stack > * + * {
+  margin-top: var(--pm-space-3);
+}
+
+.pm-muted {
+  color: var(--pm-sys-text-muted);
+}
+
+.pm-meta {
+  color: var(--pm-sys-text-meta);
+}
+
+.pm-skeleton {
+  display: block;
+  height: 12px;
+  border-radius: var(--pm-radius-chip);
+  background: var(--pm-sys-surface-sunken);
+  animation: pm-skeleton-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pm-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Reduced motion: every duration is 0ms; opacity fades (.pm-fade) survive at 120ms. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .pm-skeleton {
+    animation: none;
+  }
+
+  .pm-fade {
+    transition-property: opacity !important;
+    transition-duration: 120ms !important;
+  }
+}
+
+.pm-fade {
+  transition: opacity 120ms;
+}

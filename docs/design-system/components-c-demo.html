@@ -1,0 +1,647 @@
+<!doctype html>
+<!--
+  COMPONENTS C DEMO (pass 2, SPEC P.4 and P.5). The same shell as screens/_skeleton.html (top bar without a tape, a state sentence in the thread slot,
+  main[data-thread-none="working"]) with every pass-2 component in every state at once. Markup is static: where components.js (WP10) acts, the static
+  state is shown and labelled. Thread samples are inert (pm-btn--thread-demo, no data-thread), so the page has no thread and declares why.
+  Reading the page: the two-column block holds the narrow components, the full-width blocks are the components that need a wide container.
+-->
+<html lang="en" data-rail="expanded">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Components C demo</title>
+<script>
+  /* Before first paint: saved rail and theme (see shell.js). */
+  (function () { var d = document.documentElement, r = null, t = null; try { r = localStorage.getItem("pm.rail"); t = localStorage.getItem("pm.theme"); } catch (e) {}
+  if (innerWidth < 1024 || r === "collapsed" || (r !== "expanded" && innerWidth < 1280)) d.setAttribute("data-rail", "collapsed"); if (t === "dark" || t === "light") d.setAttribute("data-theme", t); })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="components-a.css">
+<link rel="stylesheet" href="components-b.css">
+<link rel="stylesheet" href="components-c.css">
+<link rel="stylesheet" href="showcase.css">
+<script defer src="shell.js"></script>
+<script defer src="components.js"></script>
+<style>
+  /* Demo-only layout, tokens only. */
+  .demo-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--pm-space-6); align-items: start; margin-top: var(--pm-space-6); }
+  .demo-col { display: grid; gap: 0; min-width: 0; }
+  .demo-sec { display: grid; align-content: start; gap: var(--pm-space-3); min-width: 0; padding-bottom: var(--pm-space-6); }
+  .demo-sec > h2 { margin: 0; }
+  .demo-full { display: grid; gap: var(--pm-space-3); margin-top: var(--pm-space-6); }
+  .demo-full > h2 { margin: 0; }
+  .demo-cap { margin: 0; color: var(--pm-sys-text-muted); font-size: var(--pm-type-meta-size); line-height: var(--pm-type-meta-line); letter-spacing: var(--pm-type-meta-tracking); }
+  .demo-card { display: grid; gap: var(--pm-space-3); padding: var(--pm-space-4) var(--pm-space-5); border: var(--pm-hairline); border-radius: var(--pm-radius-card); background: var(--pm-sys-surface-raised); }
+  .demo-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--pm-space-3) var(--pm-space-4); }
+  .demo-grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--pm-space-5); align-items: start; }
+  .demo-grid3 > * { min-width: 0; }
+  .demo-state > :first-child { justify-self: center; }
+  .demo-state { display: grid; grid-template-columns: 48px 112px minmax(0, 1fr); align-items: center; column-gap: var(--pm-space-3); min-height: 48px; }
+  .demo-stage { --pm-cmp-work-h: 300px; height: 300px; padding: 0; }
+  .demo-flowcap { display: block; margin-bottom: var(--pm-space-2); }
+  @container pm-content (max-width: 899px) { .demo-cols { grid-template-columns: minmax(0, 1fr); } .demo-grid3 { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<a class="pm-skip" href="#pm-job">Skip to the components</a>
+
+<svg width="0" height="0" style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="i-overview" viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></symbol>
+  <symbol id="i-interview" viewBox="0 0 20 20"><path d="M4 4.5h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H9.5L6 17v-3.5H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M6.5 8h7M6.5 10.5h4"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 20 20"><path d="M6 2.5h5.5l4 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1z"/><path d="M11.5 2.5v4h4M7.5 10.5h5M7.5 13.5h5"/></symbol>
+  <symbol id="i-roadmap" viewBox="0 0 20 20"><circle cx="4.5" cy="14.5" r="1.75"/><circle cx="10" cy="5.5" r="1.75"/><circle cx="15.5" cy="14.5" r="1.75"/><path d="M5.4 13l3.7-6M10.9 7l3.7 6"/></symbol>
+  <symbol id="i-build" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5"/><path d="M3 8h14M3 12h14M10 4v4M7 8v4M13 8v4M10 12v4"/></symbol>
+  <symbol id="i-try-it" viewBox="0 0 20 20"><path d="M5.5 3.5l10 4.2-4.3 1.6-1.7 4.4z"/><path d="M12.5 12.5l3.5 3.5"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 20 20"><path d="M3 6h2M9 6h8M3 14h8M15 14h2"/><circle cx="7" cy="6" r="2"/><circle cx="13" cy="14" r="2"/></symbol>
+  <symbol id="i-live-logs" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="1.5"/><path d="M6 8l3 2-3 2M11 12.5h3.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 20 20"><path d="M3 6.5a1 1 0 0 1 1-1h4l1.8 2H16a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 20 20"><path d="M16 10H4M9 5l-5 5 5 5"/></symbol>
+  <symbol id="i-collapse" viewBox="0 0 20 20"><path d="M10 5l-5 5 5 5M16 5l-5 5 5 5"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 20 20"><path d="M4 5l5 5-5 5M10 5l5 5-5 5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5"/><path d="M13 13l4 4"/></symbol>
+  <symbol id="i-attach" viewBox="0 0 20 20"><path d="M15.5 9.5l-5.8 5.8a3.2 3.2 0 0 1-4.5-4.5l6-6a2.1 2.1 0 0 1 3 3l-6 6a1 1 0 0 1-1.5-1.5l5.3-5.3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 20 20"><path d="M10 16V4M5 9l5-5 5 5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 20 20"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.5" y="9" width="11" height="8" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 20 20"><path d="M7 5v10M13 5v10"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 20 20"><path d="M5 10h10"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="9" rx="1.5"/><path d="M13 7V5.5A1.5 1.5 0 0 0 11.5 4h-6A1.5 1.5 0 0 0 4 5.5v6A1.5 1.5 0 0 0 5.5 13H7"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></symbol>
+  <symbol id="i-external" viewBox="0 0 20 20"><path d="M8 4.5H5.5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12M11 4.5h4.5V9M15.5 4.5L9 11"/></symbol>
+  <!-- Component glyphs, 16x16 viewBox (components-a/-b): <svg class="pm-icon"><use href="#pm-i-..."/></svg> for 16px icons,
+       <svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-..."/></svg> inside .pm-pin-head (Done check, Blocked x, Paused bar, Locked lock). -->
+  <symbol id="pm-g-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.8"/></symbol>
+  <symbol id="pm-g-x" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+  <symbol id="pm-g-bar" viewBox="0 0 16 16"><path d="M3.5 8h9"/></symbol>
+  <symbol id="pm-g-lock" viewBox="0 0 16 16"><rect x="3.5" y="7.5" width="9" height="6.5" rx="1"/><path d="M5.5 7.5v-2a2.5 2.5 0 015 0v2"/></symbol>
+  <symbol id="pm-i-arrow-right" viewBox="0 0 16 16"><path d="M3 8h10M9 4.5L12.5 8 9 11.5"/></symbol>
+  <symbol id="pm-i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></symbol>
+  <symbol id="pm-i-attach" viewBox="0 0 16 16"><path d="M13 7.5l-5 5a3 3 0 01-4.2-4.2l5.5-5.5a2 2 0 012.8 2.8L6.6 11a1 1 0 01-1.4-1.4l4.6-4.6"/></symbol>
+  <symbol id="pm-i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/></symbol>
+  <symbol id="pm-i-external" viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5L7.5 8.5M12 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></symbol>
+  <symbol id="i-requests" viewBox="0 0 20 20"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="15" r="2"/><circle cx="14" cy="8" r="2"/><path d="M6 7v6M14 10c0 3-3 3-6 4"/></symbol>
+  <symbol id="pm-i-mic" viewBox="0 0 16 16"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3.5 7.5a4.5 4.5 0 0 0 9 0M8 12v2.5M5.5 14.5h5"/></symbol>
+  <symbol id="pm-i-stop" viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" rx="1.5"/></symbol>
+  <symbol id="pm-i-upload" viewBox="0 0 16 16"><path d="M8 10.5v-8M4.5 6L8 2.5 11.5 6M3 12.5h10"/></symbol>
+  <symbol id="pm-i-arrow-down" viewBox="0 0 16 16"><path d="M8 3v10M4.5 9.5L8 13l3.5-3.5"/></symbol>
+</svg>
+
+<div class="pm-app">
+  <!-- RAIL. Fixed, ink, never scrolls. Heights (SPEC C.2): 56 + 40 + 1 + 56 + 8x36 + 12 + spacer + 44 + 48. -->
+  <aside class="pm-rail" id="pm-rail" aria-label="Sidebar">
+    <div class="pm-rail-head">
+      <a class="pm-wordmark" href="#" aria-label="pramaan, all projects">pramaan</a>
+      <span class="pm-monogram" aria-hidden="true">p</span>
+      <button class="pm-rail-toggle" type="button" aria-expanded="true" aria-controls="pm-rail" aria-label="Collapse navigation">
+        <svg class="pm-i pm-i-collapse"><use href="#i-collapse"/></svg>
+        <svg class="pm-i pm-i-expand"><use href="#i-expand"/></svg>
+      </button>
+    </div>
+
+    <nav class="pm-rail-nav" aria-label="Projects and destinations">
+      <a class="pm-rail-item pm-rail-all" href="#"><svg class="pm-i"><use href="#i-folder"/></svg><span class="pm-rail-label">All projects</span><span class="pm-rail-meta">Test</span></a>
+      <div class="pm-rail-seam" role="separator"></div>
+      <div class="pm-rail-project" title="todo, Working">
+        <span class="pm-rail-tile" aria-hidden="true">T</span>
+        <span class="pm-rail-project-text"><span class="pm-rail-project-name">todo</span><span class="pm-rail-status" data-status="working">Working</span></span>
+      </div>
+      <ul class="pm-rail-list">
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-overview"/></svg><span class="pm-rail-label">Overview</span></a></li>
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-interview"/></svg><span class="pm-rail-label">Interview</span></a></li>
+        <li><a class="pm-rail-item" href="#" aria-current="page"><svg class="pm-i"><use href="#i-documents"/></svg><span class="pm-rail-label">Documents<svg class="pm-pen" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true" focusable="false"><ellipse cx="50" cy="16" rx="49" ry="15" vector-effect="non-scaling-stroke"/></svg></span><span class="pm-rail-meta pm-tnum">3/3</span></a></li>
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-roadmap"/></svg><span class="pm-rail-label">Roadmap</span></a></li>
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-build"/></svg><span class="pm-rail-label">Build</span></a></li>
+        <li><a class="pm-rail-item" href="#" data-locked><svg class="pm-i"><use href="#i-try-it"/></svg><span class="pm-rail-label">Try it</span><svg class="pm-i pm-rail-lock" aria-hidden="true"><use href="#i-lock"/></svg></a></li>
+        <li><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-settings"/></svg><span class="pm-rail-label">Settings</span></a></li>
+        <li class="pm-rail-item--dev"><span class="pm-sr">Development</span><a class="pm-rail-item" href="#"><svg class="pm-i"><use href="#i-live-logs"/></svg><span class="pm-rail-label">Live logs</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="pm-rail-spacer"></div>
+
+    <div class="pm-rail-budget" role="group" aria-label="Monthly budget 18% used" title="Monthly budget 18% used">
+      <div class="pm-rail-budget-text"><span class="pm-rail-budget-label">Monthly budget</span><span class="pm-rail-budget-value">18% used</span></div>
+      <div class="pm-rail-track" aria-hidden="true"><div class="pm-rail-fill" style="--pm-fill: 18%"></div></div>
+    </div>
+
+    <button class="pm-rail-user" type="button" popovertarget="pm-user-menu" aria-label="Account menu, Aditya Choudhary" title="Aditya Choudhary">
+      <span class="pm-rail-avatar" aria-hidden="true">AC</span>
+      <span class="pm-rail-user-text"><span class="pm-rail-user-name">Aditya Choudhary</span><span class="pm-rail-user-sub">Signed in</span></span>
+    </button>
+    <div class="pm-rail-menu" id="pm-user-menu" popover aria-label="Account">
+      <button class="pm-rail-menu-item" type="button" role="switch" aria-checked="false" data-theme-switch><span>Dark theme</span><span class="pm-rail-switch" aria-hidden="true"></span></button>
+      <a class="pm-rail-menu-item" href="#">Switch organisation</a>
+      <a class="pm-rail-menu-item" href="#">Sign out</a>
+    </div>
+  </aside>
+
+  <main class="pm-main" id="pm-main" data-thread-none="working">
+
+    <header class="pm-topbar">
+      <a class="pm-back pm-back--hidden" href="#" aria-label="Back to Projects" tabindex="-1"><svg class="pm-i"><use href="#i-back"/></svg></a>
+      <nav class="pm-crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="#">Design system</a></li>
+          <li><span aria-current="page">Components C</span></li>
+        </ol>
+      </nav>
+      <div class="pm-slot">
+        <span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span>
+        <span class="pm-pin-sentence pm-slot-sentence" title="A demo page has nothing for you to decide. Every thread sample below is inert.">Nothing needed from you.</span>
+      </div>
+    </header>
+
+    <div class="pm-content" id="pm-job">
+      <div class="pm-title">
+        <h1>Components C</h1>
+        <p class="pm-title-sentence">Pass 2 components in every state. Static markup, with the states components.js drives labelled.</p>
+      </div>
+
+      <!-- P.5.2 -->
+    <section class="demo-full" aria-labelledby="h-lanes">
+      <h2 id="h-lanes">Lane switcher</h2>
+      <p class="demo-cap">44px row, stitch above and below. Each lane current in turn; the current chip is ink filled. It is navigation, never the thread.</p>
+      <nav class="pm-lanes" aria-label="Ways to start, current: Describe your idea"><ol>
+        <li><a class="pm-chip" href="#" aria-current="page">Describe your idea</a></li>
+        <li><a class="pm-chip" href="#">Hand off your code</a></li>
+        <li class="pm-lanes-label">For engineering teams</li>
+        <li><a class="pm-chip" href="#">Work in my repository</a></li>
+      </ol></nav>
+      <nav class="pm-lanes" aria-label="Ways to start, current: Hand off your code"><ol>
+        <li><a class="pm-chip" href="#">Describe your idea</a></li>
+        <li><a class="pm-chip" href="#" aria-current="page">Hand off your code</a></li>
+        <li class="pm-lanes-label">For engineering teams</li>
+        <li><a class="pm-chip" href="#">Work in my repository</a></li>
+      </ol></nav>
+      <nav class="pm-lanes" aria-label="Ways to start, current: Work in my repository"><ol>
+        <li><a class="pm-chip" href="#">Describe your idea</a></li>
+        <li><a class="pm-chip" href="#">Hand off your code</a></li>
+        <li class="pm-lanes-label">For engineering teams</li>
+        <li><a class="pm-chip" href="#" aria-current="page">Work in my repository</a></li>
+      </ol></nav>
+    </section>
+
+
+      <!-- ============ Two columns of narrow components ============ -->
+      <div class="demo-cols">
+
+      <div class="demo-col">
+        <!-- P.5.3 -->
+        <section class="demo-sec" aria-labelledby="h-choice">
+          <h2 id="h-choice">Choice cards and choice list</h2>
+          <p class="demo-cap">Two radio cards (one chosen, one default), a disabled card with its reason, and a six-row list with one disabled row. Keyboard: arrows move inside a group.</p>
+          <fieldset class="pm-choices">
+            <legend>Where is your code?</legend>
+            <label class="pm-choice"><input class="pm-sr" type="radio" name="demo-src" value="upload" checked><span class="pm-choice-title">Upload a .zip</span><span class="pm-choice-meta">No GitHub account needed.</span></label>
+            <label class="pm-choice"><input class="pm-sr" type="radio" name="demo-src" value="github"><span class="pm-choice-title">Import from GitHub</span><span class="pm-choice-meta">Pramaan reads it once. Your repository is never changed.</span></label>
+          </fieldset>
+          <fieldset class="pm-choices">
+            <legend>Disabled card, with its reason in the sentence</legend>
+            <label class="pm-choice"><input class="pm-sr" type="radio" name="demo-off" value="github" disabled><span class="pm-choice-title">Import from GitHub</span><span class="pm-choice-meta">Give permission on GitHub first.</span></label>
+          </fieldset>
+          <fieldset class="pm-choice-list">
+            <legend>Choose your repository</legend>
+            <div class="pm-choice-rows">
+              <label class="pm-choice-row"><input type="radio" name="demo-repo" value="a" checked><span class="pm-choice-name">test-org/insight-weaver-537</span></label>
+              <label class="pm-choice-row" aria-disabled="true"><input type="radio" name="demo-repo" value="b" disabled><span class="pm-choice-name">test-org/todo</span><span class="pm-choice-note">already a Pramaan project</span></label>
+              <label class="pm-choice-row"><input type="radio" name="demo-repo" value="c"><span class="pm-choice-name">studio-demo/customer-portal</span></label>
+              <label class="pm-choice-row"><input type="radio" name="demo-repo" value="d"><span class="pm-choice-name">test-org/provider-update-demo-npm-stack</span></label>
+              <label class="pm-choice-row"><input type="radio" name="demo-repo" value="e"><span class="pm-choice-name">test-org/omnibound-vlmk-craft</span></label>
+              <label class="pm-choice-row"><input type="radio" name="demo-repo" value="f"><span class="pm-choice-name">test-org/pramaan-web</span></label>
+            </div>
+          </fieldset>
+          <p class="demo-cap">Showing 6 of 33</p>
+        </section>
+
+        <!-- P.5.4 -->
+        <section class="demo-sec" aria-labelledby="h-file">
+          <h2 id="h-file">File field</h2>
+          <p class="demo-cap">Default, chosen (components.js writes the name into the name span), the two error states of screens 18c and 18d, and the three prototype error sentences of screen 20 (shown here, not on 20).</p>
+          <div class="pm-field"><span class="pm-label" id="f1-l">Your code (.zip, up to 200 MB): default</span>
+            <div class="pm-file"><input type="file" id="f1" class="pm-sr" aria-labelledby="f1-l" accept=".zip"><label for="f1" class="pm-btn pm-btn--quiet">Choose a file</label><span class="pm-file-name" data-file-name></span></div>
+            <span class="pm-help">Up to 200 MB. Dependencies and build output are left out.</span></div>
+          <div class="pm-field"><span class="pm-label" id="f2-l">Your code (.zip, up to 200 MB): chosen</span>
+            <div class="pm-file"><input type="file" id="f2" class="pm-sr" aria-labelledby="f2-l" accept=".zip"><label for="f2" class="pm-btn pm-btn--quiet">Choose a file</label><span class="pm-file-name" data-file-name>customer-portal.zip &middot; 38 MB</span></div>
+            <span class="pm-help">Pramaan never writes back to where the code came from.</span></div>
+          <div class="pm-field"><span class="pm-label" id="f3-l">Too big (18c)</span>
+            <div class="pm-file pm-file--error"><input type="file" id="f3" class="pm-sr" aria-labelledby="f3-l" aria-describedby="f3-h" accept=".zip"><label for="f3" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>customer-portal.zip &middot; 312 MB</span></div>
+            <span class="pm-help pm-help--error" id="f3-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>This file is larger than 200 MB. Choose a smaller .zip, or leave out big folders such as media.</span></div>
+          <div class="pm-field"><span class="pm-label" id="f4-l">Not a zip (18d)</span>
+            <div class="pm-file pm-file--error"><input type="file" id="f4" class="pm-sr" aria-labelledby="f4-l" aria-describedby="f4-h" accept=".zip"><label for="f4" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>customer-portal.rar &middot; 41 MB</span></div>
+            <span class="pm-help pm-help--error" id="f4-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>This is not a .zip file. Zip the folder and choose the .zip.</span></div>
+          <div class="pm-field"><span class="pm-label" id="f5-l">Have a requirements document? (.md or .txt, under 1 MB)</span>
+            <div class="pm-file pm-file--error"><input type="file" id="f5" class="pm-sr" aria-labelledby="f5-l" aria-describedby="f5-h" accept=".md,.txt"><label for="f5" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>requirements.pdf &middot; 3 MB</span></div>
+            <span class="pm-help pm-help--error" id="f5-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>Choose a Markdown or text file under 1 MB.</span></div>
+          <div class="pm-field"><span class="pm-label" id="f6-l">Empty document</span>
+            <div class="pm-file pm-file--error"><input type="file" id="f6" class="pm-sr" aria-labelledby="f6-l" aria-describedby="f6-h" accept=".md,.txt"><label for="f6" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>requirements.md &middot; 0 KB</span></div>
+            <span class="pm-help pm-help--error" id="f6-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>This document is empty.</span></div>
+          <div class="pm-field"><span class="pm-label" id="f7-l">Unreadable document</span>
+            <div class="pm-file pm-file--error"><input type="file" id="f7" class="pm-sr" aria-labelledby="f7-l" aria-describedby="f7-h" accept=".md,.txt"><label for="f7" class="pm-btn pm-btn--quiet">Choose another file</label><span class="pm-file-name" data-file-name>requirements.md &middot; 12 KB</span></div>
+            <span class="pm-help pm-help--error" id="f7-h"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>The file could not be read. Paste its text below instead.</span></div>
+        </section>
+
+        <!-- P.5.13 question card, narrow -->
+        <section class="demo-sec" aria-labelledby="h-qcard-narrow">
+          <h2 id="h-qcard-narrow">Question card, one column</h2>
+          <p class="demo-cap">The card body switches to two columns when it is wide enough; the title spans both. The same card in a narrow column: it stays one column.</p>
+          <div class="pm-qcard">
+            <div class="pm-qcard-body">
+              <h3 class="pm-qcard-title pm-t-heading">Two quick questions</h3>
+              <fieldset class="pm-qfield"><legend>Who plays?</legend>
+                <label class="pm-qopt"><input type="radio" name="dq1n" checked> One person against the computer</label>
+                <label class="pm-qopt"><input type="radio" name="dq1n"> Two people, taking turns</label>
+                <label class="pm-qopt"><input type="radio" name="dq1n"> Either, chosen at the start</label></fieldset>
+              <div class="pm-qfield"><label class="pm-label" for="dq2n">What happens when someone wins?</label><input class="pm-input" id="dq2n" type="text" placeholder="Say it in your own words"></div>
+            </div>
+            <div class="pm-qcard-foot"><span>Your answers save as you go.</span><button class="pm-btn pm-btn--thread-demo" type="button">Submit answers</button></div>
+          </div>
+        </section>
+
+        <!-- P.5.8 and P.5.9 -->
+        <section class="demo-sec" aria-labelledby="h-meter">
+          <h2 id="h-meter">Meter</h2>
+          <p class="demo-cap">The rail's budget line in page colours: a 4px track, an ink fill at --pm-fill, a Meta line above. 18% and 100%.</p>
+          <div class="demo-card">
+            <div class="pm-meter" style="--pm-fill: 18%"><p class="pm-meter-label">Monthly budget &middot; 18% used</p><div class="pm-meter-track" role="img" aria-label="Monthly budget 18% used"><span class="pm-meter-fill"></span></div></div>
+            <div class="pm-meter" style="--pm-fill: 100%"><p class="pm-meter-label">Monthly budget &middot; 100% used</p><div class="pm-meter-track" role="img" aria-label="Monthly budget 100% used"><span class="pm-meter-fill"></span></div></div>
+          </div>
+        </section>
+
+      </div>
+      <div class="demo-col">
+        <!-- P.5.7 -->
+        <section class="demo-sec" aria-labelledby="h-steps">
+          <h2 id="h-steps">Steps, mini steps and the check</h2>
+          <p class="demo-cap">Rows of 44px on a thin stitched line: four Done and one Working.</p>
+          <div class="demo-card">
+            <ol class="pm-steps">
+              <li class="pm-step"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-step-title">Made the change on a new branch</span><span class="pm-steps-fact"><span class="pm-mono">feature/2-archive-workspaces</span></span></li>
+              <li class="pm-step"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-step-title">Tested the change it made</span><span class="pm-steps-fact">Checks passed on the branch</span></li>
+              <li class="pm-step"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-step-title">Opened a pull request and had it reviewed</span><span class="pm-steps-fact">Pull request #42, opened Tuesday</span></li>
+              <li class="pm-step"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-step-title">Fixed what the review found</span><span class="pm-steps-fact">Round 1 asked for an empty-state test. Round 2 passed.</span></li>
+              <li class="pm-step"><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span><span class="pm-step-title">Making your private copy</span><span class="pm-steps-fact">Nothing needed from you.</span></li>
+            </ol>
+          </div>
+          <p class="demo-cap">Mini steps, four 8px squares, every fill combination: none, one to four done, working, blocked.</p>
+          <div class="demo-card">
+            <div class="demo-row">
+              <span class="demo-row"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: none done"><i></i><i></i><i></i><i></i></span><span class="demo-cap">none</span></span>
+              <span class="demo-row"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 1 of 4 done"><i data-state="done"></i><i></i><i></i><i></i></span><span class="demo-cap">1 done</span></span>
+              <span class="demo-row"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 2 of 4 done"><i data-state="done"></i><i data-state="done"></i><i></i><i></i></span><span class="demo-cap">2 done</span></span>
+              <span class="demo-row"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 3 of 4 done"><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i><i></i></span><span class="demo-cap">3 done</span></span>
+              <span class="demo-row"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 4 of 4 done"><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i></span><span class="demo-cap">4 done</span></span>
+              <span class="demo-row"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 2 of 4 done, Review working"><i data-state="done"></i><i data-state="done"></i><i data-state="working"></i><i></i></span><span class="demo-cap">working</span></span>
+              <span class="demo-row"><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 1 of 4 done, Test blocked"><i data-state="done"></i><i data-state="blocked"></i><i></i><i></i></span><span class="demo-cap">blocked</span></span>
+            </div>
+          </div>
+          <p class="demo-cap">The check (GitHub App result), Done and Blocked.</p>
+          <div class="pm-check" data-status="done"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span><span class="pm-pin-sentence">Pramaan can open pull requests in test-org/insight-weaver-537.</span></span><p class="pm-check-text">It never pushes to your default branch (main).</p></div>
+          <div class="pm-check" data-status="blocked"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span><span class="pm-pin-sentence">Pramaan cannot open pull requests in test-org/insight-weaver-537 yet.</span></span><p class="pm-check-text">The Pramaan GitHub App is not installed for this repository.</p></div>
+        </section>
+
+        <!-- P.4.1 -->
+        <section class="demo-sec" aria-labelledby="h-dictate">
+          <h2 id="h-dictate">Dictation</h2>
+          <p class="demo-cap">Five states. The first is live: components.js runs the real speech API in Chrome and falls back to the unavailable state. The others are static.</p>
+          <div class="demo-card">
+            <div class="demo-state"><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-dictate="#dict-ta"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button><span class="pm-label">Idle</span><span class="pm-dictate-status pm-help" data-dictate-status>Ctrl+Enter sends. Your decisions save as you go.</span></div>
+            <div class="demo-state"><button class="pm-dictate" type="button" aria-pressed="true" aria-label="Stop dictating" data-state="listening" data-live="true"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-stop"/></svg></button><span class="pm-label">Listening</span><span class="pm-dictate-status pm-help">Listening. Press the button again to stop. Nothing is sent until you press Send.</span></div>
+            <div class="demo-state"><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button><span class="pm-label">Done</span><span class="pm-dictate-status pm-help">Added to your reply. Check it, then send.</span></div>
+            <div class="demo-state"><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" aria-disabled="true" data-state="unavailable" aria-describedby="dict-na"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button><span class="pm-label">Unavailable</span><span class="pm-dictate-status pm-help" id="dict-na">Dictation is not available in this browser. Typing works the same.</span></div>
+            <div class="demo-state"><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-state="error"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button><span class="pm-label">Error</span><span class="pm-dictate-status pm-help"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>Nothing was heard. Try again, or type.</span></div>
+            <div class="demo-state"><span></span><span class="pm-label">Error, other</span><span class="pm-dictate-status pm-help"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>The microphone is blocked. Allow it in your browser, or type.</span></div>
+            <div class="demo-state"><span></span><span class="pm-label">Error, stopped</span><span class="pm-dictate-status pm-help"><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span>Dictation stopped. Try again, or type.</span></div>
+            <textarea class="pm-textarea" id="dict-ta" rows="2" aria-label="Text the live dictation button writes into" placeholder="The live dictation button above writes here."></textarea>
+            <div class="pm-field"><label class="pm-label" for="dict-20">A field with dictation and no send (screen 20)</label>
+              <div class="pm-composer-row pm-composer-row--nosend"><textarea class="pm-textarea" id="dict-20" rows="3" placeholder="Or paste it here"></textarea><button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-dictate="#dict-20"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button></div>
+              <span class="pm-help" data-dictate-status>Paste the document, or dictate it.</span></div>
+          </div>
+        </section>
+
+        <!-- P.4.2 -->
+        <section class="demo-sec" aria-labelledby="h-setting">
+          <h2 id="h-setting">Setting</h2>
+          <p class="demo-cap">A switch row; the consequence sentence swaps with the state (components.js). On, off, and disabled with each reason.</p>
+          <div class="demo-card">
+            <div class="pm-setting">
+              <h3 class="pm-setting-title">On</h3>
+              <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="sw-gate" checked aria-describedby="sw-gate-t"><div class="pm-setting-text"><div class="pm-setting-head"><label class="pm-setting-label" for="sw-gate">Check with me before each sprint starts</label></div><p class="pm-setting-consequence" id="sw-gate-t" data-on="Pramaan waits for you to try and accept a sprint before the next one starts." data-off="Pramaan starts the next sprint as soon as the previous one is built and checked. You can still ask for changes at any time.">Pramaan waits for you to try and accept a sprint before the next one starts.</p></div></div>
+            </div>
+            <div class="pm-setting">
+              <h3 class="pm-setting-title">Off</h3>
+              <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="sw-gate2" aria-describedby="sw-gate2-t"><div class="pm-setting-text"><div class="pm-setting-head"><label class="pm-setting-label" for="sw-gate2">Check with me before each sprint starts</label></div><p class="pm-setting-consequence" id="sw-gate2-t" data-on="Pramaan waits for you to try and accept a sprint before the next one starts." data-off="Pramaan starts the next sprint as soon as the previous one is built and checked. You can still ask for changes at any time.">Pramaan starts the next sprint as soon as the previous one is built and checked. You can still ask for changes at any time.</p></div></div>
+            </div>
+            <div class="pm-setting">
+              <h3 class="pm-setting-title">Disabled, project paused</h3>
+              <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="sw-gate3" checked disabled aria-describedby="sw-gate3-t sw-gate3-r"><div class="pm-setting-text"><div class="pm-setting-head"><label class="pm-setting-label" for="sw-gate3">Check with me before each sprint starts</label><span class="pm-setting-reason" id="sw-gate3-r">Change this when the project is running again.</span></div><p class="pm-setting-consequence" id="sw-gate3-t">Pramaan waits for you to try and accept a sprint before the next one starts.</p></div></div>
+            </div>
+            <div class="pm-setting">
+              <h3 class="pm-setting-title">Disabled, all sprints accepted</h3>
+              <div class="pm-switch-row"><input class="pm-switch" type="checkbox" role="switch" id="sw-gate4" disabled aria-describedby="sw-gate4-t sw-gate4-r"><div class="pm-setting-text"><div class="pm-setting-head"><label class="pm-setting-label" for="sw-gate4">Check with me before each sprint starts</label><span class="pm-setting-reason" id="sw-gate4-r">All planned sprints are accepted; there is no next sprint.</span></div><p class="pm-setting-consequence" id="sw-gate4-t">Pramaan starts the next sprint as soon as the previous one is built and checked. You can still ask for changes at any time.</p></div></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+      </div>
+
+      <!-- ============ Full width ============ -->
+      <section class="demo-full" aria-labelledby="h-actioncards">
+        <h2 id="h-actioncards">Action cards</h2>
+        <p class="demo-cap">Three equal cards, 88px tall: the action on line one, its Meta sentence on line two. The card is not a link; the button is.</p>
+        <ul class="pm-actioncards">
+          <li class="pm-actioncard"><button class="pm-actioncard-action" type="button">Read your decisions</button><p class="pm-actioncard-text">Nothing you decided is lost.</p></li>
+          <li class="pm-actioncard"><button class="pm-actioncard-action" type="button">Request a revision</button><p class="pm-actioncard-text">Pramaan drafts the change after the sprint.</p></li>
+          <li class="pm-actioncard"><a class="pm-actioncard-action" href="#">Open Build</a><p class="pm-actioncard-text">See how sprint 1 is going.</p></li>
+        </ul>
+      </section>
+
+      <section class="demo-full" aria-labelledby="h-flow">
+        <h2 id="h-flow">Copy flow</h2>
+        <p class="demo-cap">A fitted aside of two boxes and an arrow, in six states: no file, file chosen, GitHub, in progress, done, too big. The data hooks (data-flow-source-label, data-flow-source-value, data-flow-source-chip) sit on the first one: choose a file in the file field above and components.js writes into it.</p>
+        <div class="demo-grid3">
+          <aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: no file">
+            <h2>Where your code goes</h2>
+            <div class="pm-flow">
+              <div class="pm-flow-box"><span class="pm-flow-label" data-flow-source-label>Your upload</span><span class="pm-flow-value" data-flow-source-value>No file chosen yet</span><span class="pm-chip pm-flow-chip" data-flow-source-chip>Read once &middot; never changed</span></div>
+              <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+              <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip">All work happens here</span></div>
+            </div>
+            <p class="pm-flow-sentence">The code stays yours. Take a copy any time.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project. Take a copy downloads a .zip. Export to GitHub is not available yet.</div></details>
+          </aside>
+          <aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: file chosen">
+            <h2>Where your code goes</h2>
+            <div class="pm-flow">
+              <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 38 MB</span><span class="pm-chip pm-flow-chip">Read once &middot; never changed</span></div>
+              <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+              <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip">All work happens here</span></div>
+            </div>
+            <p class="pm-flow-sentence">The code stays yours. Take a copy any time.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project. Take a copy downloads a .zip. Export to GitHub is not available yet.</div></details>
+          </aside>
+          <aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: GitHub">
+            <h2>Where your code goes</h2>
+            <div class="pm-flow">
+              <div class="pm-flow-box"><span class="pm-flow-label">GitHub</span><span class="pm-flow-value pm-mono">studio-demo/customer-portal</span><span class="pm-chip pm-flow-chip">Read only &middot; unchanged</span></div>
+              <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+              <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip">All work happens here</span></div>
+            </div>
+            <p class="pm-flow-sentence">The code stays yours. Take a copy any time.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project. Take a copy downloads a .zip. Export to GitHub is not available yet.</div></details>
+          </aside>
+          <aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: in progress">
+            <h2>Where your code goes</h2>
+            <div class="pm-flow">
+              <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 38 MB</span><span class="pm-chip pm-flow-chip">Read once &middot; never changed</span></div>
+              <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+              <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">Making your private copy</span><span class="pm-pin" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span></div>
+            </div>
+            <p class="pm-flow-sentence">Your original code stays unchanged.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body pm-mono">Private copy: pramaan-build/customer-portal-3f9a1c2e, from your upload customer-portal.zip (38 MB), received today</div></details>
+          </aside>
+          <aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: done">
+            <h2>Where your code goes</h2>
+            <div class="pm-flow">
+              <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 38 MB</span><span class="pm-chip pm-flow-chip">Read once &middot; never changed</span></div>
+              <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+              <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip" data-status="done">Ready</span></div>
+            </div>
+            <p class="pm-flow-sentence">Your original code stays unchanged.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body">The private copy is a private repository Pramaan holds, named after your project.</div></details>
+          </aside>
+          <aside class="pm-copyflow pm-panel--fit" aria-label="Where your code goes: too big">
+            <h2>Where your code goes</h2>
+            <div class="pm-flow">
+              <div class="pm-flow-box"><span class="pm-flow-label">Your upload</span><span class="pm-flow-value pm-mono">customer-portal.zip &middot; 312 MB</span><span class="pm-chip pm-flow-chip" data-status="blocked">Too big</span></div>
+              <svg class="pm-icon pm-flow-arrow" aria-hidden="true"><use href="#pm-i-arrow-down"/></svg>
+              <div class="pm-flow-box"><span class="pm-flow-label">Pramaan's private copy</span><span class="pm-flow-value">A private copy named after your project</span><span class="pm-chip pm-flow-chip">All work happens here</span></div>
+            </div>
+            <p class="pm-flow-sentence">Choose a file under 200 MB.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body">Dependencies, build output and the .git folder are left out of the copy; the ZIP can unpack to at most 1 GB and 50,000 files.</div></details>
+          </aside>
+        </div>
+      </section>
+
+      <section class="demo-full" aria-labelledby="h-brief">
+        <h2 id="h-brief">Decisions brief block</h2>
+        <p class="demo-cap">Inside a fitted decisions panel, under the list: untouched (05b), first row ticked (05), and collapsed to one Done line (06).</p>
+        <div class="demo-grid3">
+          <aside class="pm-decisions pm-panel--fit" aria-label="Your decisions, nothing ticked">
+            <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count pm-tnum">1 of about 6 saved</span></div>
+            <ul class="pm-decisions-list"><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Product idea</span><span class="pm-decision-value">a tic tac toe game</span><span class="pm-decision-editcue">Edit</span></button></li></ul>
+            <div class="pm-decisions-brief">
+              <h3 class="pm-decisions-brief-title">Where your answers go</h3>
+              <ol class="pm-brief-list">
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">One-sentence outcome</span><span class="pm-brief-gloss">The one thing this product should do.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Evidence of the problem</span><span class="pm-brief-gloss">What you told us that led to this brief.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Success contract</span><span class="pm-brief-gloss">How we will know the product works.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Guardrails</span><span class="pm-brief-gloss">Things that must not get worse while we build.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Acceptance signal</span><span class="pm-brief-gloss">The check you can run yourself to accept the result.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Constraints and non-goals</span><span class="pm-brief-gloss">What it must respect and what it will not do.</span></li>
+              </ol>
+            </div>
+          </aside>
+          <aside class="pm-decisions pm-panel--fit" aria-label="Your decisions, first ticked">
+            <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count pm-tnum">2 of about 6 saved</span></div>
+            <ul class="pm-decisions-list"><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Product idea</span><span class="pm-decision-value">a tic tac toe game</span><span class="pm-decision-editcue">Edit</span></button></li><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Who plays</span><span class="pm-decision-value">One person against the computer</span><span class="pm-decision-editcue">Edit</span></button></li></ul>
+            <div class="pm-decisions-brief">
+              <h3 class="pm-decisions-brief-title">Where your answers go</h3>
+              <ol class="pm-brief-list">
+                <li class="pm-brief-row" data-fed="true"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">One-sentence outcome</span><span class="pm-brief-gloss">The one thing this product should do.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Evidence of the problem</span><span class="pm-brief-gloss">What you told us that led to this brief.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Success contract</span><span class="pm-brief-gloss">How we will know the product works.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Guardrails</span><span class="pm-brief-gloss">Things that must not get worse while we build.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Acceptance signal</span><span class="pm-brief-gloss">The check you can run yourself to accept the result.</span></li>
+                <li class="pm-brief-row"><span class="pm-brief-ring" aria-hidden="true"><svg class="pm-pin-glyph"><use href="#pm-g-check"/></svg></span><span class="pm-brief-name">Constraints and non-goals</span><span class="pm-brief-gloss">What it must respect and what it will not do.</span></li>
+              </ol>
+            </div>
+          </aside>
+          <aside class="pm-decisions pm-panel--fit" aria-label="Your decisions, interview finished">
+            <div class="pm-decisions-head"><h2>Your decisions</h2><span class="pm-decisions-count pm-tnum">6 of 6 saved</span></div>
+            <ul class="pm-decisions-list"><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Product idea</span><span class="pm-decision-value">a tic tac toe game</span><span class="pm-decision-editcue">Edit</span></button></li><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Who plays</span><span class="pm-decision-value">One person against the computer</span><span class="pm-decision-editcue">Edit</span></button></li><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">What happens on a win</span><span class="pm-decision-value">The game says who won and offers a new game</span><span class="pm-decision-editcue">Edit</span></button></li><li class="pm-decision"><button class="pm-decision-toggle" type="button" aria-expanded="false"><span class="pm-decision-title">Starting over</span><span class="pm-decision-value">A button starts a new game at any time</span><span class="pm-decision-editcue">Edit</span></button></li></ul>
+            <div class="pm-decisions-brief">
+              <h3 class="pm-decisions-brief-title">Where your answers go</h3>
+              <p class="pm-brief-line"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span>Your 6 decisions feed all six sections.</span></p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- P.5.13 question card -->
+    <!-- P.5.13 question card -->
+    <section class="demo-full" aria-labelledby="h-qcard">
+      <h2 id="h-qcard">Question card, two columns</h2>
+      <p class="demo-cap">The card body switches to two columns when it is wide enough; the title spans both. Here the card is wide, so the two questions sit side by side.</p>
+      <div class="pm-qcard">
+        <div class="pm-qcard-body">
+          <h3 class="pm-qcard-title pm-t-heading">Two quick questions</h3>
+          <fieldset class="pm-qfield"><legend>Who plays?</legend>
+            <label class="pm-qopt"><input type="radio" name="dq1" checked> One person against the computer</label>
+            <label class="pm-qopt"><input type="radio" name="dq1"> Two people, taking turns</label>
+            <label class="pm-qopt"><input type="radio" name="dq1"> Either, chosen at the start</label></fieldset>
+          <div class="pm-qfield"><label class="pm-label" for="dq2">What happens when someone wins?</label><input class="pm-input" id="dq2" type="text" placeholder="Say it in your own words"></div>
+        </div>
+        <div class="pm-qcard-foot"><span>Your answers save as you go.</span><button class="pm-btn pm-btn--thread-demo" type="button">Submit answers</button></div>
+      </div>
+    </section>
+
+      <section class="demo-full" aria-labelledby="h-bento">
+        <h2 id="h-bento">Bento</h2>
+        <p class="demo-cap">DOM order is reading order: the lead (the decision banner, data-gate; its thread button is left out because this page has no thread), three digit tiles, a wide next tile, an info tile. The 104 to 120px lead, 120px digit tiles, one column under 900px.</p>
+        <div class="pm-bento" style="margin-top: 0">
+          <div class="pm-banner pm-banner--needs-you pm-tile pm-tile--lead" data-gate>
+            <span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span>
+            <div class="pm-banner-body"><h2 class="pm-banner-title">Let's get clear on the product.</h2><p class="pm-banner-text">Answer the next interview question. You set the direction; Pramaan handles the technical setup.</p></div>
+          </div>
+          <div class="pm-tile pm-tile--digit"><dl class="pm-digits"><div class="pm-digit"><dt>Documents accepted</dt><dd class="pm-digit-value"><span>3</span><span class="pm-digit-sep">/</span><span>3</span></dd><dd class="pm-digit-sentence">All three unlock the plan.</dd></div></dl></div>
+          <div class="pm-tile pm-tile--digit"><dl class="pm-digits"><div class="pm-digit"><dt>Sprints</dt><dd class="pm-digit-value"><span>1</span><span class="pm-digit-sep">/</span><span>4</span></dd><dd class="pm-digit-sentence">Sprint 1 is being built.</dd></div></dl></div>
+          <div class="pm-tile pm-tile--digit"><dl class="pm-digits"><div class="pm-digit"><dt>Monthly budget used</dt><dd class="pm-digit-value"><span>18</span><span class="pm-digit-sep">%</span></dd><dd class="pm-digit-sentence">Resets 1 October.</dd></div></dl>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body">Units are tokens, the pieces of text the AI reads and writes. 5,415,812 of 20,000,000 used this month.</div></details></div>
+          <div class="pm-tile pm-tile--wide"><h2>What happens next</h2>
+            <ol class="pm-ticks"><li>Interview: you answer a few questions about your product.</li><li>Documents: Pramaan drafts three documents for you to read and accept.</li><li>Roadmap: you approve a plan of sprints.</li><li>Build: Pramaan builds sprint 1, and you try it.</li></ol></div>
+          <div class="pm-tile"><h2>Your workspace</h2><p class="demo-cap">Private, set up for you once the interview is done.</p>
+            <details class="pm-details"><summary>Details</summary><div class="pm-details-body pm-mono">Workspace sized automatically. pramaan-build/todo-d509a2e9</div></details></div>
+        </div>
+      </section>
+
+      <section class="demo-full" aria-labelledby="h-milestone">
+        <h2 id="h-milestone">Quiet milestone</h2>
+        <p class="demo-cap">The tape shows its end state: checks on the done steps, the current step's ticks filled. "Play once" sets data-milestone for 700ms (components.js), and the line fades in. Nothing plays on load, nothing loops. Under reduced motion the end state appears at once.</p>
+        <div class="demo-row">
+          <nav class="pm-tape" aria-label="Your journey, milestone demo">
+            <ol>
+              <li data-state="done"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 1, </span>Interview<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+              <li data-state="done"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 2, </span>Documents<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+              <li data-state="done"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 3, </span>Roadmap<span class="pm-sr">, done</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true"><svg class="pm-i pm-i--12"><use href="#i-check"/></svg></span></a></li>
+              <li data-state="current" data-progress="3/3"><a class="pm-tape-step" href="#" aria-current="step" title="Build: 3 of 3 features ready"><span class="pm-tape-label"><span class="pm-sr">Step 4, </span>Build<span class="pm-sr">, 3 of 3 features ready. You are here</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">4</span><span class="pm-tape-ticks" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span></a></li>
+              <li data-state="upcoming"><a class="pm-tape-step" href="#"><span class="pm-tape-label"><span class="pm-sr">Step 5, </span>Try it<span class="pm-sr">, not started</span></span><span class="pm-tape-num pm-tnum" aria-hidden="true">5</span></a></li>
+            </ol>
+            <span class="pm-tape-pin" aria-hidden="true"></span>
+          </nav>
+          <div class="pm-review-only"><span>Review only:</span><button class="pm-btn pm-btn--quiet pm-btn--sm" type="button" data-milestone-trigger="sprint-ready">Play once</button></div>
+        </div>
+        <p class="pm-milestone-line" data-milestone-line hidden><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-pin-sentence">Sprint 1 is ready to try.</span></p>
+        <p class="demo-cap">The line as it reads once shown (static copy):</p>
+        <p class="pm-milestone-line"><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-pin-sentence">Sprint 1 is ready to try.</span></p>
+      </section>
+
+      <section class="demo-full" aria-labelledby="h-doc">
+        <h2 id="h-doc">Document head</h2>
+        <p class="demo-cap">Title left, version chips right on the same line, the byline under it with a link-styled Details inline (it opens the block below).</p>
+        <div class="demo-card">
+          <div class="pm-doc-head">
+            <h2 class="pm-doc-title pm-t-title">Product brief</h2>
+            <div class="pm-versions" role="radiogroup" aria-label="Version"><button class="pm-chip" type="button" role="radio" aria-checked="true">Draft 1 &middot; newest</button><button class="pm-chip" type="button" role="radio" aria-checked="false">Draft 2</button></div>
+            <details class="pm-doc-byline pm-details" id="demo-doc-details"><summary><span>Pramaan wrote draft 1 on Tuesday at 20:59.</span> <span class="pm-doc-details-link">Details</span></summary><div class="pm-details-body pm-mono">Draft id d-1 &middot; repository path pramaan-build/todo-d509a2e9</div></details>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo-full" aria-labelledby="h-request">
+        <h2 id="h-request">Request composer and request list</h2>
+        <p class="demo-cap">The composer twice: send in ink (another request needs you, screen 22) and send as the thread (screen 22b; a look-only sample here). Both are live and behave the same: disabled with its reason until there is text, Ctrl+Enter sends, the hint reports it. The thread send is quiet while it cannot be pressed (Ruling 15). Then four request rows of 64px in the four pins of the fixture, each with its mini measure.</p>
+        <div class="demo-full" style="margin-top: 0">
+          <form class="pm-request-composer" aria-label="Request a change, ink send" onsubmit="return false">
+            <label class="pm-label" for="rq1">Request a change</label>
+            <div class="pm-composer-row pm-composer-row--dictate">
+              <button class="pm-btn pm-btn--ghost pm-btn--icon pm-btn--lg" type="button" aria-label="Attach files or images"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-attach"/></svg></button>
+              <button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-dictate="#rq1"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button>
+              <textarea class="pm-composer-input" id="rq1" rows="3" placeholder="Describe the change the way you would in a ticket. One change per request."></textarea>
+              <button class="pm-btn pm-btn--ink pm-btn--lg" type="submit" data-request-send aria-disabled="true" aria-describedby="rq1-r">Send the request</button>
+            </div>
+            <div class="pm-composer-hint"><span data-dictate-status>Pramaan starts on a new branch as soon as you send. Nothing touches main.</span><span class="pm-btn-reason" id="rq1-r">Type the change first.</span></div>
+          </form>
+          <form class="pm-request-composer" aria-label="Request a change, thread send" onsubmit="return false">
+            <label class="pm-label" for="rq2">Request a change</label>
+            <div class="pm-composer-row pm-composer-row--dictate">
+              <button class="pm-btn pm-btn--ghost pm-btn--icon pm-btn--lg" type="button" aria-label="Attach files or images"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-attach"/></svg></button>
+              <button class="pm-dictate" type="button" aria-pressed="false" aria-label="Dictate your reply" data-dictate="#rq2"><svg class="pm-icon" aria-hidden="true"><use href="#pm-i-mic"/></svg></button>
+              <textarea class="pm-composer-input" id="rq2" rows="3" placeholder="Describe the change the way you would in a ticket. One change per request."></textarea>
+              <button class="pm-btn pm-btn--thread-demo pm-btn--lg" type="submit" data-request-send data-thread-when="text" aria-disabled="true" aria-describedby="rq2-r">Send the request</button>
+            </div>
+            <div class="pm-composer-hint"><span data-dictate-status>Nothing needs you. Describe the first change.</span><span class="pm-btn-reason" id="rq2-r">Type the change first.</span></div>
+          </form>
+        </div>
+        <ol class="pm-request-list" aria-label="Requests">
+          <li class="pm-request"><div class="pm-request-line"><a class="pm-rowlink pm-request-title" href="#">Let admins archive old workspaces</a><span class="pm-pin" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-request-sentence">Reviewed twice and ready. Merge it when you are ready.</span></div><p class="pm-request-meta">Started Tuesday &middot; <span class="pm-mono">feature/2-archive-workspaces</span> &middot; <a href="#">Pull request #42</a></p><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 3 of 4 done"><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i><i></i></span></li>
+          <li class="pm-request"><div class="pm-request-line"><a class="pm-rowlink pm-request-title" href="#">Send a summary email every Monday</a><span class="pm-pin" data-status="blocked"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-x"/></svg></span><span class="pm-pin-label">Blocked</span></span><span class="pm-request-sentence">A check did not pass. Pramaan is fixing it; nothing needed from you.</span></div><p class="pm-request-meta">Started today &middot; <span class="pm-mono">feature/3-weekly-summary</span></p><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: Build done, Test blocked"><i data-state="done"></i><i data-state="blocked"></i><i></i><i></i></span></li>
+          <li class="pm-request"><div class="pm-request-line"><a class="pm-rowlink pm-request-title" href="#">Search across notes</a><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span><span class="pm-request-sentence">Starts after 'Send a summary email every Monday'.</span></div><p class="pm-request-meta">Queued today</p><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: none done"><i></i><i></i><i></i><i></i></span></li>
+          <li class="pm-request"><div class="pm-request-line"><a class="pm-rowlink pm-request-title" href="#">Export the weekly report as CSV</a><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-request-sentence">Merged by you Tuesday 14:10.</span></div><p class="pm-request-meta"><span class="pm-mono">feature/1-export-csv</span> &middot; <a href="#">Pull request #38</a> &middot; merged Tuesday</p><span class="pm-steps pm-steps--mini" role="img" aria-label="Build, Test, Review, Merge: 4 of 4 done"><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i><i data-state="done"></i></span></li>
+        </ol>
+      </section>
+
+      <section class="demo-full" aria-labelledby="h-table">
+        <h2 id="h-table">Two-line table</h2>
+        <p class="demo-cap">Rows of 64px: the row link over its plain purpose in Meta. Comfortable, then compact (the compact rows are 54px).</p>
+        <table class="pm-table pm-table--two-line">
+          <thead><tr><th scope="col">Document</th><th scope="col" class="pm-col-status">Status</th><th scope="col" class="pm-col-version">Version</th><th scope="col" class="pm-col-updated">Updated</th></tr></thead>
+          <tbody>
+            <tr><td><a class="pm-rowlink" href="#">Product brief</a><span class="pm-row-purpose">What the product is for and how we will know it works.</span></td><td><span class="pm-cell-status"><span class="pm-pin pm-pin--tint" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-help">accepted Tuesday</span></span></td><td class="pm-tnum">Draft 1</td><td class="pm-tnum">Tue 14:10</td></tr>
+            <tr><td><a class="pm-rowlink" href="#">Requirements</a><span class="pm-row-purpose">What the first version must do and must not do.</span></td><td><span class="pm-cell-status"><span class="pm-pin pm-pin--tint" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span><span class="pm-help">accepted Tuesday</span></span></td><td class="pm-tnum">Draft 1</td><td class="pm-tnum">Tue 14:12</td></tr>
+            <tr><td><a class="pm-rowlink" href="#">User journey</a><span class="pm-row-purpose">What a person does in the product, step by step.</span></td><td><span class="pm-cell-status"><span class="pm-pin pm-pin--tint" data-status="needs-you"><span class="pm-pin-head"></span><span class="pm-pin-label">Needs you</span></span><span class="pm-help">Draft 2 is waiting</span></span></td><td class="pm-tnum">Draft 2</td><td class="pm-tnum">Tue 14:30</td></tr>
+            <tr><td><a class="pm-rowlink" href="#">Sprint plan</a><span class="pm-row-purpose">Which sprints build it, in what order.</span></td><td><span class="pm-cell-status"><span class="pm-pin pm-pin--tint" data-status="working" data-live="true"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span><span class="pm-help">being drafted</span></span></td><td class="pm-tnum">Draft 1</td><td class="pm-tnum">Tue 14:41</td></tr>
+          </tbody>
+        </table>
+        <table class="pm-table pm-table--two-line" data-density="compact" style="margin-top: var(--pm-space-2)">
+          <thead><tr><th scope="col">Advanced document, compact</th><th scope="col" class="pm-col-status">Status</th><th scope="col" class="pm-col-version">Version</th><th scope="col" class="pm-col-updated">Updated</th></tr></thead>
+          <tbody>
+            <tr><td><a class="pm-rowlink" href="#">System design</a><span class="pm-row-purpose">How the parts fit together.</span></td><td class="pm-col-status"><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td><td class="pm-col-version pm-tnum">Draft 1</td><td class="pm-col-updated pm-tnum">Tue 14:50</td></tr>
+            <tr><td><a class="pm-rowlink" href="#">Data model</a><span class="pm-row-purpose">What is stored and how it relates.</span></td><td class="pm-col-status"><span class="pm-pin pm-pin--tint" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></td><td class="pm-col-version pm-tnum">Draft 1</td><td class="pm-col-updated pm-tnum">Tue 14:52</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="demo-full" aria-labelledby="h-device">
+        <h2 id="h-device">Device switch and device frame</h2>
+        <p class="demo-cap">Three chips centred in the stage bar; the frame is centred in the stage body, 390px wide, with a control-border frame, card radius and a Meta caption under it. Phone is chosen here; the chips are live (components.js sets the width and the caption).</p>
+        <div class="pm-stage demo-stage" style="border: var(--pm-hairline); border-radius: var(--pm-radius-card); padding: 0 var(--pm-space-4) var(--pm-space-4)">
+          <div class="pm-stage-bar">
+            <span>Private preview &middot; Sprint 1: Calculator on every device</span>
+            <div class="pm-device-switch" role="radiogroup" aria-label="Preview width"><button class="pm-chip" type="button" role="radio" aria-checked="true" data-device-w="390px" data-caption="390 px">Phone</button><button class="pm-chip" type="button" role="radio" aria-checked="false" data-device-w="820px" data-caption="820 px">Tablet</button><button class="pm-chip" type="button" role="radio" aria-checked="false" data-caption="Fills the stage">Computer</button></div>
+            <button class="pm-btn pm-btn--ghost pm-btn--sm" type="button">Open in a new tab <svg class="pm-icon" aria-hidden="true"><use href="#pm-i-external"/></svg></button>
+          </div>
+          <div class="pm-stage-body">
+            <figure class="pm-device" style="--pm-device-w: 390px">
+              <div class="pm-device-frame"><iframe title="Calculator preview, phone width" srcdoc="&lt;!doctype html&gt;&lt;meta charset='utf-8'&gt;&lt;body style='font-family:system-ui,sans-serif;margin:16px'&gt;&lt;h2 style='font-size:18px;margin:0 0 12px'&gt;Calculator&lt;/h2&gt;&lt;input style='width:100%;padding:8px;box-sizing:border-box'&gt;&lt;p&gt;Result: 3&lt;/p&gt;"></iframe></div>
+              <figcaption class="pm-device-caption">390 px</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo-full" aria-labelledby="h-plan">
+        <h2 id="h-plan">Plan aside, skeleton route card and contents comments</h2>
+        <p class="demo-cap">The plan aside is a fitted card of 40px sprint rows (the second row is the sprint in view: 2px ink bar, weight 600). The skeleton route card stands in for a plan being drafted. The contents comments list sits under the reader's contents links.</p>
+        <div class="demo-grid3">
+          <aside class="pm-plan-aside pm-panel--fit" data-spy aria-label="Plan at a glance">
+            <h2>Plan at a glance</h2>
+            <ol>
+              <li><a href="#demo-s1"><span class="pm-tnum">1</span><span class="pm-plan-name">Your private checklist</span><span class="pm-pin" data-status="done"><span class="pm-pin-head"><svg class="pm-pin-glyph" aria-hidden="true"><use href="#pm-g-check"/></svg></span><span class="pm-pin-label">Done</span></span></a></li>
+              <li><a href="#demo-s2" aria-current="location"><span class="pm-tnum">2</span><span class="pm-plan-name">Calculator on every device</span><span class="pm-pin" data-status="working"><span class="pm-pin-head"></span><span class="pm-pin-label">Working</span></span></a></li>
+              <li><a href="#demo-s3"><span class="pm-tnum">3</span><span class="pm-plan-name">Share a checklist</span><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></a></li>
+              <li><a href="#demo-s4"><span class="pm-tnum">4</span><span class="pm-plan-name">Reminders by email</span><span class="pm-pin" data-status="waiting"><span class="pm-pin-head"></span><span class="pm-pin-label">Waiting</span></span></a></li>
+            </ol>
+            <p>Nothing is built until you approve.</p>
+          </aside>
+          <div class="pm-route-card pm-route-card--skeleton" aria-hidden="true"><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span><span class="pm-skeleton"></span></div>
+          <nav class="pm-toc" aria-label="In this document">
+            <p class="pm-toc-title">In this document</p>
+            <ol><li><a href="#demo-c1" aria-current="location">One-sentence outcome</a></li><li><a href="#demo-c2">Constraints</a></li><li><a href="#demo-c3">Success contract</a></li></ol>
+            <div class="pm-toc-links"><a href="#demo-c2">Passage comments (1)</a></div>
+            <ol class="pm-toc-comments"><li><a href="#demo-c2">1 &middot; Constraints: 'I don't think this is a constraint'</a></li></ol>
+            <p class="pm-toc-title" style="margin-top: var(--pm-space-4)">The same list on a document with none:</p>
+            <p class="pm-toc-comments-empty">No passage comments.</p>
+          </nav>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>
