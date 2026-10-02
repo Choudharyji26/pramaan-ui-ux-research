@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pramaan builder: split-screen skeleton</title>
+<link rel="stylesheet" href="split.css">
+</head>
+<body data-screen="">
+<header class="top">
+  <a class="logo" href="#s=01" aria-label="Pramaan, all projects">Pramaan</a>
+  <nav class="crumb" id="crumb" aria-label="Breadcrumb"></nav>
+  <ol class="tape" id="tape" aria-label="Stages"></ol>
+  <div class="top-actions">
+    <button type="button" id="btn-settings" aria-pressed="false">Settings</button>
+    <button type="button" id="btn-logs" aria-pressed="false">Logs</button>
+    <button type="button" id="btn-acct" aria-label="Account">Account</button>
+  </div>
+  <div class="pop acct" id="sb-pop" hidden>
+    <div class="switch"><button type="button" role="switch" aria-checked="false" data-act="darkTheme" aria-label="Dark theme"></button><span>Dark theme</span></div>
+    <button type="button" class="quiet" data-act="accountStub">Switch organisation</button>
+    <button type="button" class="quiet" data-act="accountStub">Sign out</button>
+  </div>
+</header>
+
+<main class="split">
+  <section class="chat" aria-label="Chat with Pramaan">
+    <div class="strip" id="strip" hidden><span id="strip-t"></span><button type="button" class="link" id="btn-hist">History</button></div>
+    <div class="pop hist" id="hist" hidden></div>
+    <div class="chat-head" id="chathead" hidden></div>
+    <div class="msgs-wrap">
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <button type="button" class="chip pill" id="pill" hidden>New reply below</button>
+    </div>
+    <div class="dock" id="dock"></div>
+    <form class="composer" id="composer" onsubmit="return false">
+      <div class="composer-row">
+        <button type="button" class="quiet icon" id="attach" aria-label="Attach a file">+</button>
+        <button type="button" class="quiet icon" id="dictate" aria-pressed="false" aria-label="Dictate your reply">Mic</button>
+        <textarea id="msg" rows="2" aria-label="Message Pramaan"></textarea>
+      </div>
+      <div class="composer-foot">
+        <p class="hint"><span id="hint-t"></span> <span id="dict-status" aria-live="polite"></span></p>
+        <span class="row"><small class="reason" id="send-reason"></small><button type="button" class="quiet" id="send" aria-disabled="true">Send</button></span>
+      </div>
+    </form>
+  </section>
+
+  <section class="right" aria-label="Results and actions">
+    <div class="right-head">
+      <div class="tabs" id="tabs" role="tablist" aria-label="Project views"></div>
+      <span class="badge" id="badge"></span>
+    </div>
+    <div class="view" id="view"></div>
+    <div class="right-foot"><button type="button" class="quiet" id="btn-screens">Screens</button><small>34 screens, each reachable here. Review aid.</small></div>
+    <div class="drawer" id="drawer" hidden></div>
+  </section>
+</main>
+<button type="button" class="quiet selpop" id="selpop" hidden>Comment on this passage</button>
+<script src="split.js"></script>
+</body>
+</html>
